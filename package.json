@@ -13,7 +13,7 @@
     "@nrwl/workspace": "15.8.9",
     "@swc/cli": "~0.1.55",
     "@swc/core": "^1.2.173",
-    "@swc/jest": "0.2.20",
+    "@swc/jest": "0.2.24",
     "@tobysmith568/eslint-config": "^1.0.2",
     "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^29.4.0",
