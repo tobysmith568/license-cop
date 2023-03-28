@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": ["en-gb"],
+  "words": [],
+  "ignoreWords": ["tobysmith", "nrwl", "swcrc"],
+  "import": [],
+  "ignoreRegExpList": [],
+  "flagWords": ["licence"]
+}
