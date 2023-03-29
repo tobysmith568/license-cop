@@ -1,5 +1,9 @@
 {
   "name": "license-cop",
   "version": "0.0.0",
-  "type": "commonjs"
+  "type": "commonjs",
+  "bin": {
+    "license-cop": "./bin/src/license-cop",
+    "lcop": "./bin/src/license-cop"
+  }
 }

@@ -5,7 +5,7 @@
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb"],
   "words": [],
-  "ignoreWords": ["tobysmith", "nrwl", "swcrc"],
+  "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli"],
   "import": [],
   "ignoreRegExpList": [],
   "flagWords": ["licence"]

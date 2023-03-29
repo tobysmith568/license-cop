@@ -11,7 +11,14 @@
         "outputPath": "dist/packages/license-cop",
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
-        "assets": ["packages/license-cop/*.md"]
+        "assets": ["packages/license-cop/*.md", "packages/license-cop/src/bin/**"]
+      },
+      "buildableProjectDepsInPackageJsonType": "dependencies"
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node ./dist/packages/license-cop/src/bin/license-cop"
       }
     },
     "lint": {

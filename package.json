@@ -18,6 +18,7 @@
     "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/node": "18.15.10",
+    "@types/npmcli__arborist": "^5.6.1",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
     "cspell": "^6.31.1",
@@ -31,7 +32,10 @@
     "typescript": "~4.9.5"
   },
   "dependencies": {
+    "@npmcli/arborist": "^6.2.5",
     "@swc/helpers": "~0.4.11",
+    "arg": "^5.0.2",
+    "spdx-license-ids": "^3.0.13",
     "tslib": "^2.3.0"
   }
 }
