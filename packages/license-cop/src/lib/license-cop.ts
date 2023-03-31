@@ -2,12 +2,19 @@ import Arborist, { Node, Link } from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
 import { readPackageJson } from "./package-json";
 
-export const checkLicenses = async (workingDir?: string): Promise<void> => {
+export interface LicenseCopOptions {
+  workingDirectory?: string;
+  includeDevDependencies?: boolean;
+}
+
+export const checkLicenses = async (options?: LicenseCopOptions): Promise<void> => {
+  const { workingDirectory, includeDevDependencies } = options ?? {};
+
   console.log("Checking licenses");
 
   const licenses = new Set<string>();
 
-  const path = resolvePath(workingDir);
+  const path = resolvePath(workingDirectory);
 
   const arborist = new Arborist({
     path
@@ -19,7 +26,7 @@ export const checkLicenses = async (workingDir?: string): Promise<void> => {
 
   const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
     for (const node of nodes) {
-      if (node.dev || node.devOptional) {
+      if (!includeDevDependencies && (node.dev || node.devOptional)) {
         continue;
       }
 
@@ -28,6 +35,8 @@ export const checkLicenses = async (workingDir?: string): Promise<void> => {
 
       if (license) {
         licenses.add(license);
+      } else {
+        console.log(`No license found for ${node.name}`);
       }
 
       if (node.children.size > 0) {

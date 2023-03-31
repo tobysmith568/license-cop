@@ -1,5 +1,5 @@
 import arg, { Result } from "arg";
-import { checkLicenses } from "../license-cop";
+import { checkLicenses, LicenseCopOptions } from "../license-cop";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { printPackageVersion } from "./version";
 
@@ -20,7 +20,12 @@ const cli = async (args: string[]) => {
     return;
   }
 
-  await checkLicenses(givenUserInputs["--directory"]);
+  const options: LicenseCopOptions = {
+    workingDirectory: givenUserInputs["--directory"],
+    includeDevDependencies: givenUserInputs["--include-dev-dependencies"]
+  };
+
+  await checkLicenses(options);
 };
 
 const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
