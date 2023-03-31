@@ -13,6 +13,9 @@ export interface ArgumentsWithAliases extends Spec {
   "--dev": "--include-dev-dependencies";
   "-D": "--include-dev-dependencies";
 
+  "--dev-dependencies-only": typeof Boolean;
+  "--dev-only": "--dev-dependencies-only";
+
   "--version": typeof Boolean;
   "-v": "--version";
 }
@@ -25,6 +28,9 @@ export const argumentsWithAliases: ArgumentsWithAliases = {
   "--include-dev-dependencies": Boolean,
   "--dev": "--include-dev-dependencies",
   "-D": "--include-dev-dependencies",
+
+  "--dev-dependencies-only": Boolean,
+  "--dev-only": "--dev-dependencies-only",
 
   "--version": Boolean,
   "-v": "--version"

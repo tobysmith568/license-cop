@@ -22,7 +22,8 @@ const cli = async (args: string[]) => {
 
   const options: LicenseCopOptions = {
     workingDirectory: givenUserInputs["--directory"],
-    includeDevDependencies: givenUserInputs["--include-dev-dependencies"]
+    includeDevDependencies: givenUserInputs["--include-dev-dependencies"],
+    devDependenciesOnly: givenUserInputs["--dev-dependencies-only"]
   };
 
   await checkLicenses(options);

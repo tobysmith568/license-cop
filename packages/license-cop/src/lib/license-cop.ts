@@ -5,10 +5,11 @@ import { readPackageJson } from "./package-json";
 export interface LicenseCopOptions {
   workingDirectory?: string;
   includeDevDependencies?: boolean;
+  devDependenciesOnly?: boolean;
 }
 
 export const checkLicenses = async (options?: LicenseCopOptions): Promise<void> => {
-  const { workingDirectory, includeDevDependencies } = options ?? {};
+  const { workingDirectory, includeDevDependencies, devDependenciesOnly } = options ?? {};
 
   console.log("Checking licenses");
 
@@ -26,7 +27,11 @@ export const checkLicenses = async (options?: LicenseCopOptions): Promise<void> 
 
   const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
     for (const node of nodes) {
-      if (!includeDevDependencies && (node.dev || node.devOptional)) {
+      if (!includeDevDependencies && !devDependenciesOnly && (node.dev || node.devOptional)) {
+        continue;
+      }
+
+      if (devDependenciesOnly && !node.dev && !node.devOptional) {
         continue;
       }
 
