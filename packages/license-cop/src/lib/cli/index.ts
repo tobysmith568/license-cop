@@ -1,4 +1,5 @@
 import arg, { Result } from "arg";
+import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { printPackageVersion } from "./version";
@@ -7,7 +8,12 @@ export async function main(args: string[]): Promise<void> {
   try {
     await cli(args);
   } catch (e: unknown) {
-    console.error(e);
+    if (e instanceof Error) {
+      console.error(e.message);
+    } else {
+      console.error(e);
+    }
+
     process.exitCode = 1;
   }
 }
@@ -20,8 +26,15 @@ const cli = async (args: string[]) => {
     return;
   }
 
+  const directory = givenUserInputs["--directory"] ?? process.cwd();
+
+  const config = await loadConfig(directory);
+
   const options: LicenseCopOptions = {
-    workingDirectory: givenUserInputs["--directory"],
+    allowedLicenses: config.licenses,
+    allowedPackages: config.packages,
+
+    workingDirectory: directory,
     includeDevDependencies: givenUserInputs["--include-dev-dependencies"],
     devDependenciesOnly: givenUserInputs["--dev-dependencies-only"]
   };
