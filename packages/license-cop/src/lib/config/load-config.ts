@@ -1,18 +1,20 @@
-import { cosmiconfig, Options as CosmiconfigOptions } from "cosmiconfig";
 import { parseConfig } from "./config";
+import { loadParentConfig } from "./load-parent-config";
+import deepMerge from "deepmerge";
+import { findConfig } from "./find-config";
 
 export const loadConfig = async (rootDir: string) => {
-  const options: CosmiconfigOptions = {
-    stopDir: rootDir
-  };
+  const foundConfig = await findConfig(rootDir);
 
-  const explorer = cosmiconfig("licenses", options);
+  let config = parseConfig(foundConfig);
 
-  const result = await explorer.search(rootDir);
+  while (config.extends) {
+    const loadedParentConfig = await loadParentConfig(config.extends, rootDir);
+    const parsedParentConfig = parseConfig(loadedParentConfig);
 
-  if (!result?.config) {
-    throw new Error("No config file found");
+    config = deepMerge(parsedParentConfig, config);
+    config.extends = parsedParentConfig.extends;
   }
 
-  return parseConfig(result.config);
+  return config;
 };

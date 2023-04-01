@@ -4,7 +4,7 @@
   "ignorePaths": [],
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb"],
-  "words": [],
+  "words": ["deepmerge"],
   "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli"],
   "import": [],
   "ignoreRegExpList": [],
