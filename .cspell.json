@@ -5,7 +5,7 @@
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb"],
   "words": ["deepmerge"],
-  "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli"],
+  "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli", "licensecop", "npmjs.com"],
   "import": [],
   "ignoreRegExpList": [],
   "flagWords": ["licence", "licences"]

@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "type": "commonjs",
   "bin": {
-    "license-cop": "./bin/src/license-cop",
-    "lcop": "./bin/src/license-cop"
+    "license-cop": "./src/bin/license-cop"
   }
 }

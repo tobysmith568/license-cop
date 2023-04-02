@@ -11,7 +11,12 @@
         "outputPath": "dist/packages/license-cop",
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
-        "assets": ["packages/license-cop/*.md", "packages/license-cop/src/bin/**"]
+        "assets": [
+          "README.md",
+          "LICENSE.md",
+          "packages/license-cop/*.md",
+          "packages/license-cop/src/bin/**"
+        ]
       },
       "buildableProjectDepsInPackageJsonType": "dependencies"
     },
