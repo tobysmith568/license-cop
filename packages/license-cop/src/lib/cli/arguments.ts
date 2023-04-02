@@ -5,6 +5,8 @@ export interface UserInputs {
 }
 
 export interface ArgumentsWithAliases extends Spec {
+  "--init": typeof Boolean;
+
   "--directory": typeof String;
   "--dir": "--directory";
   "-d": "--directory";
@@ -21,6 +23,8 @@ export interface ArgumentsWithAliases extends Spec {
 }
 
 export const argumentsWithAliases: ArgumentsWithAliases = {
+  "--init": Boolean,
+
   "--directory": String,
   "--dir": "--directory",
   "-d": "--directory",

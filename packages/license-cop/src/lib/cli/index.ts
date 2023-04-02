@@ -2,6 +2,7 @@ import arg, { Result } from "arg";
 import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
+import { init } from "./init";
 import { printPackageVersion } from "./version";
 
 export async function main(args: string[]): Promise<void> {
@@ -27,6 +28,11 @@ const cli = async (args: string[]) => {
   }
 
   const directory = givenUserInputs["--directory"] ?? process.cwd();
+
+  if (givenUserInputs["--init"]) {
+    await init(directory);
+    return;
+  }
 
   const config = await loadConfig(directory);
 
