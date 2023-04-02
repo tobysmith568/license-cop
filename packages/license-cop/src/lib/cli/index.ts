@@ -41,8 +41,9 @@ const cli = async (args: string[]) => {
     allowedPackages: config.packages,
 
     workingDirectory: directory,
-    includeDevDependencies: givenUserInputs["--include-dev-dependencies"],
-    devDependenciesOnly: givenUserInputs["--dev-dependencies-only"]
+    includeDevDependencies:
+      givenUserInputs["--include-dev-dependencies"] ?? config.includeDevDependencies,
+    devDependenciesOnly: givenUserInputs["--dev-dependencies-only"] ?? config.devDependenciesOnly
   };
 
   await checkLicenses(options);

@@ -88,10 +88,6 @@ Set to `true` to make license-cop also check your dev-dependencies.
 `false` by default.  
 Set to `true` to make license-cop only check your dev-dependencies.
 
-#### `directory`
-
-Optionally provide a relative or absolute path to a project to run license-cop in.
-
 ## License
 
 License-cop itself is licensed under the [ISC license](./LICENSE.md).

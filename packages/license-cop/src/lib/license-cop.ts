@@ -20,10 +20,10 @@ interface Violation {
 export const checkLicenses = async (options: LicenseCopOptions): Promise<void> => {
   const {
     workingDirectory,
-    includeDevDependencies,
-    devDependenciesOnly,
     allowedLicenses,
-    allowedPackages
+    allowedPackages,
+    includeDevDependencies,
+    devDependenciesOnly
   } = options;
 
   const allLicenses = new Set<string>();

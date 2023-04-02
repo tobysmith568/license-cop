@@ -4,12 +4,17 @@ const configParser = z
   .object({
     extends: z.string().optional(),
     licenses: z.array(z.string()).optional(),
-    packages: z.array(z.string()).optional()
+    packages: z.array(z.string()).optional(),
+    includeDevDependencies: z.boolean().optional(),
+    devDependenciesOnly: z.boolean().optional(),
+    directory: z.string().optional()
   })
   .transform(c => ({
     extends: c.extends,
     licenses: c.licenses ?? [],
-    packages: c.packages ?? []
+    packages: c.packages ?? [],
+    includeDevDependencies: c.includeDevDependencies ?? false,
+    devDependenciesOnly: c.devDependenciesOnly ?? false
   }));
 
 export type Config = z.infer<typeof configParser>;
