@@ -8,5 +8,5 @@
   "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli"],
   "import": [],
   "ignoreRegExpList": [],
-  "flagWords": ["licence"]
+  "flagWords": ["licence", "licences"]
 }

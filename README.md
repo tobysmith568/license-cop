@@ -1,3 +1,3 @@
 # LicenseCop
 
-Yet another dependency license checker tool; focused on simplicity.
+Yet another license checker tool for your dependencies; focused on simplicity.
