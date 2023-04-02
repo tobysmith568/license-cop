@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "should-pass-when-all-licenses-are-present",
+  "dependencies": {
+    "isc-dependency": "file:../dependencies/isc",
+    "mit-dependency": "file:../dependencies/mit"
+  },
+  "devDependencies": {
+    "license-cop": "file:../../src/dist/packages/license-cop"
+  }
+}

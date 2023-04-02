@@ -1,0 +1,55 @@
+name: E2E Tests
+
+on:
+  workflow_call:
+
+env:
+  NODE_VERSION: 18
+
+jobs:
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          - name: Should pass when all licenses are present
+            directory: ./e2e/should-pass-when-all-licenses-are-present
+            args: ""
+            expectedExitCode: 0
+
+          - name: Should fail when a license is missing
+            directory: ./e2e/should-fail-when-a-license-is-missing
+            args: ""
+            expectedExitCode: 1
+
+    name: ${{ matrix.test.name }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: Build
+          path: ./src/dist
+
+      - name: Install in test
+        run: npm install
+        working-directory: ${{ matrix.test.directory }}
+
+      - name: Debug
+        run: ls
+        working-directory: ${{ matrix.test.directory }}/node_modules
+
+      - name: Run Test
+        run: |
+          npx license-cop ${{ matrix.test.args }}
+          exit $($LASTEXITCODE -eq ${{ matrix.test.expectedExitCode }} ? 0 : 1)
+        working-directory: ${{ matrix.test.directory }}

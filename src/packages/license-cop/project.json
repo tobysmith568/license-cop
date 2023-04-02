@@ -12,8 +12,8 @@
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
         "assets": [
-          "README.md",
-          "LICENSE.md",
+          "../README.md",
+          "../LICENSE.md",
           "packages/license-cop/*.md",
           "packages/license-cop/src/bin/**"
         ]

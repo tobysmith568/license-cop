@@ -113,3 +113,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./src
+
+  e2e:
+    name: E2E Test
+    uses: ./.github/workflows/e2e-tests.yml
+    needs:
+      - build
+    secrets: inherit
