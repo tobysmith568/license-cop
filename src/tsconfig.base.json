@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@license-cop/permissive": ["packages/permissive/src/index.ts"],
       "license-cop": ["packages/license-cop/src/index.ts"]
     }
   },

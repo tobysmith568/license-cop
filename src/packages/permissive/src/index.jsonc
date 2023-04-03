@@ -1,0 +1,28 @@
+{
+  "licenses": [
+    // MIT-like
+    "MIT",
+    "MIT-0",
+    "ISC",
+
+    // Apache
+    "Apache-2.0",
+
+    // BSD
+    "0BSD",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSD-3-Clause-Clear",
+    "BSD-4-Clause",
+
+    // Creative Commons
+    "CC0-1.0",
+
+    // Microsoft
+    "MS-PL",
+
+    // Other
+    "Unlicense",
+    "WTFPL"
+  ]
+}
