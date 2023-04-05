@@ -21,10 +21,25 @@ jobs:
             args: ""
             expectedExitCode: 0
 
+          - name: Should pass when all packages are present
+            directory: ./e2e/should-pass-when-all-packages-are-present
+            args: ""
+            expectedExitCode: 0
+
           - name: Should fail when a license is missing
             directory: ./e2e/should-fail-when-a-license-is-missing
             args: ""
             expectedExitCode: 1
+
+          - name: Should fail when a package is out of its semver range
+            directory: ./e2e/should-fail-when-a-package-is-out-of-its-semver-range
+            args: ""
+            expectedExitCode: 1
+
+          - name: Should pass when a package is in its semver range
+            directory: ./e2e/should-pass-when-a-package-is-in-its-semver-range
+            args: ""
+            expectedExitCode: 0
 
     name: ${{ matrix.test.name }}
 

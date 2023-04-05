@@ -1,0 +1,3 @@
+{
+  "packages": ["isc-dependency", "mit-dependency@^4.5.1"]
+}
