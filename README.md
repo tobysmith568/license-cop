@@ -40,11 +40,11 @@ By default the `--init` flag will make a `.licenses.json` file, however you can 
 
 #### `licenses`
 
-Specify all of the SPDX license codes that you're allowing in your dependency tree. E.g.
+Specify all of the [SPDX license codes](https://spdx.org/licenses/) that you're allowing in your dependency tree. E.g.
 
 ```json
 {
-  "licenses": ["MIT", "ISC", "Apache2.0"]
+  "licenses": ["MIT", "ISC", "Apache-2.0"]
 }
 ```
 
@@ -62,17 +62,25 @@ Specify all of the packages you're allowing, no matter what the license is. You 
 
 Specify another license-cop config file that this file should extend.
 
+```json
+{
+  "extends": "@license-cop/permissive"
+}
+```
+
 Values can be:
 
-- The name of an installed npm package (optionally prefixed with `npm:`) that contains a license-cop config file.
-  `@license-cop/permissive`
+- The name of an installed npm package (optionally prefixed with `npm:`) that contains a license-cop config file.  
+  `@license-cop/permissive`  
   `npm:@license-cop/permissive`
+
+> [@license-cop/permissive](https://www.npmjs.com/package/@license-cop/permissive) is a base config provided by us containing a curated list of permissive licenses. We think it's a good starting point for all configs!
 
 - The name of a public github repository (prefixed with `github:`) that contains a license-cop config file. This currently only supports config files called exactly `.licenses.json`.  
   `github:tobysmith568/license-cop-config`
 
-- A URL to a license-cop config file. Currently this only supports json config files.
-- `https://raw.githubusercontent.com/tobysmith568/license-cop-config/main/license-cop.json`
+- A URL to a license-cop config file. Currently this only supports json config files.  
+  `https://raw.githubusercontent.com/tobysmith568/license-cop-config/main/license-cop.json`
 
 **Caveats**
 
