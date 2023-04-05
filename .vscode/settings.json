@@ -1,5 +1,4 @@
 {
-  "terminal.integrated.cwd": "./src",
   "files.associations": {
     ".licenses.json": "json5"
   }

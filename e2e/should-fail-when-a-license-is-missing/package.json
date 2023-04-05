@@ -6,6 +6,6 @@
     "mit-dependency": "file:../dependencies/mit"
   },
   "devDependencies": {
-    "license-cop": "file:../../src/dist/packages/license-cop"
+    "license-cop": "file:../../dist/packages/license-cop"
   }
 }
