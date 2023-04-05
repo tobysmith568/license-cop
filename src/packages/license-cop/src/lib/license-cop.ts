@@ -2,6 +2,7 @@ import Arborist, { Node, Link } from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
 import { readPackageJson } from "./package-json";
 import { isAllowedLicense, isAllowedPackage } from "./package-rules";
+import { Violation, ViolationsError } from "./violations-error";
 
 export interface LicenseCopOptions {
   allowedLicenses: string[];
@@ -9,12 +10,6 @@ export interface LicenseCopOptions {
   workingDirectory?: string;
   includeDevDependencies?: boolean;
   devDependenciesOnly?: boolean;
-}
-
-interface Violation {
-  packageName: string;
-  packageVersion: string;
-  license: string;
 }
 
 export const checkLicenses = async (options: LicenseCopOptions): Promise<void> => {
@@ -79,9 +74,7 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
   await parseNodes(topNode.children.values());
 
   if (packageViolations.size > 0) {
-    reportViolations(packageViolations);
-  } else {
-    console.log("No issues found!");
+    throw new ViolationsError(packageViolations);
   }
 };
 
@@ -91,12 +84,4 @@ const resolvePath = (path?: string): string => {
   }
 
   return isAbsolute(path) ? path : join(process.cwd(), path);
-};
-
-const reportViolations = (violations: Set<Violation>): void => {
-  console.log("Issues:");
-  for (const violation of violations) {
-    const { packageName, packageVersion, license } = violation;
-    console.log(`${packageName}@${packageVersion} - ${license}`);
-  }
 };

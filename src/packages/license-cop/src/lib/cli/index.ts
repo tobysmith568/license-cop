@@ -1,6 +1,7 @@
 import arg, { Result } from "arg";
 import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
+import { Violation, ViolationsError } from "../violations-error";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { init } from "./init";
 import { printPackageVersion } from "./version";
@@ -9,7 +10,9 @@ export async function main(args: string[]): Promise<void> {
   try {
     await cli(args);
   } catch (e: unknown) {
-    if (e instanceof Error) {
+    if (e instanceof ViolationsError) {
+      reportViolations(e.violations);
+    } else if (e instanceof Error) {
       console.error(e.message);
     } else {
       console.error(e);
@@ -53,4 +56,12 @@ const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
   return arg(argumentsWithAliases, {
     argv: rawArgs.slice(2)
   });
+};
+
+const reportViolations = (violations: Set<Violation>): void => {
+  console.log("Issues:");
+  for (const violation of violations) {
+    const { packageName, packageVersion, license } = violation;
+    console.log(`${packageName}@${packageVersion} - ${license}`);
+  }
 };
