@@ -1,6 +1,9 @@
-import { readCachedProjectGraph, createProjectGraphAsync } from "@nrwl/devkit";
+import devkit from "@nrwl/devkit";
 import chalk from "chalk";
 import { execSync } from "child_process";
+import { getLatestTag } from "npm-publish-latest-tag";
+
+const { createProjectGraphAsync, readCachedProjectGraph } = devkit;
 
 function invariant(condition, message) {
   if (!condition) {
@@ -9,7 +12,7 @@ function invariant(condition, message) {
   }
 }
 
-const [, , name, tag = "next"] = process.argv;
+const [, , name] = process.argv;
 
 await createProjectGraphAsync();
 const graph = readCachedProjectGraph();
@@ -27,6 +30,8 @@ invariant(
 );
 
 process.chdir(outputPath);
+
+const tag = await getLatestTag("./package.json");
 
 console.log(chalk.bold.red("Using the --dry-run flag. Not actually publishing to npm..."));
 execSync(`npm publish --access public --tag ${tag} --dry-run`);

@@ -52,9 +52,8 @@
     "version": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/scripts/version.mjs license-cop {args.ver}"
-      },
-      "dependsOn": ["build"]
+        "command": "node tools/scripts/version.mjs license-cop {args.version}"
+      }
     },
     "publish": {
       "executor": "nx:run-commands",

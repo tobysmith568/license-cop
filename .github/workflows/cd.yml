@@ -1,0 +1,77 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: A SemVer for the release
+        default: ""
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  ci:
+    name: Run CI
+    uses: ./.github/workflows/ci.yml
+    with:
+      version: ${{ inputs.version }}
+    secrets: inherit
+
+  publish:
+    name: Publish to npm
+
+    needs:
+      - ci
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: Build
+          path: ./dist
+
+      - name: Publish
+        run: npx nx run-many --target publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+  create-release:
+    name: Create GitHub Release
+
+    needs:
+      - publish
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - run: Write-Host Pretending to make a GitHub release for ${{ inputs.version }}
+  #     - name: Create Release
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         tag_name: v${{ inputs.version }}
+  #         generate_release_notes: true
+  #         body: |
+  #           # Release v${{ inputs.version }}
+
+  #           Download from [npm](https://www.npmjs.com/package/license-cop/v/${{ inputs.version }}): `npm install license-cop@${{ inputs.version }}`

@@ -15,13 +15,6 @@
         "updateBuildableProjectDepsInPackageJson": false
       }
     },
-    "publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node tools/scripts/publish.mjs permissive {args.ver} {args.tag}"
-      },
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -42,6 +35,19 @@
           "codeCoverage": true
         }
       }
+    },
+    "version": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/version.mjs permissive {args.version}"
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs permissive {args.tag}"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": []
