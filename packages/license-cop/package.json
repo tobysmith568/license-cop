@@ -20,5 +20,14 @@
   },
   "bugs": {
     "url": "https://github.com/tobysmith568/license-cop/issues"
-  }
+  },
+  "keywords": [
+    "cli",
+    "license",
+    "licenses",
+    "license-cop",
+    "spdx",
+    "dependencies",
+    "oss"
+  ]
 }

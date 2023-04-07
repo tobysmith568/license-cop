@@ -1,6 +1,6 @@
 # @license-cop/permissive
 
-An out-of-the-box base config file for [license-cop](https://npmjs.com/packages/license-cop) containing a curated list of especially permissive licenses.
+An out-of-the-box base config file for [license-cop](https://npmjs.com/package/license-cop) containing a curated list of especially permissive licenses.
 
 <a href="https://www.npmjs.com/package/@license-cop/permissive">
   <img alt="npm" src="https://img.shields.io/npm/v/@license-cop/permissive?logo=npm">
@@ -50,4 +50,4 @@ Many of the licenses in this config:
 
 ## License
 
-[`@license-cop/permissive`](https://npmjs.com/packages/@license-cop/permissive) itself is licensed under the [ISC license](../../License.md).
+[`@license-cop/permissive`](https://npmjs.com/package/@license-cop/permissive) itself is licensed under the [ISC license](../../LICENSE.md).
