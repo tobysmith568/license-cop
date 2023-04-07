@@ -50,4 +50,4 @@ Many of the licenses in this config:
 
 ## License
 
-[`@license-cop/permissive`](https://npmjs.com/package/@license-cop/permissive) itself is licensed under the [ISC license](../../LICENSE.md).
+[`@license-cop/permissive`](https://npmjs.com/package/@license-cop/permissive) itself is licensed under the [ISC license](https://github.com/tobysmith568/license-cop/blob/main/LICENSE.md).

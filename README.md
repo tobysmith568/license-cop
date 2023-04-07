@@ -100,6 +100,43 @@ Set to `true` to make license-cop also check your dev-dependencies.
 `false` by default.  
 Set to `true` to make license-cop only check your dev-dependencies.
 
+## CI/CD Example (GitHub Actions)
+
+Running license-cop as a part of your CI process is a great way to catch issues before they land in your main branch.
+
+Below is an example of how you can run license-cop in its own GitHub Action job for all PRs targetting main:
+
+```yaml
+name: Check Licenses
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  licenses:
+    name: Check Licenses
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run License-Cop
+        run: npx license-cop
+```
+
+The Action above will fail if any of your node_modules have a license that isn't listed in your license-cop config file.
+
 ## License
 
-License-cop itself is licensed under the [ISC license](./LICENSE.md).
+License-cop itself is licensed under the [ISC license](https://github.com/tobysmith568/license-cop/blob/main/LICENSE.md).

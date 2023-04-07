@@ -43,7 +43,6 @@
     "deepmerge": "^4.3.1",
     "git-filesystem": "^0.0.2",
     "json5": "^2.2.3",
-    "spdx-license-ids": "^3.0.13",
     "tslib": "^2.3.0",
     "zod": "^3.21.4"
   }
