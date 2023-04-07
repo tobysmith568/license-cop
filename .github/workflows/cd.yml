@@ -65,13 +65,33 @@ jobs:
       contents: write
 
     steps:
-      - run: Write-Host Pretending to make a GitHub release for ${{ inputs.version }}
-  #     - name: Create Release
-  #       uses: softprops/action-gh-release@v1
-  #       with:
-  #         tag_name: v${{ inputs.version }}
-  #         generate_release_notes: true
-  #         body: |
-  #           # Release v${{ inputs.version }}
+      - uses: actions/checkout@v3
 
-  #           Download from [npm](https://www.npmjs.com/package/license-cop/v/${{ inputs.version }}): `npm install license-cop@${{ inputs.version }}`
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: Build
+          path: ./dist
+
+      - name: Pack assets
+        run: npx nx run-many --target pack
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}
+          generate_release_notes: true
+          files: dist/**.*.tgz
+          body: |
+            # Release v${{ inputs.version }}
+
+            Download from [npm](https://www.npmjs.com/package/license-cop/v/${{ inputs.version }}): `npm install license-cop@${{ inputs.version }} --save-dev`

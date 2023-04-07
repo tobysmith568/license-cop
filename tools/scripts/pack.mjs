@@ -1,7 +1,6 @@
 import devkit from "@nrwl/devkit";
 import chalk from "chalk";
 import { execSync } from "child_process";
-import { getLatestTag } from "npm-publish-latest-tag";
 
 const { createProjectGraphAsync, readCachedProjectGraph } = devkit;
 
@@ -31,6 +30,4 @@ invariant(
 
 process.chdir(outputPath);
 
-const tag = await getLatestTag("./package.json");
-
-execSync(`npm publish --access public --tag ${tag}`);
+execSync(`npm pack`);

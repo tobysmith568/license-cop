@@ -48,6 +48,12 @@
         "command": "node tools/scripts/version.mjs license-cop {args.version}"
       }
     },
+    "pack": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/pack.mjs license-cop"
+      }
+    },
     "publish": {
       "executor": "nx:run-commands",
       "options": {
