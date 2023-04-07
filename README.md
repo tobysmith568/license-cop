@@ -2,6 +2,10 @@
 
 Yet another license checker tool for your dependencies; focused on simplicity.
 
+<a href="https://www.npmjs.com/package/license-cop">
+  <img alt="npm" src="https://img.shields.io/npm/v/license-cop?logo=npm">
+</a>
+
 ## Setup
 
 Install license-cop

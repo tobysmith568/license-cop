@@ -11,7 +11,15 @@
         "outputPath": "dist/packages/permissive",
         "main": "packages/permissive/src/index.jsonc",
         "tsConfig": "packages/permissive/tsconfig.lib.json",
-        "assets": ["packages/permissive/*.md", "packages/permissive/src/*.jsonc"],
+        "assets": [
+          "packages/permissive/*.md",
+          "packages/permissive/src/*.jsonc",
+          {
+            "glob": "**",
+            "input": "packages/permissive/assets",
+            "output": "./"
+          }
+        ],
         "updateBuildableProjectDepsInPackageJson": false
       }
     },
@@ -46,8 +54,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "node tools/scripts/publish.mjs permissive {args.tag}"
-      },
-      "dependsOn": ["build"]
+      }
     }
   },
   "tags": []

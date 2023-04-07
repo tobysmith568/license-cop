@@ -4,5 +4,21 @@
   "type": "commonjs",
   "bin": {
     "license-cop": "./src/bin/license-cop"
+  },
+  "author": {
+    "name": "Toby Smith",
+    "email": "tobysmith568@hotmail.co.uk",
+    "url": "https://tobysmith.uk"
+  },
+  "license": "ISC",
+  "description": "Yet another license checker tool for your dependencies; focused on simplicity.",
+  "homepage": "https://github.com/tobysmith568/license-cop#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobysmith568/license-cop.git",
+    "directory": "packages/license-cop"
+  },
+  "bugs": {
+    "url": "https://github.com/tobysmith568/license-cop/issues"
   }
 }

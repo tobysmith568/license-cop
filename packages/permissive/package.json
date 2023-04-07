@@ -2,5 +2,21 @@
   "name": "@license-cop/permissive",
   "version": "0.0.0",
   "type": "commonjs",
-  "main": "./src/index.jsonc"
+  "main": "./src/index.jsonc",
+  "author": {
+    "name": "Toby Smith",
+    "email": "tobysmith568@hotmail.co.uk",
+    "url": "https://tobysmith.uk"
+  },
+  "license": "ISC",
+  "description": "An out-of-the-box base config file for license-cop containing a curated list of especially permissive licenses.",
+  "homepage": "https://github.com/tobysmith568/license-cop/tree/main/packages/permissive#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobysmith568/license-cop.git",
+    "directory": "packages/permissive"
+  },
+  "bugs": {
+    "url": "https://github.com/tobysmith568/license-cop/issues"
+  }
 }

@@ -2,6 +2,10 @@
 
 An out-of-the-box base config file for [license-cop](https://npmjs.com/packages/license-cop) containing a curated list of especially permissive licenses.
 
+<a href="https://www.npmjs.com/package/@license-cop/permissive">
+  <img alt="npm" src="https://img.shields.io/npm/v/@license-cop/permissive?logo=npm">
+</a>
+
 ## Usage
 
 Install `@license-cop/permissive`
