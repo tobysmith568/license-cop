@@ -12,13 +12,9 @@
         "main": "packages/permissive/src/index.jsonc",
         "tsConfig": "packages/permissive/tsconfig.lib.json",
         "assets": [
-          "packages/permissive/*.md",
           "packages/permissive/src/*.jsonc",
-          {
-            "glob": "**",
-            "input": "packages/permissive/assets",
-            "output": "./"
-          }
+          "packages/permissive/README.md",
+          "LICENSE.md"
         ],
         "updateBuildableProjectDepsInPackageJson": false
       }
