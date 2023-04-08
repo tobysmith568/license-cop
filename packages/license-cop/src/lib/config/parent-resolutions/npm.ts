@@ -1,8 +1,11 @@
 import { stat } from "fs/promises";
 import { join } from "path";
+import logger from "../../logger";
 import { findConfig } from "../find-config";
 
 export const npmResolution = async (packageName: string, rootDir: string) => {
+  logger.verbose(`Resolving npm package: ${packageName}`);
+
   const packagePath = getPackagePath(rootDir, packageName);
   return await findConfig(packagePath);
 };

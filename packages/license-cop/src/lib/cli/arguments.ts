@@ -20,6 +20,8 @@ export interface ArgumentsWithAliases extends Spec {
 
   "--version": typeof Boolean;
   "-v": "--version";
+
+  "--verbose": typeof Boolean;
 }
 
 export const argumentsWithAliases: ArgumentsWithAliases = {
@@ -37,5 +39,7 @@ export const argumentsWithAliases: ArgumentsWithAliases = {
   "--dev-only": "--dev-dependencies-only",
 
   "--version": Boolean,
-  "-v": "--version"
+  "-v": "--version",
+
+  "--verbose": Boolean
 };

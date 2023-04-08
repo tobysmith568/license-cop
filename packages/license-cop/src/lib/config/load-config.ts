@@ -2,6 +2,7 @@ import { parseConfig } from "./config";
 import { loadParentConfig } from "./load-parent-config";
 import deepMerge from "deepmerge";
 import { findConfig } from "./find-config";
+import logger from "../logger";
 
 export const loadConfig = async (rootDir: string) => {
   const foundConfig = await findConfig(rootDir);
@@ -9,6 +10,7 @@ export const loadConfig = async (rootDir: string) => {
   let config = parseConfig(foundConfig);
 
   while (config.extends) {
+    logger.verbose(`Extending config with ${config.extends}`);
     const loadedParentConfig = await loadParentConfig(config.extends, rootDir);
     const parsedParentConfig = parseConfig(loadedParentConfig);
 

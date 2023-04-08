@@ -1,5 +1,8 @@
 import { Stats } from "fs";
 import { readFile, stat } from "fs/promises";
+import logger from "./logger";
+
+//TODO: Use zod to validate the package.json
 
 interface PackageJson {
   name: string;
@@ -10,6 +13,7 @@ interface PackageJson {
 export const readPackageJson = async (pathToPackageJson: string): Promise<PackageJson> => {
   const doesPackageJsonExist = await doesFileExist(pathToPackageJson);
   if (!doesPackageJsonExist) {
+    logger.verbose(`Cannot find the package.json: '${pathToPackageJson}'`);
     throw new Error(`Cannot find the file: '${pathToPackageJson}'`);
   }
 

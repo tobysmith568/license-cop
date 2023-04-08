@@ -1,6 +1,7 @@
 import { githubResolution } from "./parent-resolutions/github";
 import { nodeModuleExists, npmResolution } from "./parent-resolutions/npm";
 import { httpResolution } from "./parent-resolutions/http";
+import { ConfigError } from "./config-error";
 
 export const loadParentConfig = async (
   parentConfigPath: string,
@@ -24,5 +25,5 @@ export const loadParentConfig = async (
     return await npmResolution(parentConfigPath, rootDir);
   }
 
-  throw new Error(`Invalid parent config location: ${parentConfigPath}`);
+  throw new ConfigError(`Invalid parent config location: ${parentConfigPath}`);
 };

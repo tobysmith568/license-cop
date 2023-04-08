@@ -7,6 +7,7 @@ import { init } from "./init";
 import { printPackageVersion } from "./version";
 import { join } from "path";
 import { readPackageJson } from "../package-json";
+import logger from "../logger";
 
 export async function main(args: string[]): Promise<void> {
   try {
@@ -15,17 +16,26 @@ export async function main(args: string[]): Promise<void> {
     if (e instanceof ViolationsError) {
       reportViolations(e.violations);
     } else if (e instanceof Error) {
-      console.error(e.message);
+      logger.error(e.message);
     } else {
-      console.error(e);
+      logger.error(JSON.stringify(e));
     }
 
+    logger.verbose("Exiting with error code 1");
     process.exitCode = 1;
   }
+
+  logger.verbose("Exiting with error code 0");
+  process.exitCode = 0;
 }
 
 const cli = async (args: string[]) => {
   const givenUserInputs = parseUserInputs(args);
+
+  if (givenUserInputs["--verbose"]) {
+    logger.enableVerboseLogging();
+    logger.verbose("Verbose logging enabled");
+  }
 
   if (givenUserInputs["--version"]) {
     await printPackageVersion();
@@ -33,6 +43,7 @@ const cli = async (args: string[]) => {
   }
 
   const directory = givenUserInputs["--directory"] ?? process.cwd();
+  logger.verbose(`Using directory: ${directory}`);
 
   if (givenUserInputs["--init"]) {
     await init(directory);
@@ -52,11 +63,11 @@ const cli = async (args: string[]) => {
   };
 
   const productName = await getProductName(directory);
-  console.log(`Scanning dependencies of: ${productName}`);
+  logger.log(`Scanning dependencies of: ${productName}`);
 
   await checkLicenses(options);
 
-  console.log("Done! No issues found.");
+  logger.log("Done! No issues found.");
 };
 
 const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
@@ -66,10 +77,10 @@ const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
 };
 
 const reportViolations = (violations: Set<Violation>): void => {
-  console.error("Issues:");
+  logger.error("Issues:");
   for (const violation of violations) {
     const { packageName, packageVersion, license } = violation;
-    console.error(`${packageName}@${packageVersion} - ${license}`);
+    logger.error(`${packageName}@${packageVersion} - ${license}`);
   }
 };
 
