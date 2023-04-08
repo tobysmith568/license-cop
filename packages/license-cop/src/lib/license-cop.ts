@@ -32,8 +32,6 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
 
   const topNode = await arborist.loadActual();
 
-  console.log("Scanning dependencies of:", topNode.name);
-
   const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
     for (const node of nodes) {
       const isDevDependency = node.dev || node.devOptional;

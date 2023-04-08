@@ -5,6 +5,8 @@ import { Violation, ViolationsError } from "../violations-error";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { init } from "./init";
 import { printPackageVersion } from "./version";
+import { join } from "path";
+import { readPackageJson } from "../package-json";
 
 export async function main(args: string[]): Promise<void> {
   try {
@@ -49,7 +51,12 @@ const cli = async (args: string[]) => {
     devDependenciesOnly: givenUserInputs["--dev-dependencies-only"] ?? config.devDependenciesOnly
   };
 
+  const productName = await getProductName(directory);
+  console.log(`Scanning dependencies of: ${productName}`);
+
   await checkLicenses(options);
+
+  console.log("Done! No issues found.");
 };
 
 const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
@@ -59,9 +66,15 @@ const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
 };
 
 const reportViolations = (violations: Set<Violation>): void => {
-  console.log("Issues:");
+  console.error("Issues:");
   for (const violation of violations) {
     const { packageName, packageVersion, license } = violation;
-    console.log(`${packageName}@${packageVersion} - ${license}`);
+    console.error(`${packageName}@${packageVersion} - ${license}`);
   }
+};
+
+const getProductName = async (directory: string): Promise<string> => {
+  const packageJsonPath = join(directory, "package.json");
+  const packageJson = await readPackageJson(packageJsonPath);
+  return packageJson.name;
 };

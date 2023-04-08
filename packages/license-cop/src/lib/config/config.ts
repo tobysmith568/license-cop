@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ConfigError } from "./config-error";
 
 const configParser = z
   .object({
@@ -23,8 +24,7 @@ export const parseConfig = (config: unknown): Config => {
   const parseResult = configParser.safeParse(config);
 
   if (!parseResult.success) {
-    console.error("Invalid config file");
-    throw new Error(parseResult.error.message);
+    throw new ConfigError(parseResult.error.message);
   }
 
   return parseResult.data;

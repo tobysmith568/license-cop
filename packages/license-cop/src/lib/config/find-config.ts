@@ -1,4 +1,5 @@
 import { cosmiconfig, Options as CosmiconfigOptions, Loader } from "cosmiconfig";
+import { ConfigError } from "./config-error";
 import { json5Parse } from "./parsers/json5";
 
 // cspell:disable-next-line
@@ -46,11 +47,15 @@ export const findConfig = async (rootDir: string): Promise<unknown> => {
 
   const explorer = cosmiconfig("licensecop", options);
 
-  const result = await explorer.search(rootDir);
+  try {
+    const result = await explorer.search(rootDir);
 
-  if (!result?.config) {
-    throw new Error("No config file found");
+    if (!result?.config) {
+      throw new Error("No config file found");
+    }
+
+    return result.config;
+  } catch (e) {
+    throw ConfigError.fromUnknown(e);
   }
-
-  return result.config;
 };

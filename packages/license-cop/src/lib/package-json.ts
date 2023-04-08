@@ -2,6 +2,7 @@ import { Stats } from "fs";
 import { readFile, stat } from "fs/promises";
 
 interface PackageJson {
+  name: string;
   version: string;
   license?: string;
 }
