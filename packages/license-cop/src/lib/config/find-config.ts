@@ -1,5 +1,5 @@
 import { cosmiconfig, Options as CosmiconfigOptions, Loader } from "cosmiconfig";
-import JSON5 from "json5";
+import { json5Parse } from "./parsers/json5";
 
 // cspell:disable-next-line
 const moduleNames = ["licenses", "licences", "licensesrc", "licencesrc"];
@@ -31,7 +31,7 @@ for (const moduleName of moduleNames) {
   searchPlaces.push(...generateSearchPlaces(moduleName));
 }
 
-const json5Loader: Loader = (filepath, content) => Promise.resolve(JSON5.parse(content));
+const json5Loader: Loader = (_filepath, content) => Promise.resolve(json5Parse(content));
 
 export const findConfig = async (rootDir: string): Promise<unknown> => {
   const options: CosmiconfigOptions = {
