@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "extends": {
+      "type": "string"
+    },
+    "licenses": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "packages": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "includeDevDependencies": {
+      "type": "boolean"
+    },
+    "devDependenciesOnly": {
+      "type": "boolean"
+    },
+    "directory": {
+      "type": "string"
+    }
+  }
+}
