@@ -2,9 +2,9 @@ import JSON5 from "json5";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-const filePath = join(__dirname, "index.jsonc");
+const filePath = join(__dirname, "../", ".licenses.jsonc");
 
-describe("index", () => {
+describe(".licenses.jsonc", () => {
   it("should be valid json5", async () => {
     const fileContent = await readFile(filePath, "utf-8");
 

@@ -5,18 +5,15 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "dist/packages/permissive",
-        "main": "packages/permissive/src/index.jsonc",
-        "tsConfig": "packages/permissive/tsconfig.lib.json",
-        "assets": [
-          "packages/permissive/src/*.jsonc",
-          "packages/permissive/README.md",
-          "LICENSE.md"
+        "commands": [
+          "node tools/scripts/copy-asset.mjs permissive packages/permissive/.licenses.jsonc",
+          "node tools/scripts/copy-asset.mjs permissive packages/permissive/README.md",
+          "node tools/scripts/copy-asset.mjs permissive packages/permissive/package.json",
+          "node tools/scripts/copy-asset.mjs permissive LICENSE.md"
         ],
-        "updateBuildableProjectDepsInPackageJson": false
+        "outputPath": "dist/packages/permissive"
       }
     },
     "lint": {

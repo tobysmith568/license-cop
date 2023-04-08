@@ -2,7 +2,7 @@
   "name": "@license-cop/permissive",
   "version": "0.0.0",
   "type": "commonjs",
-  "main": "./src/index.jsonc",
+  "main": "./.licenses.jsonc",
   "author": {
     "name": "Toby Smith",
     "email": "tobysmith568@hotmail.co.uk",
