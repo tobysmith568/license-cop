@@ -90,7 +90,7 @@ jobs:
         with:
           tag_name: v${{ inputs.version }}
           generate_release_notes: true
-          files: dist/**.*.tgz
+          files: dist/**.tgz
           body: |
             # Release v${{ inputs.version }}
 
