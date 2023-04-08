@@ -2,6 +2,7 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 
 const defaultConfig = `{
+  "$schema": "https://license-cop.tobythe.dev/schema.json",
   "licenses": ["MIT", "ISC", "Apache-2.0"],
   "packages": []
 }
