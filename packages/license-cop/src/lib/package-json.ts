@@ -1,14 +1,16 @@
 import { Stats } from "fs";
 import { readFile, stat } from "fs/promises";
+import { z } from "zod";
+import { json5Parse } from "./config/parsers/json5";
 import logger from "./logger";
 
-//TODO: Use zod to validate the package.json
+const packageJsonValidator = z.object({
+  name: z.string(),
+  version: z.string(),
+  license: z.string().optional()
+});
 
-interface PackageJson {
-  name: string;
-  version: string;
-  license?: string;
-}
+type PackageJson = z.infer<typeof packageJsonValidator>;
 
 export const readPackageJson = async (pathToPackageJson: string): Promise<PackageJson> => {
   const doesPackageJsonExist = await doesFileExist(pathToPackageJson);
@@ -19,8 +21,15 @@ export const readPackageJson = async (pathToPackageJson: string): Promise<Packag
 
   const packageJsonAsString: string = await readFile(pathToPackageJson, { encoding: "utf8" });
 
-  const packageJson: PackageJson = JSON.parse(packageJsonAsString);
-  return packageJson;
+  const parsedFile = json5Parse<unknown>(packageJsonAsString);
+
+  const packageJson = packageJsonValidator.safeParse(parsedFile);
+
+  if (!packageJson.success) {
+    throw new Error(`Unable to parse package.json: ${pathToPackageJson}`);
+  }
+
+  return packageJson.data;
 };
 
 const doesFileExist = async (path: string): Promise<boolean> => {
