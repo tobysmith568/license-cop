@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "0.0.0",
   "name": "should-pass-when-a-package-is-in-its-semver-range",
   "dependencies": {
     "isc-dependency": "file:../dependencies/isc",

@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "0.0.0",
   "name": "should-pass-when-all-packages-are-present",
   "dependencies": {
     "isc-dependency": "file:../dependencies/isc",
