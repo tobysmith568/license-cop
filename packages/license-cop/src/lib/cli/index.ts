@@ -12,6 +12,9 @@ import logger from "../logger";
 export async function main(args: string[]): Promise<void> {
   try {
     await cli(args);
+
+    logger.verbose("Exiting with error code 0");
+    process.exitCode = 0;
   } catch (e: unknown) {
     if (e instanceof ViolationsError) {
       reportViolations(e.violations);
@@ -24,9 +27,6 @@ export async function main(args: string[]): Promise<void> {
     logger.verbose("Exiting with error code 1");
     process.exitCode = 1;
   }
-
-  logger.verbose("Exiting with error code 0");
-  process.exitCode = 0;
 }
 
 const cli = async (args: string[]) => {
