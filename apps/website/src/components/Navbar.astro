@@ -1,0 +1,34 @@
+---
+import NavbarItem from "./NavbarItem.astro";
+---
+
+<nav>
+  <div class="item-group">
+    <NavbarItem link="/" text="Home" />
+    <NavbarItem link="/docs" text="Docs" />
+    <NavbarItem link="/permissive" text="@license-cop/permissive" />
+  </div>
+
+  <div class="item-group">
+    <NavbarItem link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
+    <NavbarItem link="https://npmjs.com/package/license-cop" text="npm" newTab/>
+  </div>
+</nav>
+
+
+<style lang="scss">
+  nav {
+    position: absolute;
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .item-group {
+    display: flex;
+    flex-direction: row;
+
+    padding: 0.5rem 1rem;
+  }
+</style>

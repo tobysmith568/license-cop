@@ -1,0 +1,41 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+---
+
+<BaseLayout title="License-Cop" >
+  <main>
+    <div class="markdown-content">
+      <slot />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    width: 100%;
+
+    display: grid;
+    justify-items: center;
+  }
+
+  .markdown-content {
+    max-width: 800px;
+    width: 100%;
+
+    margin-top: 6rem;
+  }
+</style>
+
+<style lang="scss" is:global>
+  @use "../styles/vars.scss" as *;
+
+  .markdown-content {
+    blockquote {
+      border-left: $primary 5px solid;
+      background: $primary-pale;
+      padding: 0.5rem;
+
+      border-radius: 0 $radius $radius 0;
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import Hero from "../components/Hero.astro";
+import BaseLayout from "./BaseLayout.astro";
+---
+
+<BaseLayout title="License-Cop" >
+  <main>
+    <Hero />
+
+    <div class="content">
+      <slot />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    width: 100%;
+
+    display: grid;
+    justify-items: center;
+  }
+
+  .content {
+    max-width: 800px;
+    width: 100%;
+
+    margin-top: 2rem;
+  }
+</style>
