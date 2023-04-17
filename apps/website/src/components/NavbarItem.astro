@@ -20,8 +20,9 @@ const { link, text, newTab, isWhite } = Astro.props
 
   a {
     padding: 1rem;
-    color: #000;
+    color: darken($color: #2666d5, $amount: 10%);
     text-decoration: none;
+    font-weight: bold;
 
     &.is-white {
       color: #fff;
@@ -29,7 +30,7 @@ const { link, text, newTab, isWhite } = Astro.props
   }
 
   a:visited {
-    color: #000;
+    color: darken($color: #2666d5, $amount: 10%);
 
     &.is-white {
       color: #fff;

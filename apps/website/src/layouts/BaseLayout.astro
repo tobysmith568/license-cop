@@ -1,5 +1,4 @@
 ---
-import Footer from "../components/Footer.astro";
 import Navbar from "../components/Navbar.astro";
 
 export interface Props {
@@ -26,8 +25,6 @@ const { title, navbarColor } = Astro.props;
   <body>
     <Navbar whiteItems={navbarColor === "white"} />
     <slot />
-
-    <Footer />
   </body>
 </html>
 
@@ -37,7 +34,6 @@ const { title, navbarColor } = Astro.props;
 
   html {
     font-family: system-ui, sans-serif;
-    background-color: #f6f6f6;
   }
 
   html, body {

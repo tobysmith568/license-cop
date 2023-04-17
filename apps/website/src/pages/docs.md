@@ -84,9 +84,9 @@ Values can be:
 - A URL to a license-cop config file. Currently this only supports json config files.  
   `https://raw.githubusercontent.com/tobysmith568/license-cop-config/main/license-cop.json`
 
-**Caveats**
-
+:::caution
 If you extend a remote file, and that in-turn extends an npm package, then you're going to need to have that npm package installed locally. They're not resolved dynamically from npmjs.com.
+:::
 
 #### `includeDevDependencies`
 
