@@ -26,7 +26,9 @@ export const readPackageJson = async (pathToPackageJson: string): Promise<Packag
   const packageJson = packageJsonValidator.safeParse(parsedFile);
 
   if (!packageJson.success) {
-    throw new Error(`Unable to parse package.json: ${pathToPackageJson}`);
+    throw new Error(
+      `Unable to parse package.json: ${pathToPackageJson}: ${packageJson.error.message}`
+    );
   }
 
   return packageJson.data;
