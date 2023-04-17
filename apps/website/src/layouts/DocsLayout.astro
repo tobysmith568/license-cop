@@ -63,10 +63,11 @@ import BaseLayout from "./BaseLayout.astro";
 </style>
 
 <style lang="scss" is:global>
+  $darkBlue: darken($color: #2666d5, $amount: 10%);
 
   .markdown-content {
-    h1, h2, h3, h4, h5, h6 {
-      color: darken($color: #2666d5, $amount: 10%);
+    h1, h2, h3, h4, h5, h6, a, code {
+      color: $darkBlue;
     }
   }
 </style>
