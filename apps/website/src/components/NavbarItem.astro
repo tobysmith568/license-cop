@@ -14,19 +14,19 @@ const { link, text, newTab, isWhite } = Astro.props
 </a>
 
 <style lang="scss">
-  $darkBlue: darken($color: #2666d5, $amount: 10%);
+  @use "../styles/vars.scss" as *;
 
   a {
     padding: 1rem;
-    color: $darkBlue;
+    color: $darkPrimary;
     text-decoration: none;
     font-weight: bold;
 
     &.is-white {
-      color: #fff;
+      color: $white;
 
       .text::before {
-        background-color: #fff;
+        background-color: $white;
       }
     }
 
@@ -41,7 +41,7 @@ const { link, text, newTab, isWhite } = Astro.props
         height: 0.12rem;
         bottom: -0.2rem;
         left: 0;
-        background-color: $darkBlue;
+        background-color: $darkPrimary;
         transform: scaleX(0);
         transition: transform 0.3s ease;
 
@@ -59,10 +59,10 @@ const { link, text, newTab, isWhite } = Astro.props
   }
 
   a:visited {
-    color: $darkBlue;
+    color: $darkPrimary;
 
     &.is-white {
-      color: #fff;
+      color: $white;
     }
   }
 </style>

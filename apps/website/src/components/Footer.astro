@@ -30,6 +30,8 @@ const year = new Date().getFullYear();
 </div>
 
 <style lang="scss">
+  @use "../styles/vars.scss" as *;
+
   .columns {
     display: flex;
     flex-direction: row;
@@ -37,7 +39,7 @@ const year = new Date().getFullYear();
     align-items: flex-start;
     padding: 1rem;
     background-color: #2a2a2a;
-    color: #fff;
+    color: $white;
     font-size: 0.8rem;
     font-weight: 300;
     line-height: 1.5rem;
@@ -61,7 +63,7 @@ const year = new Date().getFullYear();
 
   .copyright {
     background-color: #1a1a1a;
-    color: #fff;
+    color: $white;
     min-height: 5rem;
 
     display: grid;
@@ -72,10 +74,10 @@ const year = new Date().getFullYear();
     }
 
     a {
-      color: #fff;
+      color: $white;
 
       &:visited {
-        color: #fff;
+        color: $white;
       }
     }
   }
