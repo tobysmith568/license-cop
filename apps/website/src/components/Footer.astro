@@ -21,12 +21,15 @@ const year = new Date().getFullYear();
   </div>
 
   <div class="copyright">
-    <p>Copyright © {year} Toby Smith and Contributors</p>
+    <p>
+      Copyright © {year}
+      <a href="https://tobysmith.uk" target="_blank">Toby Smith</a>
+      and Contributors
+    </p>
   </div>
 </div>
 
 <style lang="scss">
-
   .columns {
     display: flex;
     flex-direction: row;
@@ -68,6 +71,12 @@ const year = new Date().getFullYear();
       margin: 0;
     }
 
-  }
+    a {
+      color: #fff;
 
+      &:visited {
+        color: #fff;
+      }
+    }
+  }
 </style>
