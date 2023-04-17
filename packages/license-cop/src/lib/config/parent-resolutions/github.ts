@@ -1,5 +1,4 @@
 import { GitHubClient } from "git-filesystem";
-import JSON5 from "json5";
 import logger from "../../logger";
 import { ConfigError } from "../config-error";
 import { json5Parse } from "../parsers/json5";
