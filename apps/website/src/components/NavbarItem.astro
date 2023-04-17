@@ -3,13 +3,14 @@ interface Props {
   link: string;
   text: string;
   newTab?: boolean;
+  isWhite?: boolean;
 }
 
-const { link, text, newTab } = Astro.props
+const { link, text, newTab, isWhite } = Astro.props
 ---
 
 <div class="item">
-  <a href={link} target={newTab ? "_blank" : null} >{text}</a>
+  <a href={link} class={isWhite ? "is-white" : null} target={newTab ? "_blank" : null} >{text}</a>
 </div>
 
 <style lang="scss">
@@ -21,9 +22,19 @@ const { link, text, newTab } = Astro.props
     padding: 1rem;
     color: #000;
     text-decoration: none;
+
+    &.is-white {
+      color: #fff;
+    }
   }
 
   a:visited {
     color: #000;
+
+    &.is-white {
+      color: #fff;
+    }
   }
+
+
 </style>

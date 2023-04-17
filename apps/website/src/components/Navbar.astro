@@ -1,17 +1,23 @@
 ---
 import NavbarItem from "./NavbarItem.astro";
+
+interface Props {
+  whiteItems: boolean;
+}
+
+const { whiteItems } = Astro.props;
 ---
 
 <nav>
   <div class="item-group">
-    <NavbarItem link="/" text="Home" />
-    <NavbarItem link="/docs" text="Docs" />
-    <NavbarItem link="/permissive" text="@license-cop/permissive" />
+    <NavbarItem isWhite={whiteItems} link="/" text="Home" />
+    <NavbarItem isWhite={whiteItems} link="/docs" text="Docs" />
+    <NavbarItem isWhite={whiteItems} link="/permissive" text="@license-cop/permissive" />
   </div>
 
   <div class="item-group">
-    <NavbarItem link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
-    <NavbarItem link="https://npmjs.com/package/license-cop" text="npm" newTab/>
+    <NavbarItem isWhite={whiteItems} link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
+    <NavbarItem isWhite={whiteItems} link="https://npmjs.com/package/license-cop" text="npm" newTab/>
   </div>
 </nav>
 
