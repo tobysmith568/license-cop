@@ -4,9 +4,11 @@ layout: ../layouts/DocsLayout.astro
 
 # @license-cop/permissive
 
-TODO
+[@license-cop/permissive](https://www.npmjs.com/package/@license-cop/permissive) is a base config provided by us containing a curated list of permissive licenses.
 
-## Usage
+We think it's a good starting point for all configs!
+
+## Usage (npm)
 
 Install `@license-cop/permissive`
 
@@ -22,6 +24,19 @@ Add it to your own config
   "licenses": ["anything extra that you need"]
 }
 ```
+
+## Usage (url)
+
+You can also consume @license-cop/permissive via a CDN like [jsdelivr](https://www.jsdelivr.com/).
+
+```json
+{
+  "extends": "https://cdn.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc",
+  "licenses": ["anything extra that you need"]
+}
+```
+
+## License Constraints
 
 :::warning{title=Disclaimer}
 
