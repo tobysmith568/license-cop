@@ -5,18 +5,25 @@ const year = new Date().getFullYear();
 ---
 
 <div class="footer">
-  <div class="columns">
-    <div class="column">
-      <h3>Pages</h3>
-      <FooterItem link="/" text="Home" />
-      <FooterItem link="/docs" text="Docs" />
-      <FooterItem link="/permissive" text="@license-cop/permissive" />
-    </div>
+  <div class="menu">
+    <div class="columns">
+      <div class="column left">
+        <h3>Pages</h3>
+        <FooterItem link="/" text="Home" />
+        <FooterItem link="/docs" text="Docs" />
+        <FooterItem link="/permissive" text="@license-cop/permissive" />
+      </div>
 
-    <div class="column right">
-      <h3>Links</h3>
-      <FooterItem link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
-      <FooterItem link="https://npmjs.com/package/license-cop" text="npm" newTab/>
+      <div class="column">
+        <h3>Links</h3>
+        <FooterItem link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
+        <FooterItem link="https://npmjs.com/package/license-cop" text="npm" newTab/>
+      </div>
+
+      <div class="column right">
+        <h3>Notices</h3>
+        <FooterItem link="/third-party" text="Third-party Licenses" />
+      </div>
     </div>
   </div>
 
@@ -32,19 +39,23 @@ const year = new Date().getFullYear();
 <style lang="scss">
   @use "../styles/vars.scss" as *;
 
+  .menu {
+    background-color: #2a2a2a;
+  }
+
   .columns {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: flex-start;
+    max-width: $contentWidth;
     padding: 1rem;
-    background-color: #2a2a2a;
     color: $white;
     font-size: 0.8rem;
     font-weight: 300;
     line-height: 1.5rem;
     text-align: left;
-    margin-top: 4rem;
+    margin: 4rem auto 0 auto;
     padding: 2rem 0;
   }
 
@@ -55,6 +66,12 @@ const year = new Date().getFullYear();
     align-items: flex-start;
     width: 100%;
     max-width: 300px;
+
+    align-items: center;
+
+    &.left {
+      align-items: flex-start;
+    }
 
     &.right {
       align-items: flex-end;

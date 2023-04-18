@@ -16,7 +16,9 @@ import BaseLayout from "./BaseLayout.astro";
   <Footer />
 </BaseLayout>
 
-<style>
+<style lang="scss">
+  @use "../styles/vars.scss" as *;
+
   main {
     width: 100%;
 
@@ -25,7 +27,7 @@ import BaseLayout from "./BaseLayout.astro";
   }
 
   .content {
-    max-width: 800px;
+    max-width: $contentWidth;
     width: 100%;
 
     margin-top: 2rem;
