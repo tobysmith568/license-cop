@@ -28,6 +28,10 @@ export default defineConfig({
   outDir: "../../dist/apps/website",
   site: "https://license-cop.tobythe.dev",
 
+  build: {
+    format: "file"
+  },
+
   integrations: [react(), sitemap(), webmanifest(webmanifestOptions)],
 
   markdown: {

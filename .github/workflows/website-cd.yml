@@ -3,7 +3,6 @@ name: Website CD
 on:
   push:
     branches:
-      - renovate/*
       - main
 
 env:
