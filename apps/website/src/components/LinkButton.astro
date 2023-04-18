@@ -7,7 +7,7 @@ interface Props {
 const { href, newTab } = Astro.props;
 ---
 
-<a href={href} target={ newTab ? "_blank" : null }>
+<a href={href} target={newTab ? "_blank" : null}>
   <slot />
 </a>
 
@@ -24,7 +24,7 @@ const { href, newTab } = Astro.props;
     text-decoration: none;
 
     &:hover {
-      background-color: lighten($color: $primary, $amount: 10)
+      background-color: lighten($color: $primary, $amount: 10);
     }
   }
 </style>

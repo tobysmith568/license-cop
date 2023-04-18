@@ -18,13 +18,9 @@ const { title, navbarColor, noIndex } = Astro.props;
     <meta name="generator" content={Astro.generator} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml">
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
-    {noIndex ? (
-      <meta name="robots" content="noindex" />
-    ) : (
-      <meta name="robots" content="index" />
-    )}
+    {noIndex ? <meta name="robots" content="noindex" /> : <meta name="robots" content="index" />}
 
     <title>{title}</title>
   </head>
@@ -43,7 +39,8 @@ const { title, navbarColor, noIndex } = Astro.props;
     font-family: system-ui, sans-serif;
   }
 
-  html, body {
+  html,
+  body {
     margin: 0;
     padding: 0;
   }

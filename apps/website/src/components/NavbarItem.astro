@@ -6,10 +6,10 @@ interface Props {
   isWhite?: boolean;
 }
 
-const { link, text, newTab, isWhite } = Astro.props
+const { link, text, newTab, isWhite } = Astro.props;
 ---
 
-<a href={link} class={isWhite ? "is-white" : ""} target={newTab ? "_blank" : null} >
+<a href={link} class={isWhite ? "is-white" : ""} target={newTab ? "_blank" : null}>
   <div class="text">{text}</div>
 </a>
 

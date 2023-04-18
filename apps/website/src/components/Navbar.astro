@@ -16,11 +16,20 @@ const { whiteItems } = Astro.props;
   </div>
 
   <div class="item-group">
-    <NavbarItem isWhite={whiteItems} link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab/>
-    <NavbarItem isWhite={whiteItems} link="https://npmjs.com/package/license-cop" text="npm" newTab/>
+    <NavbarItem
+      isWhite={whiteItems}
+      link="https://github.com/tobysmith568/license-cop"
+      text="GitHub"
+      newTab
+    />
+    <NavbarItem
+      isWhite={whiteItems}
+      link="https://npmjs.com/package/license-cop"
+      text="npm"
+      newTab
+    />
   </div>
 </nav>
-
 
 <style lang="scss">
   nav {

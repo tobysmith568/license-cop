@@ -1,5 +1,5 @@
 ---
-import { getProjectLicenses } from "generate-license-file"
+import { getProjectLicenses } from "generate-license-file";
 import DocsLayout from "../layouts/DocsLayout.astro";
 
 const licenses = await getProjectLicenses("./package.json");
@@ -14,7 +14,6 @@ const getPackageUrl = (packageNameAndVersion: string) => {
 ---
 
 <DocsLayout noIndex={true}>
-
   <h1>Third-party Content</h1>
 
   <h2>Sources</h2>
@@ -32,41 +31,42 @@ const getPackageUrl = (packageNameAndVersion: string) => {
 
   <h2>Licenses</h2>
 
-  <p>
-    Below lists all third-party licenses used by license-cop and this website.
-  </p>
+  <p>Below lists all third-party licenses used by license-cop and this website.</p>
 
   <p>
     This content was generated using the
-    <a href="https://npmjs.com/package/generate-license-file" target="_blank">generate-license-file</a>
+    <a href="https://npmjs.com/package/generate-license-file" target="_blank"
+      >generate-license-file</a
+    >
     npm package.
   </p>
 
   <ul class="licenses">
-    {licenses.map((license, i) => (
-      <li>
-        <p>The following npm packages may be included in this project:</p>
-        <ul class="packages">
-          {license.dependencies.map((pkg) => (
-            <li>
-              <a href={getPackageUrl(pkg)} target="_blank">{pkg}</a>
-            </li>
-          ))}
-        </ul>
+    {
+      licenses.map((license, i) => (
+        <li>
+          <p>The following npm packages may be included in this project:</p>
+          <ul class="packages">
+            {license.dependencies.map(pkg => (
+              <li>
+                <a href={getPackageUrl(pkg)} target="_blank">
+                  {pkg}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <p>These packages contains the following license and notice below:</p>
+          <p>These packages contains the following license and notice below:</p>
 
-        <pre class="license-content">
-          <code>
-            {license.content.trimStart()}
-          </code>
-        </pre>
+          <pre class="license-content">
+            <code>{license.content.trimStart()}</code>
+          </pre>
 
-        {i !== licenses.length - 1 && <hr />}
-      </li>
-    ))}
+          {i !== licenses.length - 1 && <hr />}
+        </li>
+      ))
+    }
   </ul>
-
 </DocsLayout>
 
 <style lang="scss">
