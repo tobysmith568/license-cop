@@ -1,28 +1,16 @@
 ---
-import { Code } from "astro/components";
 import Footer from "../components/Footer.astro";
 import Hero from "../components/Hero.astro";
-import BaseLayout from "./BaseLayout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="License-Cop" navbarColor="white">
+<BaseLayout title="License-Cop" navbarColor="white" noIndex={true}>
   <main>
     <Hero>
-      <h1>License-Cop</h1>
-      <p class="subtitle">
-        Yet another license checker tool for your dependencies; focused on simplicity.
-      </p>
+      <h1>404</h1>
 
-      <div>
-        <p>
-          <Code code={`npm install license-cop --save-dev`} theme="light-plus" />
-        </p>
-      </div>
+      <p class="subtitle">Page not found</p>
     </Hero>
-
-    <div class="content">
-      <slot />
-    </div>
   </main>
 
   <Footer />

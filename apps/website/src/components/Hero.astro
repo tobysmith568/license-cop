@@ -1,20 +1,10 @@
 ---
-import { Code } from "astro/components";
 ---
 
 <div class="wrapper">
   <div class="hero">
     <div class="content">
-      <h1>License-Cop</h1>
-      <p class="subtitle">
-        Yet another license checker tool for your dependencies; focused on simplicity.
-      </p>
-
-      <div>
-        <p>
-          <Code code={`npm install license-cop --save-dev`} theme="light-plus" />
-        </p>
-      </div>
+      <slot />
     </div>
   </div>
 
@@ -49,16 +39,5 @@ import { Code } from "astro/components";
     height: 10rem;
     background: rgb(98, 172, 218);
     background: linear-gradient(0deg, rgba(98, 172, 218, 0) 13%, rgba(134, 168, 230, 1) 100%);
-  }
-
-  h1 {
-    font-size: 5rem;
-    font-weight: 700;
-    color: white;
-  }
-
-  .subtitle {
-    color: white;
-    font-size: 1.2rem;
   }
 </style>
