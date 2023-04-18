@@ -1,11 +1,34 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
-  "ignorePaths": [],
+  "ignorePaths": [
+    "**/*.tgz",
+    "**/*.svg",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "apps/website/src/pages/terms.md",
+    "apps/website/src/pages/privacy.md"
+  ],
   "dictionaryDefinitions": [],
-  "dictionaries": ["en-gb"],
+  "dictionaries": ["en-gb", "fullstack", "css", "html", "typescript", "npm"],
   "words": ["deepmerge"],
-  "ignoreWords": ["tobysmith", "nrwl", "swcrc", "lcop", "npmcli", "licensecop", "npmjs.com"],
+  "ignoreWords": [
+    "tobysmith",
+    "nrwl",
+    "swcrc",
+    "lcop",
+    "npmcli",
+    "licensecop",
+    "npmjs.com",
+    "astrojs",
+    "jsdelivr",
+    "nxtensions",
+    "unist-util-visit",
+    "hastscript",
+    "shiki",
+    "Fira"
+  ],
   "import": [],
   "ignoreRegExpList": [],
   "flagWords": ["licence", "licences"]

@@ -1,0 +1,114 @@
+.admonition {
+  margin-bottom: 1em;
+  margin-top: 1em;
+  padding: 15px 30px 15px 15px;
+  border-radius: 0.5rem;
+
+  .title-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  h5 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .admonition-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5em;
+
+    svg {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      stroke-width: 0;
+    }
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.admonition-important {
+  background-color: #eaf4fb;
+  border-left: 8px solid #3498db;
+
+  h5 {
+    color: #3498db;
+  }
+
+  .admonition-icon {
+    svg {
+      stroke: #3498db;
+      fill: #3498db;
+    }
+  }
+}
+
+.admonition-tip {
+  background-color: #eafaf1;
+  border-left: 8px solid #2ecc71;
+
+  h5 {
+    color: #2ecc71;
+  }
+
+  .admonition-icon {
+    svg {
+      stroke: #2ecc71;
+      fill: #2ecc71;
+    }
+  }
+}
+
+.admonition-note {
+  background-color: #fef9e7;
+  border-left: 8px solid #f1c40f;
+
+  h5 {
+    color: #f1c40f;
+  }
+
+  .admonition-icon {
+    svg {
+      stroke: #f1c40f;
+      fill: #f1c40f;
+    }
+  }
+}
+
+.admonition-caution {
+  background-color: #fcf2e8;
+  border-left: 8px solid #e67e22;
+
+  h5 {
+    color: #e67e22;
+  }
+
+  .admonition-icon {
+    svg {
+      stroke: #e67e22;
+      fill: #e67e22;
+    }
+  }
+}
+
+.admonition-warning {
+  background-color: #fdedeb;
+  border-left: 8px solid #e74c3c;
+
+  h5 {
+    color: #e74c3c;
+  }
+
+  .admonition-icon {
+    svg {
+      stroke: #e74c3c;
+      fill: #e74c3c;
+    }
+  }
+}

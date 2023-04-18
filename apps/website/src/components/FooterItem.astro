@@ -1,0 +1,31 @@
+---
+interface Props {
+  link: string;
+  text: string;
+  newTab?: boolean;
+}
+
+const { link, text, newTab } = Astro.props;
+---
+
+<div class="item">
+  <a href={link} target={newTab ? "_blank" : null}>{text}</a>
+</div>
+
+<style lang="scss">
+  @use "../styles/vars.scss" as *;
+
+  .item {
+    padding: 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  a {
+    color: $white;
+    text-decoration: none;
+  }
+
+  a:visited {
+    color: $white;
+  }
+</style>

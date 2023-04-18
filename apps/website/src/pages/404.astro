@@ -1,0 +1,46 @@
+---
+import Footer from "../components/Footer.astro";
+import Hero from "../components/Hero.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="License-Cop" navbarColor="white" noIndex={true}>
+  <main>
+    <Hero>
+      <h1>404</h1>
+
+      <p class="subtitle">Page not found</p>
+    </Hero>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style lang="scss">
+  @use "../styles/vars.scss" as *;
+
+  main {
+    width: 100%;
+
+    display: grid;
+    justify-items: center;
+  }
+
+  h1 {
+    font-size: 5rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .subtitle {
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .content {
+    max-width: $contentWidth;
+    width: 100%;
+
+    margin-top: 2rem;
+  }
+</style>

@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "firsttris.vscode-jest-runner",
-    "mrmlnc.vscode-json5"
+    "mrmlnc.vscode-json5",
+    "astro-build.astro-vscode"
   ]
 }

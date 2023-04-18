@@ -1,0 +1,104 @@
+---
+import FooterItem from "./FooterItem.astro";
+
+const year = new Date().getFullYear();
+---
+
+<div class="footer">
+  <div class="menu">
+    <div class="columns">
+      <div class="column left">
+        <h3>Pages</h3>
+        <FooterItem link="/" text="Home" />
+        <FooterItem link="/docs" text="Docs" />
+        <FooterItem link="/permissive" text="@license-cop/permissive" />
+      </div>
+
+      <div class="column">
+        <h3>Links</h3>
+        <FooterItem link="https://github.com/tobysmith568/license-cop" text="GitHub" newTab />
+        <FooterItem link="https://npmjs.com/package/license-cop" text="npm" newTab />
+      </div>
+
+      <div class="column right">
+        <h3>Notices</h3>
+        <FooterItem link="/terms" text="Terms & Conditions" />
+        <FooterItem link="/privacy" text="Privacy Policy" />
+        <FooterItem link="/cookies" text="Cookies" />
+        <FooterItem link="/third-party" text="Third-party Content" />
+      </div>
+    </div>
+  </div>
+
+  <div class="copyright">
+    <p>
+      Copyright © {year}
+      <a href="https://tobysmith.uk" target="_blank">Toby Smith</a>
+      and Contributors
+    </p>
+  </div>
+</div>
+
+<style lang="scss">
+  @use "../styles/vars.scss" as *;
+
+  .menu {
+    background-color: #2a2a2a;
+  }
+
+  .columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    max-width: $contentWidth;
+    padding: 1rem;
+    color: $white;
+    font-size: 0.8rem;
+    font-weight: 300;
+    line-height: 1.5rem;
+    text-align: left;
+    margin: 4rem auto 0 auto;
+    padding: 2rem 0;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 300px;
+
+    align-items: center;
+
+    &.left {
+      align-items: flex-start;
+    }
+
+    &.right {
+      align-items: flex-end;
+    }
+  }
+
+  .copyright {
+    background-color: #1a1a1a;
+    color: $white;
+    min-height: 5rem;
+
+    display: grid;
+    place-items: center;
+
+    p {
+      margin: 0;
+    }
+
+    a {
+      color: $white;
+
+      &:visited {
+        color: $white;
+      }
+    }
+  }
+</style>
