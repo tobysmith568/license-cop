@@ -81,7 +81,7 @@ Values can be:
 - The name of a public github repository (prefixed with `github:`) that contains a license-cop config file. This currently only supports config files called exactly `.licenses.json`.  
   `github:tobysmith568/license-cop-config`
 
-- A URL to a license-cop config file. Currently this only supports json config files.  
+- A URL to a license-cop config file. Currently this only supports json-like config files.  
   `https://raw.githubusercontent.com/tobysmith568/license-cop-config/main/license-cop.json`
 
 :::caution

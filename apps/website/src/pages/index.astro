@@ -3,20 +3,98 @@ import IndexLayout from "../layouts/IndexLayout.astro";
 ---
 
 <IndexLayout>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
-    <p>stuff</p>
+  <div class="grid">
+    <h2>Why check your licenses?</h2>
+
+    <h3>Remain Compliant</h3>
+
+    <p>
+      Avoid using dependencies that are licensed with restrictions that you're unaware of.
+    </p>
+
+    <h3>Increase Trustworthyness</h3>
+
+    <p>
+      Advertise to your consumers that you're using only permissive open source software.
+    </p>
+
+    <h2>Why License-Cop?</h2>
+
+    <h3>As flexible as you need</h3>
+
+    <p>
+      Configure your projects to your exact specificiation with a clear and concise config.
+    </p>
+
+    <h3>Easy to use</h3>
+
+    <p>
+      Use the <code>--init</code> flag to get started quickly.
+    </p>
+
+    <h3>Composable</h3>
+
+    <p>
+      Use base configs to centralise your organisations defaults with extensions where needed.
+    </p>
+
+    <h3>Sensible defaults</h3>
+
+    <p>
+      Leverage our
+      <a href="/permissive">@license-cop/permissive</a>
+      base config to avoid having to repeat well-known licenses.
+    </p>
+
+    <h3>Open Source</h3>
+
+    <p>
+      Contribute improvements and enhance features to help the community.
+    </p>
+
+    <h2>How to get started</h2>
+
+    <h3>Installation</h3>
+
+    <p>
+      Install
+      <code>license-cop</code>
+      as a dev dependency and use the CLI.
+    </p>
+
+    <h3>Documentation</h3>
+
+    <p>
+      Read the
+      <a href="/docs">documentation</a>
+      to learn more about how to use License-Cop and its features.
+    </p>
+
+  </div>
 </IndexLayout>
+
+
+<style lang="scss">
+  .grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-row-gap: 1rem;
+    grid-column-gap: 3rem;
+
+    h2 {
+      grid-column: 1 / 3;
+    }
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    font-size: 1.15rem;
+  }
+</style>
