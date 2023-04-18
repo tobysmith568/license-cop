@@ -1,9 +1,15 @@
 ---
 import Footer from "../components/Footer.astro";
 import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  noIndex?: boolean;
+}
+
+const noIndex = Astro.props.frontmatter?.noIndex ?? Astro.props.noIndex ?? false;
 ---
 
-<BaseLayout title="License-Cop" navbarColor="black">
+<BaseLayout title="License-Cop" navbarColor="black" noIndex={noIndex}>
   <div class="background">
     <div class="waves" />
     <div class="bed" />

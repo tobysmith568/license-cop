@@ -1,5 +1,6 @@
 ---
 layout: ../layouts/DocsLayout.astro
+noIndex: true
 ---
 
 # Terms and Conditions ("Terms")

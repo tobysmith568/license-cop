@@ -1,5 +1,6 @@
 ---
 layout: ../layouts/DocsLayout.astro
+noIndex: true
 ---
 
 # Cookies Policy

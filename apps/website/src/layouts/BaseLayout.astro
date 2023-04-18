@@ -4,9 +4,10 @@ import Navbar from "../components/Navbar.astro";
 export interface Props {
   title: string;
   navbarColor: "white" | "black";
+  noIndex?: boolean;
 }
 
-const { title, navbarColor } = Astro.props;
+const { title, navbarColor, noIndex } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -18,6 +19,12 @@ const { title, navbarColor } = Astro.props;
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml">
+
+    {noIndex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <meta name="robots" content="index" />
+    )}
 
     <title>{title}</title>
   </head>
