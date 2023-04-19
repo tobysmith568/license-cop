@@ -21,6 +21,13 @@ const { title, navbarColor, noIndex } = Astro.props;
 
     {noIndex ? <meta name="robots" content="noindex" /> : <meta name="robots" content="index" />}
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
     <title>{title}</title>
   </head>
 
@@ -45,8 +52,7 @@ const { title, navbarColor, noIndex } = Astro.props;
   }
 
   code {
-    font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-      Bitstream Vera Sans Mono, Courier New, monospace;
+    font-family: "Fira Code", monospace;
   }
 
   .astro-code {
