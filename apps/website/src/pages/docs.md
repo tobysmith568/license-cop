@@ -1,5 +1,6 @@
 ---
 layout: ../layouts/DocsLayout.astro
+metaDescription: Details about how to install, set up, and use License-Cop along with details about all the different configuration options.
 ---
 
 # Documentation

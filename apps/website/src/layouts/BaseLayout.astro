@@ -3,11 +3,13 @@ import Navbar from "../components/Navbar.astro";
 
 export interface Props {
   title: string;
-  navbarColor: "white" | "black";
+  metaDescription?: string;
   noIndex?: boolean;
+
+  navbarColor: "white" | "black";
 }
 
-const { title, navbarColor, noIndex } = Astro.props;
+const { title, metaDescription, noIndex, navbarColor } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -19,6 +21,7 @@ const { title, navbarColor, noIndex } = Astro.props;
 
     <link rel="sitemap" href="/sitemap-index.xml" />
 
+    {metaDescription && <meta name="description" content={metaDescription} />}
     {noIndex ? <meta name="robots" content="noindex" /> : <meta name="robots" content="index" />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -3,13 +3,20 @@ import Footer from "../components/Footer.astro";
 import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
+  metaDescription: string;
   noIndex?: boolean;
 }
 
 const noIndex = Astro.props.frontmatter?.noIndex ?? Astro.props.noIndex ?? false;
+const metaDescription =
+  Astro.props.frontmatter?.metaDescription ?? Astro.props.metaDescription ?? null;
 ---
 
-<BaseLayout title="License-Cop" navbarColor="black" noIndex={noIndex}>
+<BaseLayout
+  title="License-Cop"
+  navbarColor="black"
+  noIndex={noIndex}
+  metaDescription={metaDescription}>
   <div class="background">
     <div class="waves"></div>
     <div class="bed"></div>
