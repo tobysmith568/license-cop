@@ -1,0 +1,9 @@
+---
+import Code from "./Code.astro";
+
+const permissive = await fetch(
+  "https://cdn.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc"
+).then(res => res.text());
+---
+
+<Code lang="jsonc" code={permissive} />

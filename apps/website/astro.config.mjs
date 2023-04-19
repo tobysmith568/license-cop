@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import directive from "remark-directive";
 import webmanifest, { WebmanifestOptions } from "astro-webmanifest";
@@ -32,7 +32,7 @@ export default defineConfig({
     format: "file"
   },
 
-  integrations: [react(), sitemap(), webmanifest(webmanifestOptions)],
+  integrations: [mdx(), sitemap(), webmanifest(webmanifestOptions)],
 
   markdown: {
     remarkPlugins: [directive, admonitionsPlugin],

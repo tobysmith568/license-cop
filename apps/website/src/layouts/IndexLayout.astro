@@ -1,5 +1,5 @@
 ---
-import { Code } from "astro/components";
+import Code from "../components/Code.astro";
 import Footer from "../components/Footer.astro";
 import Hero from "../components/Hero.astro";
 import BaseLayout from "./BaseLayout.astro";
@@ -15,7 +15,7 @@ import BaseLayout from "./BaseLayout.astro";
 
       <div>
         <p>
-          <Code code={`npm install license-cop --save-dev`} theme="light-plus" />
+          <Code code="npm install license-cop --save-dev" />
         </p>
       </div>
     </Hero>

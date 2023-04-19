@@ -1,0 +1,13 @@
+---
+import { Code } from "astro/components";
+import type { Lang } from "shiki";
+
+interface Props {
+  code: string;
+  lang?: Lang;
+}
+
+const { code, lang } = Astro.props;
+---
+
+<Code lang={lang} code={code} theme="light-plus" />
