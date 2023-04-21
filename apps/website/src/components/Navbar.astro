@@ -8,36 +8,98 @@ interface Props {
 const { whiteItems } = Astro.props;
 ---
 
-<nav>
-  <div class="item-group">
-    <NavbarItem isWhite={whiteItems} link="/" text="Home" />
-    <NavbarItem isWhite={whiteItems} link="/docs" text="Docs" />
-    <NavbarItem isWhite={whiteItems} link="/permissive" text="@license-cop/permissive" />
-  </div>
+<div>
+  <input id="nav-toggle" class={whiteItems ? "white" : ""} type="checkbox" />
 
-  <div class="item-group">
-    <NavbarItem
-      isWhite={whiteItems}
-      link="https://github.com/tobysmith568/license-cop"
-      text="GitHub"
-      newTab
-    />
-    <NavbarItem
-      isWhite={whiteItems}
-      link="https://npmjs.com/package/license-cop"
-      text="npm"
-      newTab
-    />
-  </div>
-</nav>
+  <nav id="nav">
+    <div class="item-group">
+      <NavbarItem isWhite={whiteItems} link="/" text="Home" />
+      <NavbarItem isWhite={whiteItems} link="/docs" text="Docs" />
+      <NavbarItem isWhite={whiteItems} link="/permissive" text="@license-cop/permissive" />
+    </div>
+
+    <div class="item-group">
+      <NavbarItem
+        isWhite={whiteItems}
+        link="https://github.com/tobysmith568/license-cop"
+        text="GitHub"
+        newTab
+      />
+      <NavbarItem
+        isWhite={whiteItems}
+        link="https://npmjs.com/package/license-cop"
+        text="npm"
+        newTab
+      />
+    </div>
+  </nav>
+</div>
 
 <style lang="scss">
+  @use "../styles/vars.scss" as *;
+
+  #nav-toggle {
+    display: none;
+    width: 0;
+
+    &.white::after {
+      color: white;
+    }
+
+    @media (max-width: $mobileMaxWidth) {
+      display: block;
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 2;
+
+      &:checked {
+        &::after {
+          content: "✕";
+          color: $darkPrimary;
+        }
+      }
+    }
+
+    &.fixed {
+      position: fixed;
+    }
+
+    &::after {
+      content: "☰";
+      font-size: 2rem;
+      color: $darkPrimary;
+      cursor: pointer;
+      position: relative;
+      top: -0.5rem;
+    }
+  }
+
   nav {
     position: absolute;
     width: 100%;
 
     display: flex;
     justify-content: space-between;
+
+    @media (max-width: $mobileMaxWidth) {
+      position: fixed;
+      flex-direction: column;
+      background-color: white;
+      padding-top: 5rem;
+      padding-left: 1rem;
+      padding-right: 0;
+      overflow-x: hidden;
+      width: 15rem;
+      height: calc(100vh - 3rem);
+      justify-content: flex-start;
+      left: -16rem;
+      transition: left 0.5s;
+
+      &.open {
+        left: 0;
+      }
+    }
   }
 
   .item-group {
@@ -45,5 +107,39 @@ const { whiteItems } = Astro.props;
     flex-direction: row;
 
     padding: 0.5rem 1rem;
+
+    @media (max-width: $mobileMaxWidth) {
+      flex-direction: column;
+      padding: 0 1rem 0 0;
+    }
   }
 </style>
+
+<script>
+  const navToggle = document.getElementById("nav-toggle") as HTMLInputElement;
+  const nav = document.getElementById("nav");
+  const body = document.body;
+
+  if (navToggle && nav) {
+    navToggle.addEventListener("change", () => {
+      if (navToggle.checked) {
+        navToggle.classList.add("fixed");
+        nav.classList.add("open");
+      } else {
+        navToggle.classList.remove("fixed");
+        nav.classList.remove("open");
+      }
+    });
+
+    body.addEventListener("click", e => {
+      if (navToggle.checked) {
+        const target = e.target as HTMLElement;
+
+        if (target.id !== "nav-toggle" && target.id !== "nav") {
+          navToggle.checked = false;
+          nav.classList.remove("open");
+        }
+      }
+    });
+  }
+</script>
