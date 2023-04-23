@@ -137,6 +137,7 @@ const { whiteItems } = Astro.props;
 
         if (target.id !== "nav-toggle" && target.id !== "nav") {
           navToggle.checked = false;
+          navToggle.classList.remove("fixed");
           nav.classList.remove("open");
         }
       }
