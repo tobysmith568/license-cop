@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "should-fail-when-a-package-is-specified-with-a-caret",
+  "dependencies": {
+    "mit-dependency": "file:../../dependencies/mit"
+  },
+  "devDependencies": {
+    "license-cop": "file:../../../dist/packages/license-cop"
+  }
+}

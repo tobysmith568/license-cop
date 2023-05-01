@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "yarn@1.22.19",
+  "name": "should-pass-when-a-package-is-specified-with-a-caret",
+  "dependencies": {
+    "mit-dependency": "link:../../dependencies/mit"
+  },
+  "devDependencies": {
+    "license-cop": "portal:../../../dist/packages/license-cop"
+  },
+  "peerDependencies": {
+    "@swc/helpers": "*"
+  }
+}
