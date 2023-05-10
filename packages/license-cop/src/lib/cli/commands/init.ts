@@ -1,6 +1,6 @@
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import logger from "../logger";
+import logger from "../../logger";
 
 const defaultConfig = `{
   "$schema": "https://license-cop.js.org/schema.json",
