@@ -20,5 +20,5 @@ export default {
   testEnvironment: "jest-environment-node",
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/license-cop-e2e",
-  testTimeout: 10000
+  testTimeout: 30000
 };

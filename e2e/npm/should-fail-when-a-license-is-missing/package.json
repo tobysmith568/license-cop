@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "should-fail-when-a-license-is-missing",
+  "dependencies": {
+    "isc-dependency": "file:../../dependencies/isc",
+    "mit-dependency": "file:../../dependencies/mit"
+  },
+  "devDependencies": {
+    "license-cop": "file:../../../dist/packages/license-cop"
+  }
+}
