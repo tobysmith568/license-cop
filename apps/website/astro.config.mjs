@@ -26,7 +26,7 @@ const webmanifestOptions = {
 
 export default defineConfig({
   outDir: "../../dist/apps/website",
-  site: "https://license-cop.tobythe.dev",
+  site: "https://license-cop.js.org",
 
   build: {
     format: "file"

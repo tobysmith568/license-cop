@@ -25,7 +25,7 @@ For the purposes of this Cookies Policy:
 
 - “Company” (referred to as either "the Company", "We", "Us" or "Our" in this Cookies Policy) refers to License-Cop.
 - “Cookies” means small files that are placed on Your computer, mobile device or any other device by a website, containing details of your browsing history on that website among its many uses.
-- “Website” refers to License-Cop, accessible from [https://license-cop.tobythe.dev](https://license-cop.tobythe.dev).
+- “Website” refers to License-Cop, accessible from [https://license-cop.js.org](https://license-cop.js.org).
 - “You” means the individual accessing or using the Website, or a company, or any legal entity on behalf of which such individual is accessing or using the Website, as applicable.
 
 ## The use of the Cookies

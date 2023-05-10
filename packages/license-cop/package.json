@@ -12,7 +12,7 @@
   },
   "license": "ISC",
   "description": "Yet another license checker tool for your dependencies; focused on simplicity.",
-  "homepage": "https://github.com/tobysmith568/license-cop#readme",
+  "homepage": "https://license-cop.js.org",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tobysmith568/license-cop.git",

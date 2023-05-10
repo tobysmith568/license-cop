@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://license-cop.tobythe.dev/sitemap-index.xml
+Sitemap: https://license-cop.js.org/sitemap-index.xml

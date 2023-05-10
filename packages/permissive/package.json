@@ -10,7 +10,7 @@
   },
   "license": "ISC",
   "description": "An out-of-the-box base config file for license-cop containing a curated list of especially permissive licenses.",
-  "homepage": "https://github.com/tobysmith568/license-cop/tree/main/packages/permissive#readme",
+  "homepage": "https://license-cop.js.org/permissive",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tobysmith568/license-cop.git",

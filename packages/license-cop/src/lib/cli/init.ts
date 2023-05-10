@@ -3,7 +3,7 @@ import { join } from "path";
 import logger from "../logger";
 
 const defaultConfig = `{
-  "$schema": "https://license-cop.tobythe.dev/schema.json",
+  "$schema": "https://license-cop.js.org/schema.json",
   "licenses": ["MIT", "ISC", "Apache-2.0"],
   "packages": []
 }
