@@ -1,0 +1,26 @@
+{
+  "name": "e2e-mit-package",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/e2e/mit-package/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/e2e/mit-package",
+        "main": "packages/e2e/mit-package/src/index.ts",
+        "tsConfig": "packages/e2e/mit-package/tsconfig.lib.json",
+        "assets": ["packages/e2e/mit-package/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/e2e/mit-package/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

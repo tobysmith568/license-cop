@@ -1,0 +1,13 @@
+{
+  "name": "@license-cop/isc-legacy-test-package",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "description": "A test package used in the license-cop e2e tests. This package is licensed under the ISC license using the legacy 'licenses' field",
+  "licenses": [
+    {
+      "type": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@license-cop/uses-isc-test-package",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "description": "A test package used in the license-cop e2e tests. This package is licensed under the MIT license but it depends on a package licensed under the ISC license.",
+  "license": "MIT",
+  "dependencies": {
+    "@license-cop/isc-test-package": "latest"
+  }
+}
