@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "name": "should-fail-when-a-package-is-missing",
   "dependencies": {
-    "isc-dependency": "file:../../dependencies/isc",
-    "mit-dependency": "file:../../dependencies/mit"
+    "@license-cop/isc-test-package": "latest",
+    "@license-cop/mit-test-package": "latest"
   },
   "devDependencies": {
     "license-cop": "file:../../../dist/packages/license-cop"

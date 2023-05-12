@@ -1,24 +1,34 @@
+let loggerEnabled = false;
 let verboseEnabled = false;
+
+const enableLogging = () => {
+  loggerEnabled = true;
+};
 
 const enableVerboseLogging = () => {
   verboseEnabled = true;
 };
 
 const log = (message: string) => {
-  console.log(message);
+  if (loggerEnabled) {
+    console.log(message);
+  }
 };
 
 const verbose = (message: string) => {
-  if (verboseEnabled) {
+  if (loggerEnabled && verboseEnabled) {
     log(message);
   }
 };
 
 const error = (message: string) => {
-  console.error(message);
+  if (loggerEnabled) {
+    console.error(message);
+  }
 };
 
 const logger = {
+  enableLogging,
   enableVerboseLogging,
   log,
   verbose,

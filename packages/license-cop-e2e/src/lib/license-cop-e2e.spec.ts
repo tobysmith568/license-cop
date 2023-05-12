@@ -68,10 +68,21 @@ describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-mod
     describe("unhappy paths", () => {
       const expectedExitCode = 1;
 
-      it("should fail when a license is missing from the config", async () => {
+      it("should fail when the license of a direct dependency is missing from the config", async () => {
         const options: TestOptions = {
           packageManager,
           directory: "should-fail-when-a-license-is-missing",
+          args: [],
+          expectedExitCode
+        };
+
+        await runTest(options);
+      });
+
+      it("should fail when the license of an indirect dependency is missing from the config", async () => {
+        const options: TestOptions = {
+          packageManager,
+          directory: "should-fail-when-the-license-of-a-dep-of-a-dep-is-missing",
           args: [],
           expectedExitCode
         };

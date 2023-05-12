@@ -7,7 +7,7 @@ export const runTest = async (options: TestOptions) => {
 
   await installDependencies(packageManager, directory);
 
-  const testProcess = childProcess.spawn("npx", ["license-cop", "--verbose", ...args], {
+  const testProcess = childProcess.spawn("npx", ["license-cop", ...args], {
     cwd: join("./e2e", packageManager, directory),
     shell: true
   });
@@ -57,9 +57,8 @@ const getInstallProgram = (packageManager: PackageManager): string => {
     case "yarn-modern-with-node-modules":
       return "yarn";
     default: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _exhaustiveCheck: never = packageManager;
-      throw new Error(`Unknown package manager: ${packageManager}`);
+      throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
     }
   }
 };
@@ -73,9 +72,8 @@ const getInstallArgs = (packageManager: PackageManager): string[] => {
     case "yarn-modern-with-node-modules":
       return ["install", "--immutable"];
     default: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _exhaustiveCheck: never = packageManager;
-      throw new Error(`Unknown package manager: ${packageManager}`);
+      throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
     }
   }
 };

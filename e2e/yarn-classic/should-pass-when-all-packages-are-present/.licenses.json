@@ -1,3 +1,3 @@
 {
-  "packages": ["isc-dependency", "mit-dependency"]
+  "packages": ["@license-cop/isc-test-package", "@license-cop/mit-test-package"]
 }
