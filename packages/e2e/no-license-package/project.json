@@ -1,0 +1,26 @@
+{
+  "name": "e2e-no-license-package",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/e2e/no-license-package/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/e2e/no-license-package",
+        "main": "packages/e2e/no-license-package/src/index.ts",
+        "tsConfig": "packages/e2e/no-license-package/tsconfig.lib.json",
+        "assets": ["packages/e2e/no-license-package/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/e2e/no-license-package/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}
