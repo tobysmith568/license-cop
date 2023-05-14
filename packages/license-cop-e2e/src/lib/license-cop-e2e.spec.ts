@@ -31,6 +31,17 @@ describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-mod
         await runTest(options);
       });
 
+      it("should pass when a package uses the legacy licenses field", async () => {
+        const options: TestOptions = {
+          packageManager,
+          directory: "should-pass-when-a-package-uses-the-legacy-licenses-field",
+          args: [],
+          expectedExitCode
+        };
+
+        await runTest(options);
+      });
+
       it("should pass when a package is within its semver range", async () => {
         const options: TestOptions = {
           packageManager,

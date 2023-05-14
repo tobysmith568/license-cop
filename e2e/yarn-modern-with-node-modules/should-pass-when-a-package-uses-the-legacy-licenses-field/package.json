@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "yarn@3.5.1",
+  "name": "should-pass-when-a-package-uses-the-legacy-licenses-field",
+  "dependencies": {
+    "@license-cop/isc-legacy-test-package": "0.0.1"
+  },
+  "devDependencies": {
+    "license-cop": "portal:../../../dist/packages/license-cop"
+  },
+  "peerDependencies": {
+    "@swc/helpers": "*"
+  }
+}
