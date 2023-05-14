@@ -1,6 +1,6 @@
 import { parseConfig } from "./config";
 import { loadParentConfig } from "./load-parent-config";
-import deepMerge from "deepmerge";
+import * as deepMerge from "deepmerge";
 import { findConfig } from "./find-config";
 import logger from "../logger";
 
