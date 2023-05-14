@@ -44,7 +44,15 @@ export const readPackageJson = async (pathToPackageJson: string): Promise<Packag
 
 export const getLicenseExpression = (packageJson: PackageJson): string | Violation => {
   if (packageJson.license) {
-    // TODO: check for AND/OR expressions
+    if (packageJson.license.startsWith("(")) {
+      return {
+        type: "multiple-licenses",
+        packageName: packageJson.name,
+        packageVersion: packageJson.version,
+        licenses: packageJson.license.split(/ OR | AND |\(|\)/g).filter(l => l !== "")
+      };
+    }
+
     return packageJson.license;
   }
 
