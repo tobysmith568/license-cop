@@ -1,4 +1,5 @@
-import arg, { Result } from "arg";
+import { Result } from "arg";
+import * as arg from "arg";
 import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
 import { ViolationsError } from "../violations-error";

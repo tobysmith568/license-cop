@@ -1802,7 +1802,7 @@ __metadata:
     json5: 2.2.3
     zod: 3.21.4
   peerDependencies:
-    "@swc/helpers": 0.4.14
+    "@swc/helpers": 0.5.1
   bin:
     license-cop: ./src/bin/license-cop
   languageName: node

@@ -1,4 +1,5 @@
-import Arborist, { Node, Link } from "@npmcli/arborist";
+import { Node, Link } from "@npmcli/arborist";
+import * as Arborist from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
 import logger from "./logger";
 import { getLicenseExpression, readPackageJson } from "./package-json";
