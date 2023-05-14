@@ -1,4 +1,5 @@
 import logger from "../logger";
+import { joinStringArray } from "../utils/join-string-array";
 import {
   ForbiddenLicenseViolation,
   MultipleLicensesViolation,
@@ -18,6 +19,14 @@ export const reportViolations = (violations: Set<Violation>): void => {
 
   if (sortedViolations["forbidden-license"].length > 0) {
     logForbiddenLicenseViolations(sortedViolations["forbidden-license"]);
+  }
+
+  if (sortedViolations["multiple-licenses"].length > 0) {
+    logMultipleLicensesViolations(sortedViolations["multiple-licenses"]);
+  }
+
+  if (sortedViolations["no-license"].length > 0) {
+    logNoLicenseViolations(sortedViolations["no-license"]);
   }
 };
 
@@ -57,8 +66,29 @@ const logUnknownViolation = (): void => {
 };
 
 const logForbiddenLicenseViolations = (violations: ForbiddenLicenseViolation[]): void => {
+  logger.error("Packages with forbidden licenses:\n");
   for (const violation of violations) {
     const { packageName, packageVersion, license } = violation;
     logger.error(`${packageName}@${packageVersion} - ${license}`);
+  }
+};
+
+const logMultipleLicensesViolations = (violations: MultipleLicensesViolation[]) => {
+  logger.error(`Packages with multiple licenses:
+(You should specify these using the 'packages' option in the config file if you allow them.)"
+`);
+
+  for (const violation of violations) {
+    const { packageName, packageVersion, licenses } = violation;
+    const joinedLicenses = joinStringArray(licenses);
+    logger.error(`${packageName}@${packageVersion} - ${joinedLicenses}`);
+  }
+};
+
+const logNoLicenseViolations = (violations: NoLicenseViolation[]) => {
+  logger.error("Packages with no license:\n");
+  for (const violation of violations) {
+    const { packageName, packageVersion } = violation;
+    logger.error(`${packageName}@${packageVersion} - UNLICENSED`);
   }
 };
