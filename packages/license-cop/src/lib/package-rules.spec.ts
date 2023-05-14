@@ -1,4 +1,4 @@
-import { isAllowedLicense, isAllowedPackage } from "../../src/lib/package-rules";
+import { isAllowedLicense, isAllowedPackage } from "./package-rules";
 
 describe("PackageRules", () => {
   describe("isAllowedPackage", () => {
