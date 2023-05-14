@@ -1,6 +1,6 @@
 {
   "name": "@license-cop/isc-test-package",
-  "version": "0.0.1",
+  "version": "1.2.3",
   "type": "commonjs",
   "main": "src/index.js",
   "description": "A test package used in the license-cop e2e tests. This package is licensed under the ISC license.",

@@ -1,11 +1,11 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@3.5.1",
   "name": "should-pass-when-all-licenses-are-present",
   "dependencies": {
-    "isc-dependency": "link:../../dependencies/isc",
-    "mit-dependency": "link:../../dependencies/mit"
+    "@license-cop/isc-test-package": "latest",
+    "@license-cop/mit-test-package": "latest"
   },
   "devDependencies": {
     "license-cop": "portal:../../../dist/packages/license-cop"

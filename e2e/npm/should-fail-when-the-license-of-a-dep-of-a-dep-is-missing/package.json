@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "should-fail-when-the-license-of-a-dep-of-a-dep-is-missing",
+  "dependencies": {
+    "@license-cop/uses-isc-test-package": "latest"
+  },
+  "devDependencies": {
+    "license-cop": "file:../../../dist/packages/license-cop"
+  }
+}

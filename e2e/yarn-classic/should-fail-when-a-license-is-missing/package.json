@@ -4,8 +4,8 @@
   "packageManager": "yarn@1.22.19",
   "name": "should-fail-when-a-license-is-missing",
   "dependencies": {
-    "isc-dependency": "file:../../dependencies/isc",
-    "mit-dependency": "file:../../dependencies/mit"
+    "@license-cop/isc-test-package": "latest",
+    "@license-cop/mit-test-package": "latest"
   },
   "devDependencies": {
     "license-cop": "file:../../../dist/packages/license-cop"

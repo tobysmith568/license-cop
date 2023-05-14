@@ -1,6 +1,7 @@
 import Arborist, { Node, Link } from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
-import { readPackageJson } from "./package-json";
+import logger from "./logger";
+import { getLicenseExpression, readPackageJson } from "./package-json";
 import { isAllowedLicense, isAllowedPackage } from "./package-rules";
 import { Violation, ViolationsError } from "./violations-error";
 
@@ -25,47 +26,59 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
   const packageViolations = new Set<Violation>();
 
   const path = resolvePath(workingDirectory);
-
-  const arborist = new Arborist({
-    path
-  });
+  const arborist = new Arborist({ path });
 
   const topNode = await arborist.loadActual();
 
+  const parseNode = async (node: Node | Link) => {
+    logger.verbose(`Parsing node: ${node.name}`);
+
+    const isDevDependency = node.dev || node.devOptional;
+
+    if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
+      return;
+    }
+
+    if (devDependenciesOnly && !isDevDependency) {
+      return;
+    }
+
+    const packageJsonPath = join(node.realpath, "package.json");
+    const packageJson = await readPackageJson(packageJsonPath);
+
+    const licenseOrViolation = getLicenseExpression(packageJson);
+
+    if (typeof licenseOrViolation !== "string") {
+      packageViolations.add(licenseOrViolation);
+      return;
+    }
+
+    allLicenses.add(licenseOrViolation);
+
+    if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
+      if (node.children.size > 0) {
+        await parseNodes(node.children.values());
+      }
+      return;
+    }
+
+    if (!isAllowedLicense(licenseOrViolation, allowedLicenses)) {
+      packageViolations.add({
+        type: "forbidden-license",
+        packageName: node.name,
+        packageVersion: packageJson.version,
+        license: licenseOrViolation
+      });
+    }
+
+    if (node.children.size > 0) {
+      parseNodes(node.children.values());
+    }
+  };
+
   const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
     for (const node of nodes) {
-      const isDevDependency = node.dev || node.devOptional;
-
-      if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
-        continue;
-      }
-
-      if (devDependenciesOnly && !isDevDependency) {
-        continue;
-      }
-
-      const packageJsonPath = join(node.realpath, "package.json");
-      const packageJson = await readPackageJson(packageJsonPath);
-
-      const license = packageJson.license ?? "UNLICENSED";
-
-      allLicenses.add(license);
-
-      if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
-        continue;
-      }
-
-      if (!isAllowedLicense(license, allowedLicenses)) {
-        packageViolations.add({
-          packageName: node.name,
-          packageVersion: packageJson.version,
-          license
-        });
-      }
-
-      if (node.children.size > 0) {
-        parseNodes(node.children.values());
-      }
+      await parseNode(node);
     }
   };
 

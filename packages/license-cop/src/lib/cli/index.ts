@@ -1,15 +1,17 @@
 import arg, { Result } from "arg";
 import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
-import { Violation, ViolationsError } from "../violations-error";
+import { ViolationsError } from "../violations-error";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { init } from "./commands/init";
 import { printPackageVersion } from "./commands/version";
+import { reportViolations } from "./reportViolations";
 import { join } from "path";
 import { readPackageJson } from "../package-json";
 import logger from "../logger";
 
 export async function main(args: string[]): Promise<void> {
+  logger.enableLogging();
   try {
     await cli(args);
 
@@ -24,7 +26,7 @@ export async function main(args: string[]): Promise<void> {
       logger.error(JSON.stringify(e));
     }
 
-    logger.verbose("Exiting with error code 1");
+    logger.verbose("\nExiting with error code 1");
     process.exitCode = 1;
   }
 }
@@ -74,14 +76,6 @@ const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {
   return arg(argumentsWithAliases, {
     argv: rawArgs.slice(2)
   });
-};
-
-const reportViolations = (violations: Set<Violation>): void => {
-  logger.error("Issues:");
-  for (const violation of violations) {
-    const { packageName, packageVersion, license } = violation;
-    logger.error(`${packageName}@${packageVersion} - ${license}`);
-  }
 };
 
 const getProductName = async (directory: string): Promise<string> => {
