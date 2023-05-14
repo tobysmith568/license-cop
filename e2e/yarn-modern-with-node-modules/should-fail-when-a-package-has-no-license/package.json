@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "yarn@3.5.1",
+  "name": "should-fail-when-a-package-has-no-license",
+  "dependencies": {
+    "@license-cop/no-license-test-package": "0.0.1"
+  },
+  "devDependencies": {
+    "license-cop": "portal:../../../dist/packages/license-cop"
+  },
+  "peerDependencies": {
+    "@swc/helpers": "*"
+  }
+}

@@ -155,6 +155,28 @@ describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-mod
 
         await runTest(options);
       });
+
+      it("should fail when a package has no license", async () => {
+        const options: TestOptions = {
+          packageManager,
+          directory: "should-fail-when-a-package-has-no-license",
+          args: [],
+          expectedExitCode
+        };
+
+        await runTest(options);
+      });
+
+      it("should fail when a package is unlicensed", async () => {
+        const options: TestOptions = {
+          packageManager,
+          directory: "should-fail-when-a-package-is-unlicensed",
+          args: [],
+          expectedExitCode
+        };
+
+        await runTest(options);
+      });
     });
   }
 );
