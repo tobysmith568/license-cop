@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "should-fail-when-a-package-uses-the-legacy-licenses-field",
+  "dependencies": {
+    "@license-cop/isc-legacy-test-package": "0.0.1"
+  },
+  "devDependencies": {
+    "license-cop": "file:../../../dist/packages/license-cop"
+  }
+}
