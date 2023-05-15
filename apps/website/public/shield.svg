@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="175" height="20" role="img"
+  aria-label="Protected by: License-Cop">
+  <!-- Custom shield based on those available from https://shields.io -->
+  <style>
+    .shadow {
+      cursor: default;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+  <title>Protected by: License-Cop</title>
+  <linearGradient id="s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#bbb" stop-opacity=".1" />
+    <stop offset="1" stop-opacity=".1" />
+  </linearGradient>
+  <clipPath id="r">
+    <rect width="175" height="20" rx="3" fill="#fff" />
+  </clipPath>
+  <g clip-path="url(#r)">
+    <rect width="80" height="20" fill="#555" />
+    <rect x="80" width="95" height="20" fill="#4c1" />
+    <rect width="175" height="20" fill="url(#s)" />
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif"
+    text-rendering="geometricPrecision" font-size="110">
+    <text aria-hidden="true" class="shadow" x="405" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)"
+      textLength="690">
+      Protected by
+    </text>
+    <text x="405" y="140" transform="scale(.1)" fill="#fff" textLength="690">
+      Protected by
+    </text>
+    <image x="85" y="3" width="14" height="14"
+      xlink:href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDUxMiA1MTIiIGhlaWdodD0iNTEyIiBpZD0iQ2FwYV8xIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIKICB3aWR0aD0iNTEyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxnPgogICAgPHBhdGggZD0ibTIzNiAzMDEuNDI1IDIwIDE2MC42NjRjMTI0LjcwMiAwIDIyNS43OTMtMzUuOTYxIDIyNS43OTMtMTYwLjY2NHoiIGZpbGw9IiMzMjNjM2MiIC8+CiAgICA8cGF0aCBkPSJtMzAuMjA2IDMwMS40MjVjMCAxMjQuNzAyIDEwMS4wOTEgMTYwLjY2NCAyMjUuNzk0IDE2MC42NjR2LTE2MC42NjR6IiBmaWxsPSIjNDk1OTU5IiAvPgogICAgPHBhdGggZD0ibTIzNiAyMzcuMTYgMjAgOTYuMzk4YzEzMy4wNjYgMCAyMjUuNzk0LTMyLjEzMyAyMjUuNzk0LTMyLjEzM3YtNjQuMjY1eiIgZmlsbD0iIzJkMmQyZCIgLz4KICAgIDxwYXRoIGQ9Im0zMC4yMDYgMjM3LjE2djY0LjI2NXM5Mi43MjggMzIuMTMzIDIyNS43OTQgMzIuMTMzdi05Ni4zOTh6IiBmaWxsPSIjMzIzYzNjIiAvPgogICAgPHBhdGgKICAgICAgZD0ibTI1NiAyNjkuMjkyYzEzMy4wNjYgMCAyMjUuNzk0LTMyLjEzMyAyMjUuNzk0LTMyLjEzM2wxMy4yMTgtMzUuMDY5Yy0yOC41MjEgOC43MzYtMTM2LjUyNiAxMi4yMDEtMjU5LjAxMiAxMi4yMDF6IgogICAgICBmaWxsPSIjMjY4MmZmIiAvPgogICAgPHBhdGggZD0ibTE2Ljk4OCAyMDIuMDkxIDEzLjIxOCAzNS4wNjlzOTIuNzI4IDMyLjEzMyAyMjUuNzk0IDMyLjEzM3YtNTVjLTEyMi40ODUtLjAwMS0yMTAuNDkxLTMuNDY2LTIzOS4wMTItMTIuMjAyeiIKICAgICAgZmlsbD0iIzZhYTlmZiIgLz4KICAgIDxwYXRoCiAgICAgIGQ9Im0yNTYgNDkuOTExLTIwIDEwMy41MjQgMjAgODAuODU2YzEyMi40ODUgMCAyMTAuNDkxLTIzLjQ2NSAyMzkuMDEyLTMyLjIwMWwxNi45ODgtNDUuMDdzLTc1LjEzLTEwNy4xMDktMjU2LTEwNy4xMDl6IgogICAgICBmaWxsPSIjMDA1ZmUxIiAvPgogICAgPHBhdGggZD0ibTI1NiA0OS45MTFjLTE4MC44NyAwLTI1NiAxMDcuMTA5LTI1NiAxMDcuMTA5bDE2Ljk4OCA0NS4wNzFjMjguNTIxIDguNzM2IDExNi41MjYgMzIuMjAxIDIzOS4wMTIgMzIuMjAxeiIKICAgICAgZmlsbD0iIzI2ODJmZiIgLz4KICAgIDxwYXRoCiAgICAgIGQ9Im0zMjUuMjUyIDIxMy45OS0xNS44NjMtNzUuNTU0aC01My4zODlsLTIwIDgwLjQyOCAyMCA4MC40MjhjMjEuNDE1IDAgNDEuNDM5LTkuNTM2IDU0LjkzNy0yNi4xNjJzMTguNzE2LTM4LjE4MiAxNC4zMTUtNTkuMTR6IgogICAgICBmaWxsPSIjYjRkMmQ3IiAvPgogICAgPHBhdGggZD0ibTIwMi42MTEgMTM4LjQzNi0xNS44NjMgNzUuNTU0Yy00LjQgMjAuOTU4LjgxNyA0Mi41MTUgMTQuMzE1IDU5LjE0MXMzMy41MjIgMjYuMTYyIDU0LjkzNyAyNi4xNjJ2LTE2MC44NTd6IgogICAgICBmaWxsPSIjZTFlYmYwIiAvPgogICAgPHBhdGgKICAgICAgZD0ibTI4Ny42NDYgMjU0LjIyMmM3Ljc3Ni05LjU3OCAxMC43ODItMjEuOTk1IDguMjQ3LTM0LjA2OGwtMTAuODU5LTUxLjcxOGgtMjkuMDM0bC0yMCA1MC40MjggMjAgNTAuNDI4YzEyLjMzNiAwIDIzLjg3MS01LjQ5MiAzMS42NDYtMTUuMDd6IgogICAgICBmaWxsPSIjZTFlYmYwIiAvPgogICAgPHBhdGgKICAgICAgZD0ibTIyNi45NjYgMTY4LjQzNi0xMC44NTkgNTEuNzE4Yy0yLjUzNSAxMi4wNzMuNDcxIDI0LjQ5MSA4LjI0NyAzNC4wNjggNy43NzUgOS41NzggMTkuMzEgMTUuMDcgMzEuNjQ2IDE1LjA3di0xMDAuODU2eiIKICAgICAgZmlsbD0iI2ZmZjVmNSIgLz4KICA8L2c+Cjwvc3ZnPg==" />
+    <text aria-hidden="true" class="shadow" x="1360" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)"
+      textLength="673">
+      License-Cop
+    </text>
+    <text x="1360" y="140" transform="scale(.1)" fill="#fff" textLength="673">
+      License-Cop
+    </text>
+  </g>
+</svg>
