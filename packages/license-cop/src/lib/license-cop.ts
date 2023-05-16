@@ -3,8 +3,11 @@ import * as Arborist from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
 import logger from "./logger";
 import { getLicenseExpression, readPackageJson } from "./package-json";
-import { isAllowedLicense, isAllowedPackage } from "./package-rules";
+import { isAllowedPackage } from "./package-rules";
 import { Violation, ViolationsError } from "./violations-error";
+import { calculateViolations } from "./spdx/calculate-violations";
+import { joinStringArray } from "./utils/join-string-array";
+import { parseLicenseExpression } from "./spdx/parse-license-expression";
 
 export interface LicenseCopOptions {
   allowedLicenses: string[];
@@ -23,7 +26,6 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
     devDependenciesOnly
   } = options;
 
-  const allLicenses = new Set<string>();
   const packageViolations = new Set<Violation>();
 
   const path = resolvePath(workingDirectory);
@@ -47,15 +49,6 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
     const packageJsonPath = join(node.realpath, "package.json");
     const packageJson = await readPackageJson(packageJsonPath);
 
-    const licenseOrViolation = getLicenseExpression(packageJson);
-
-    if (typeof licenseOrViolation !== "string") {
-      packageViolations.add(licenseOrViolation);
-      return;
-    }
-
-    allLicenses.add(licenseOrViolation);
-
     if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
       if (node.children.size > 0) {
         await parseNodes(node.children.values());
@@ -63,12 +56,38 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
       return;
     }
 
-    if (!isAllowedLicense(licenseOrViolation, allowedLicenses)) {
+    const rawLicenseExpression = getLicenseExpression(packageJson);
+    const licenseExpression = parseLicenseExpression(rawLicenseExpression);
+
+    if (licenseExpression.type === "unlicensed") {
+      packageViolations.add({
+        type: "no-license",
+        packageName: node.name,
+        packageVersion: packageJson.version
+      });
+      return;
+    }
+
+    const licenseViolations = calculateViolations(licenseExpression, allowedLicenses);
+    const isMissingOnlyLicense =
+      licenseExpression.type === "identifier" &&
+      licenseViolations.length === 1 &&
+      licenseViolations[0] === licenseExpression.value;
+
+    if (isMissingOnlyLicense) {
       packageViolations.add({
         type: "forbidden-license",
         packageName: node.name,
         packageVersion: packageJson.version,
-        license: licenseOrViolation
+        license: licenseExpression.value
+      });
+    } else if (licenseViolations.length > 0) {
+      const joinedViolations = joinStringArray(licenseViolations);
+      packageViolations.add({
+        type: "forbidden-license",
+        packageName: node.name,
+        packageVersion: packageJson.version,
+        license: `${joinedViolations} from ${rawLicenseExpression}`
       });
     }
 
@@ -86,6 +105,8 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
   await parseNodes(topNode.children.values());
 
   if (packageViolations.size > 0) {
+    // TODO: should probably return a nice model instead
+    // TODO: finding license issues isn't an unexpected error
     throw new ViolationsError(packageViolations);
   }
 };

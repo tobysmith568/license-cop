@@ -1,4 +1,4 @@
-import { isAllowedLicense, isAllowedPackage } from "./package-rules";
+import { isAllowedPackage } from "./package-rules";
 
 describe("PackageRules", () => {
   describe("isAllowedPackage", () => {
@@ -57,28 +57,6 @@ describe("PackageRules", () => {
       const allowedPackages = ["something", `${packageName}@${version}`, "something else"];
 
       const result = isAllowedPackage(packageName, packageVersion, allowedPackages);
-
-      expect(result).toBeFalsy();
-    });
-  });
-
-  describe("isAllowedLicense", () => {
-    it("should return true if the licenses is in the allowed list", () => {
-      const license = "MIT";
-
-      const allowedLicenses = ["something", license, "something else"];
-
-      const result = isAllowedLicense(license, allowedLicenses);
-
-      expect(result).toBeTruthy();
-    });
-
-    it("should return false if the licenses is not in the allowed list", () => {
-      const license = "MIT";
-
-      const allowedLicenses = ["something", "something else"];
-
-      const result = isAllowedLicense(license, allowedLicenses);
 
       expect(result).toBeFalsy();
     });

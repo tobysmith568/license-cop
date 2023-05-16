@@ -21,7 +21,3 @@ export const isAllowedPackage = (
 
   return false;
 };
-
-export const isAllowedLicense = (license: string, allowedLicenses: string[]) => {
-  return allowedLicenses.includes(license);
-};
