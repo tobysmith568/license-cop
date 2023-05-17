@@ -3,7 +3,6 @@ import { readFile, stat } from "fs/promises";
 import { z } from "zod";
 import { json5Parse } from "./config/parsers/json5";
 import logger from "./logger";
-import { Violation } from "./violations-error";
 
 const packageJsonValidator = z.object({
   name: z.string(),
@@ -42,38 +41,22 @@ export const readPackageJson = async (pathToPackageJson: string): Promise<Packag
   return packageJson.data;
 };
 
-export const getLicenseExpression = (packageJson: PackageJson): string | Violation => {
+export const getLicenseExpression = (packageJson: PackageJson): string => {
   if (packageJson.license) {
-    if (packageJson.license.startsWith("(")) {
-      return {
-        type: "multiple-licenses",
-        packageName: packageJson.name,
-        packageVersion: packageJson.version,
-        licenses: packageJson.license.split(/ OR | AND |\(|\)/g).filter(l => l !== "")
-      };
-    }
-
     return packageJson.license;
   }
 
-  if (!packageJson.licenses?.length) {
-    return {
-      type: "no-license",
-      packageName: packageJson.name,
-      packageVersion: packageJson.version
-    };
+  if (packageJson.licenses) {
+    const licenses = packageJson.licenses.map<string>(license => license.type);
+
+    if (licenses.length === 1) {
+      return licenses[0];
+    }
+
+    return `(${licenses.join(" AND ")})`;
   }
 
-  if (packageJson.licenses.length === 1) {
-    return packageJson.licenses[0].type;
-  }
-
-  return {
-    type: "multiple-licenses",
-    packageName: packageJson.name,
-    packageVersion: packageJson.version,
-    licenses: packageJson.licenses.map(license => license.type)
-  };
+  return "UNLICENSED";
 };
 
 const doesFileExist = async (path: string): Promise<boolean> => {
