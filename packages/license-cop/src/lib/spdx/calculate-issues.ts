@@ -1,16 +1,13 @@
 import { SpdxExpression } from "./types/spdx-expression";
 
-export const calculateViolations = (
-  license: SpdxExpression,
-  allowedLicenses: string[]
-): string[] => {
-  const violations: string[] = [];
+export const calculateIssues = (license: SpdxExpression, allowedLicenses: string[]): string[] => {
+  const issues: string[] = [];
 
   const parseNode = (node: SpdxExpression): void => {
     switch (node.type) {
       case "identifier": {
         if (!allowedLicenses.includes(node.value)) {
-          violations.push(node.value);
+          issues.push(node.value);
         }
         return;
       }
@@ -28,7 +25,7 @@ export const calculateViolations = (
           !allowedLicenses.includes(node.expressions[0]) ||
           !allowedLicenses.includes(`${node.expressions[0]} WITH ${node.expressions[1]}`)
         ) {
-          violations.push(`${node.expressions[0]} WITH ${node.expressions[1]}`);
+          issues.push(`${node.expressions[0]} WITH ${node.expressions[1]}`);
         }
         return;
       }
@@ -42,5 +39,5 @@ export const calculateViolations = (
 
   parseNode(license);
 
-  return violations;
+  return issues;
 };

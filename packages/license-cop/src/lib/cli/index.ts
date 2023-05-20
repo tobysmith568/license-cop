@@ -2,26 +2,24 @@ import { Result } from "arg";
 import * as arg from "arg";
 import { loadConfig } from "../config/load-config";
 import { checkLicenses, LicenseCopOptions } from "../license-cop";
-import { ViolationsError } from "../violations-error";
 import { argumentsWithAliases, ArgumentsWithAliases } from "./arguments";
 import { init } from "./commands/init";
 import { printPackageVersion } from "./commands/version";
-import { reportViolations } from "./reportViolations";
 import { join } from "path";
 import { readPackageJson } from "../package-json";
 import logger from "../logger";
+import { reportFailure } from "./report-failure";
+import { reportSuccess } from "./report-success";
+
+type ExitCode = 0 | 1;
 
 export async function main(args: string[]): Promise<void> {
   logger.enableLogging();
   try {
-    await cli(args);
-
-    logger.verbose("Exiting with error code 0");
-    process.exitCode = 0;
+    const exitCode = await cli(args);
+    process.exitCode = exitCode;
   } catch (e: unknown) {
-    if (e instanceof ViolationsError) {
-      reportViolations(e.violations);
-    } else if (e instanceof Error) {
+    if (e instanceof Error) {
       logger.error(e.message);
     } else {
       logger.error(JSON.stringify(e));
@@ -32,7 +30,7 @@ export async function main(args: string[]): Promise<void> {
   }
 }
 
-const cli = async (args: string[]) => {
+const cli = async (args: string[]): Promise<ExitCode> => {
   const givenUserInputs = parseUserInputs(args);
 
   if (givenUserInputs["--verbose"]) {
@@ -42,7 +40,7 @@ const cli = async (args: string[]) => {
 
   if (givenUserInputs["--version"]) {
     await printPackageVersion();
-    return;
+    return 0;
   }
 
   const directory = givenUserInputs["--directory"] ?? process.cwd();
@@ -50,7 +48,7 @@ const cli = async (args: string[]) => {
 
   if (givenUserInputs["--init"]) {
     await init(directory);
-    return;
+    return 0;
   }
 
   const config = await loadConfig(directory);
@@ -68,9 +66,15 @@ const cli = async (args: string[]) => {
   const productName = await getProductName(directory);
   logger.log(`Scanning dependencies of: ${productName}`);
 
-  await checkLicenses(options);
+  const result = await checkLicenses(options);
 
-  logger.log("Done! No issues found.");
+  if (result.noLicenses.size > 0 || result.forbiddenLicenses.size > 0) {
+    reportFailure(result);
+    return 1;
+  }
+
+  reportSuccess(result);
+  return 0;
 };
 
 const parseUserInputs = (rawArgs: string[]): Result<ArgumentsWithAliases> => {

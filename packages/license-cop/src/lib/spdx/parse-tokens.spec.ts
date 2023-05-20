@@ -124,7 +124,7 @@ describe("parse-tokens", () => {
       const tokens = getTokens(expression);
 
       expect(() => parseTokens(tokens, expression)).toThrow(
-        `${expression} is not a valid SPDX expression`
+        `'${expression}' is not a valid SPDX expression`
       );
     }
   );
