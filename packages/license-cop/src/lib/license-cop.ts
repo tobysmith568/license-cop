@@ -4,10 +4,16 @@ import { isAbsolute, join } from "path";
 import logger from "./logger";
 import { getLicenseExpression, readPackageJson } from "./package-json";
 import { isAllowedPackage } from "./package-rules";
-import { Violation, ViolationsError } from "./violations-error";
-import { calculateViolations } from "./spdx/calculate-violations";
+import { calculateIssues } from "./spdx/calculate-issues";
 import { joinStringArray } from "./utils/join-string-array";
 import { parseLicenseExpression } from "./spdx/parse-license-expression";
+import {
+  AllowedPackage,
+  CheckLicensesResult,
+  ForbiddenLicenseResult,
+  LicensedPackage,
+  NoLicenseResult
+} from "./result";
 
 export interface LicenseCopOptions {
   allowedLicenses: string[];
@@ -17,7 +23,7 @@ export interface LicenseCopOptions {
   devDependenciesOnly?: boolean;
 }
 
-export const checkLicenses = async (options: LicenseCopOptions): Promise<void> => {
+export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLicensesResult> => {
   const {
     workingDirectory,
     allowedLicenses,
@@ -26,7 +32,10 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
     devDependenciesOnly
   } = options;
 
-  const packageViolations = new Set<Violation>();
+  const foundAllowedPackages = new Set<AllowedPackage>();
+  const packagesWithAllowedLicenses = new Set<LicensedPackage>();
+  const packagesWithNoLicenses = new Set<NoLicenseResult>();
+  const packagesWithForbiddenLicenses = new Set<ForbiddenLicenseResult>();
 
   const path = resolvePath(workingDirectory);
   const arborist = new Arborist({ path });
@@ -50,6 +59,11 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
     const packageJson = await readPackageJson(packageJsonPath);
 
     if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
+      foundAllowedPackages.add({
+        name: packageJson.name,
+        version: packageJson.version
+      });
+
       if (node.children.size > 0) {
         await parseNodes(node.children.values());
       }
@@ -60,34 +74,33 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
     const licenseExpression = parseLicenseExpression(rawLicenseExpression);
 
     if (licenseExpression.type === "unlicensed") {
-      packageViolations.add({
-        type: "no-license",
-        packageName: node.name,
-        packageVersion: packageJson.version
+      packagesWithNoLicenses.add({
+        name: packageJson.name,
+        version: packageJson.version
       });
+
+      if (node.children.size > 0) {
+        await parseNodes(node.children.values());
+      }
       return;
     }
 
-    const licenseViolations = calculateViolations(licenseExpression, allowedLicenses);
-    const isMissingOnlyLicense =
-      licenseExpression.type === "identifier" &&
-      licenseViolations.length === 1 &&
-      licenseViolations[0] === licenseExpression.value;
+    const licenseIssues = calculateIssues(licenseExpression, allowedLicenses);
+    const joinedIssues = joinStringArray(licenseIssues);
 
-    if (isMissingOnlyLicense) {
-      packageViolations.add({
-        type: "forbidden-license",
-        packageName: node.name,
-        packageVersion: packageJson.version,
-        license: licenseExpression.value
+    if (licenseIssues.length > 0) {
+      packagesWithForbiddenLicenses.add({
+        name: packageJson.name,
+        version: packageJson.version,
+        licenseIdentifiers: joinedIssues,
+        spdxExpression: rawLicenseExpression
       });
-    } else if (licenseViolations.length > 0) {
-      const joinedViolations = joinStringArray(licenseViolations);
-      packageViolations.add({
-        type: "forbidden-license",
-        packageName: node.name,
-        packageVersion: packageJson.version,
-        license: `${joinedViolations} from ${rawLicenseExpression}`
+    } else {
+      packagesWithAllowedLicenses.add({
+        name: packageJson.name,
+        version: packageJson.version,
+        spdxExpression: rawLicenseExpression,
+        licenses: licenseExpression
       });
     }
 
@@ -104,11 +117,12 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<void> =
 
   await parseNodes(topNode.children.values());
 
-  if (packageViolations.size > 0) {
-    // TODO: should probably return a nice model instead
-    // TODO: finding license issues isn't an unexpected error
-    throw new ViolationsError(packageViolations);
-  }
+  return {
+    allowedPackages: foundAllowedPackages,
+    allowedLicenses: packagesWithAllowedLicenses,
+    noLicenses: packagesWithNoLicenses,
+    forbiddenLicenses: packagesWithForbiddenLicenses
+  };
 };
 
 const resolvePath = (path?: string): string => {
