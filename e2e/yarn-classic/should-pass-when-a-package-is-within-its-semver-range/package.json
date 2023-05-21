@@ -8,8 +8,5 @@
   },
   "devDependencies": {
     "license-cop": "file:../../../dist/packages/license-cop"
-  },
-  "peerDependencies": {
-    "@swc/helpers": "*"
   }
 }

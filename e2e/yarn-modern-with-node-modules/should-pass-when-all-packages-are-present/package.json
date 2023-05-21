@@ -9,8 +9,5 @@
   },
   "devDependencies": {
     "license-cop": "portal:../../../dist/packages/license-cop"
-  },
-  "peerDependencies": {
-    "@swc/helpers": "*"
   }
 }
