@@ -5,15 +5,15 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:swc",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/license-cop",
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
-        "assets": ["packages/license-cop/src/bin/**", "README.md", "LICENSE.md"]
-      },
-      "buildableProjectDepsInPackageJsonType": "dependencies"
+        "assets": ["packages/license-cop/src/bin/**", "README.md", "LICENSE.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies"
+      }
     },
     "run": {
       "executor": "nx:run-commands",
