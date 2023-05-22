@@ -38,7 +38,7 @@
     "jest-environment-node": "^29.4.1",
     "npm-publish-latest-tag": "^1.0.1",
     "nx": "15.8.9",
-    "prettier-plugin-astro": "^0.8.0",
+    "prettier-plugin-astro": "^0.9.0",
     "react": "^17.0.2 || ^18.0.0",
     "react-dom": "^17.0.2 || ^18.0.0",
     "remark-directive": "^2.0.1",
