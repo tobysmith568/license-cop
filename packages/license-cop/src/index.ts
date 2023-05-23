@@ -1,2 +1,8 @@
 export { checkLicenses, LicenseCopOptions } from "./lib/license-cop";
-export * from "./lib/result";
+export {
+  AllowedPackage,
+  CheckLicensesResult,
+  ForbiddenLicenseResult,
+  LicensedPackage,
+  NoLicenseResult
+} from "./lib/result";

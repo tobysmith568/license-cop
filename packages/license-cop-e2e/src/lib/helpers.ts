@@ -66,11 +66,11 @@ const getInstallProgram = (packageManager: PackageManager): string => {
 const getInstallArgs = (packageManager: PackageManager): string[] => {
   switch (packageManager) {
     case "npm":
-      return ["ci"];
+      return ["i"];
     case "yarn-classic":
-      return ["install", "--frozen-lockfile"];
+      return ["install"];
     case "yarn-modern-with-node-modules":
-      return ["install", "--immutable"];
+      return ["install"];
     default: {
       const _exhaustiveCheck: never = packageManager;
       throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);

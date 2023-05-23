@@ -1,6 +1,7 @@
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import logger from "../../logger";
+import { createCommandWithGlobalOptions } from "../create-command";
 
 const defaultConfig = `{
   "$schema": "https://license-cop.js.org/schema.json",
@@ -9,7 +10,16 @@ const defaultConfig = `{
 }
 `;
 
-export const init = async (rootDir: string) => {
+export const initCommand = createCommandWithGlobalOptions()
+  .name("--init")
+  .description("Create a new license-cop configuration file")
+  .action(async options => {
+    const { directory } = options;
+
+    await init(directory);
+  });
+
+const init = async (rootDir: string) => {
   logger.log("Setting up a new license-cop config file...");
 
   const configPath = join(rootDir, ".licenses.json");
