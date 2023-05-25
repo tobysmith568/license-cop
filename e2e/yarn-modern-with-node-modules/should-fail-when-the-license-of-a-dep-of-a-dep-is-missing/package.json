@@ -6,9 +6,6 @@
   "dependencies": {
     "@license-cop/uses-isc-test-package": "latest"
   },
-  "devDependencies": {
-    "license-cop": "portal:../../../dist/packages/license-cop"
-  },
   "peerDependencies": {
     "@swc/helpers": "*"
   }

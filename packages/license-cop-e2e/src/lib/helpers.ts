@@ -7,10 +7,14 @@ export const runTest = async (options: TestOptions) => {
 
   await installDependencies(packageManager, directory);
 
-  const testProcess = childProcess.spawn("npx", ["license-cop", ...args], {
-    cwd: join("./e2e", packageManager, directory),
-    shell: true
-  });
+  const testProcess = childProcess.spawn(
+    "npm",
+    ["exec", '"../../../dist/packages/license-cop"', ...args],
+    {
+      cwd: join("./e2e", packageManager, directory),
+      shell: true
+    }
+  );
 
   process.stdout.write("\nStart of test output\n");
 
@@ -66,11 +70,11 @@ const getInstallProgram = (packageManager: PackageManager): string => {
 const getInstallArgs = (packageManager: PackageManager): string[] => {
   switch (packageManager) {
     case "npm":
-      return ["i"];
+      return ["ci"];
     case "yarn-classic":
-      return ["install"];
+      return ["install", "--frozen-lockfile"];
     case "yarn-modern-with-node-modules":
-      return ["install"];
+      return ["install", "--immutable"];
     default: {
       const _exhaustiveCheck: never = packageManager;
       throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);

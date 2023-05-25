@@ -4,8 +4,5 @@
   "name": "should-fail-when-a-package-has-no-license",
   "dependencies": {
     "@license-cop/no-license-test-package": "0.0.1"
-  },
-  "devDependencies": {
-    "license-cop": "file:../../../dist/packages/license-cop"
   }
 }
