@@ -7,6 +7,8 @@ const enableLogging = () => {
 
 const enableVerboseLogging = () => {
   verboseEnabled = true;
+
+  verbose("Verbose logging enabled");
 };
 
 const log = (message: string) => {
