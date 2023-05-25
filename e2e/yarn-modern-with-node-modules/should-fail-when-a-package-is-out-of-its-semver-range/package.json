@@ -7,9 +7,6 @@
     "@license-cop/isc-test-package": "latest",
     "@license-cop/mit-test-package": "4.5.6"
   },
-  "devDependencies": {
-    "license-cop": "portal:../../../dist/packages/license-cop"
-  },
   "peerDependencies": {
     "@swc/helpers": "*"
   }

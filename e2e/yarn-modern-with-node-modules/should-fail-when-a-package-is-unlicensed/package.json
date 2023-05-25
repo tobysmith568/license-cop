@@ -6,9 +6,6 @@
   "dependencies": {
     "@license-cop/unlicensed-test-package": "0.0.1"
   },
-  "devDependencies": {
-    "license-cop": "portal:../../../dist/packages/license-cop"
-  },
   "peerDependencies": {
     "@swc/helpers": "*"
   }
