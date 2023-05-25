@@ -43,10 +43,10 @@ const runLicenseCop = async (
 
   if (result.noLicenses.size > 0 || result.forbiddenLicenses.size > 0) {
     reportFailure(result);
-    process.exit(1);
+    process.exitCode = 1;
+  } else {
+    reportSuccess(result);
   }
-
-  reportSuccess(result);
 };
 
 const getProductName = async (directory: string): Promise<string> => {
