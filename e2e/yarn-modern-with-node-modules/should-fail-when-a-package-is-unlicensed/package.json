@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@3.5.1",
+  "packageManager": "yarn@3.6.0",
   "name": "should-fail-when-a-package-is-unlicensed",
   "dependencies": {
     "@license-cop/unlicensed-test-package": "0.0.1"
