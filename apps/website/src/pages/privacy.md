@@ -379,7 +379,7 @@ The CCPA provides California residents with specific rights regarding their pers
 In order to exercise any of Your rights under the CCPA, and if You are a California resident, You can contact Us:
 
 - By visiting this page on our website: [https://tobysmith.uk/contact](https://tobysmith.uk/contact).
-- By sending us an email: [tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk)
+- By sending us an email: [contact@tobythe.dev](mailto:contact@tobythe.dev)
 
 Only You, or a person registered with the California Secretary of State that You authorize to act on Your behalf, may make a verifiable request related to Your personal information.
 
@@ -470,4 +470,4 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
 If you have any questions about this Privacy Policy, You can contact us:
 
 - By visiting this page on our website: [https://tobysmith.uk/contact](https://tobysmith.uk/contact)
-- By sending us an email: [tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk)
+- By sending us an email: [contact@tobythe.dev](mailto:contact@tobythe.dev)

@@ -81,4 +81,4 @@ For any other web browser, please visit your web browser's official web pages.
 If you have any questions about this Cookies Policy, You can contact us:
 
 - By visiting this page on our website: [https://tobysmith.uk/contact](https://tobysmith.uk/contact).
-- By sending us an email: [tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk).
+- By sending us an email: [contact@tobythe.dev](mailto:contact@tobythe.dev).

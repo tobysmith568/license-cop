@@ -91,7 +91,7 @@ You agree to maintain a complete and accurate copy of any Content in a location 
 
 We respect the intellectual property rights of others. It is Our policy to respond to any claim that Content posted on the Service infringes a copyright or other intellectual property infringement of any person.
 
-If You are a copyright owner, or authorized on behalf of one, and You believe that the copyrighted work has been copied in a way that constitutes copyright infringement that is taking place through the Service, You must submit Your notice in writing to the attention of our copyright agent via email ([tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk)) and include in Your notice a detailed description of the alleged infringement.
+If You are a copyright owner, or authorized on behalf of one, and You believe that the copyrighted work has been copied in a way that constitutes copyright infringement that is taking place through the Service, You must submit Your notice in writing to the attention of our copyright agent via email ([contact@tobythe.dev](mailto:contact@tobythe.dev)) and include in Your notice a detailed description of the alleged infringement.
 
 You may be held accountable for damages (including costs and attorneys' fees) for misrepresenting that any Content is infringing Your copyright.
 
@@ -106,7 +106,7 @@ You may submit a notification pursuant to the Digital Millennium Copyright Act (
 - A statement by You that You have a good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.
 - A statement by You, made under penalty of perjury, that the above information in Your notice is accurate and that You are the copyright owner or authorized to act on the copyright owner's behalf.
 
-You can contact our copyright agent via email ([tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk)). Upon receipt of a notification, the Company will take whatever action, in its sole discretion, it deems appropriate, including removal of the challenged content from the Service.
+You can contact our copyright agent via email ([contact@tobythe.dev](mailto:contact@tobythe.dev)). Upon receipt of a notification, the Company will take whatever action, in its sole discretion, it deems appropriate, including removal of the challenged content from the Service.
 
 ## Intellectual Property
 
@@ -187,4 +187,4 @@ By continuing to access or use Our Service after those revisions become effectiv
 If you have any questions about these Terms and Conditions, You can contact us:
 
 - By visiting this page on our website: [https://tobysmith.uk/contact](https://tobysmith.uk/contact)
-- By sending us an email: [tobysmith568@hotmail.co.uk](mailto:tobysmith568@hotmail.co.uk)
+- By sending us an email: [contact@tobythe.dev](mailto:contact@tobythe.dev)
