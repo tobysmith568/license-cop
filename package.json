@@ -49,7 +49,7 @@
     "unist-util-visit": "^4.1.2"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^10.0.3",
+    "@commander-js/extra-typings": "^11.0.0",
     "@npmcli/arborist": "^6.2.5",
     "@primer/octicons": "^19.0.0",
     "@swc/helpers": "^0.5.1",
