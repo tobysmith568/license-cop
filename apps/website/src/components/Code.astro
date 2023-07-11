@@ -1,5 +1,5 @@
 ---
-import { Code } from "astro/components";
+import { Code as AstroCode } from "astro/components";
 import type { Lang } from "shiki";
 
 interface Props {
@@ -10,4 +10,4 @@ interface Props {
 const { code, lang } = Astro.props;
 ---
 
-<Code lang={lang} code={code} theme="light-plus" />
+<AstroCode lang={lang} code={code} theme="light-plus" />
