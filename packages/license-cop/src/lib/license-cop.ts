@@ -45,7 +45,7 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLi
   const parseNode = async (node: Node | Link) => {
     logger.verbose(`Parsing node: ${node.name}`);
 
-    const isDevDependency = node.dev || node.devOptional;
+    const isDevDependency = node.dev;
 
     if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
       return;
