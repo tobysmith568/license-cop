@@ -16,7 +16,7 @@ npm install license-cop --save-dev
 Make a config file
 
 ```bash
-npx license-cop --init
+npx license-cop -- --init
 ```
 
 Run license-cop
