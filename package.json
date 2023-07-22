@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@astrojs/mdx": "^0.19.0",
-    "@astrojs/sitemap": "^1.2.2",
+    "@astrojs/sitemap": "^2.0.0",
     "@nrwl/eslint-plugin-nx": "15.8.9",
     "@nrwl/jest": "15.8.9",
     "@nrwl/js": "15.8.9",
