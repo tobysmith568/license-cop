@@ -16,8 +16,7 @@
     "preview": {
       "dependsOn": [
         {
-          "target": "build",
-          "projects": "self"
+          "target": "build"
         }
       ],
       "executor": "@nxtensions/astro:preview",

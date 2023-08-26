@@ -1,4 +1,4 @@
-import devkit from "@nrwl/devkit";
+import devkit from "@nx/devkit";
 import chalk from "chalk";
 import { execSync } from "child_process";
 

@@ -1,4 +1,4 @@
-import devkit from "@nrwl/devkit";
+import devkit from "@nx/devkit";
 import chalk from "chalk";
 import { copyFile, mkdir, stat } from "fs/promises";
 import { basename, join } from "path";
@@ -29,11 +29,7 @@ invariant(
   `Could not find project "${name}" in the workspace. Is the project.json configured correctly?`
 );
 
-const outputDir = project.data?.targets?.build?.options?.outputPath;
-invariant(
-  outputDir,
-  `Could not find "build.options.outputPath" of project "${name}". Is project.json configured correctly?`
-);
+const outputDir = join(devkit.workspaceRoot, "dist", project.data.root);
 
 const outputDirExists = await dirExists(outputDir);
 if (!outputDirExists) {
