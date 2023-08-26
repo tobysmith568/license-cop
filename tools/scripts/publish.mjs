@@ -1,4 +1,4 @@
-import devkit from "@nrwl/devkit";
+import devkit from "@nx/devkit";
 import chalk from "chalk";
 import { execSync } from "child_process";
 import { getLatestTag } from "npm-publish-latest-tag";
@@ -23,13 +23,9 @@ invariant(
   `Could not find project "${name}" in the workspace. Is the project.json configured correctly?`
 );
 
-const outputPath = project.data?.targets?.build?.options?.outputPath;
-invariant(
-  outputPath,
-  `Could not find "build.options.outputPath" of project "${name}". Is project.json configured correctly?`
-);
+const outputDir = join(devkit.workspaceRoot, "dist", project.data.root);
 
-process.chdir(outputPath);
+process.chdir(outputDir);
 
 const tag = await getLatestTag("./package.json");
 

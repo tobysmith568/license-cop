@@ -12,19 +12,19 @@
           "node tools/scripts/copy-asset.mjs permissive packages/permissive/README.md",
           "node tools/scripts/copy-asset.mjs permissive packages/permissive/package.json",
           "node tools/scripts/copy-asset.mjs permissive LICENSE.md"
-        ],
-        "outputPath": "dist/packages/permissive"
-      }
+        ]
+      },
+      "outputs": ["{workspaceRoot}/dist/packages/permissive"]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/permissive/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/permissive/jest.config.ts",
