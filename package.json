@@ -19,7 +19,7 @@
     "@swc/cli": "0.1.62",
     "@swc/core": "^1.2.173",
     "@swc/jest": "0.2.29",
-    "@tobysmith568/eslint-config": "^1.0.2",
+    "@tobysmith568/eslint-config": "^1.0.4",
     "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^29.4.0",
     "@types/node": "18.17.11",
