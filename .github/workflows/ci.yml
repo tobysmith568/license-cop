@@ -109,6 +109,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  codeql:
+    name: CodeQL
+    uses: ./.github/workflows/codeql.yml
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
   e2e:
     name: E2E Test
 
