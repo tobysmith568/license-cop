@@ -8,7 +8,7 @@
     "postinstall": "node ./tools/scripts/patch-nx-cli.js"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^0.19.0",
+    "@astrojs/mdx": "^1.0.0",
     "@astrojs/sitemap": "^2.0.0",
     "@nx/eslint-plugin": "16.7.4",
     "@nx/jest": "16.7.4",
