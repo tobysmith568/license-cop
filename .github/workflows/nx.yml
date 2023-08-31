@@ -1,0 +1,87 @@
+name: Migrate NX
+
+on:
+  schedule:
+    - cron: 57 17 * * 3
+  workflow_call:
+
+env:
+  NODE_VERSION: 18
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  migrate:
+    name: Migrate NX
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get migrations file
+        run: npx nx migrate latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npx nx migrate --run-migrations
+
+      - name: Run Prettier
+        run: npx prettier --write .
+
+      - name: Remove migrations file
+        run: Remove-Item "migrations.json"
+
+      - name: Detect uncommitted changes
+        id: shouldCommit
+        run: |
+          $shouldCommit = (git status --porcelain).Length -ne 0
+          "{shouldCommit}=$shouldCommit" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Create branch name
+        if: ${{ steps.shouldCommit.outputs.shouldCommit == 'True' }}
+        id: branchName
+        run: |
+          $branchName = "actions/migrate-nx/${{ github.run_attempt }}"
+          "{branchName}=$branchName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Create branch
+        if: ${{ steps.shouldCommit.outputs.shouldCommit == 'True' }}
+        run: |
+          git checkout -b ${{ steps.branchName.outputs.branchName }}
+
+      - name: Commit changes
+        if: ${{ steps.shouldCommit.outputs.shouldCommit == 'True' }}
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Migrate NX"
+          git push
+
+      - name: Create pull request
+        if: ${{ steps.shouldCommit.outputs.shouldCommit == 'True' }}
+        run: |
+          $prTitle = "Migrate NX"
+          $prBody = "This PR was created by an automated workflow to migrate NX to the latest version."
+          $prHead = "${{ steps.branchName.outputs.branchName }}"
+          $prBase = "main"
+
+          gh pr create --title $prTitle --body $prBody --head $prHead --base $prBase --repo $env:GITHUB_REPOSITORY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
