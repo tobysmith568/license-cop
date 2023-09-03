@@ -28,10 +28,9 @@ jobs:
       version: ${{ inputs.version }}
       branch_name: ${{ needs.prepare.outputs.branch_name }}
     secrets: inherit
-
-  merge:
-    name: Merge Nx Branch
-    needs:
-      - ci
-    if: ${{
-    uses: tobysmith568/actions/.github/workflows/nx-merge.yml@main
+#  merge:
+#    name: Merge Nx Branch
+#    needs:
+#      - ci
+#    if: ${{
+#    uses: tobysmith568/actions/.github/workflows/nx-merge.yml@main
