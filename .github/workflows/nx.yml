@@ -17,7 +17,7 @@ jobs:
     name: Prepare Nx Branch
     uses: tobysmith568/actions/.github/workflows/nx-preparation.yml@main
     with:
-      node_version: ${{ env.NODE_VERSION }}
+      node_version: $env:NODE_VERSION
 
   ci:
     name: Run CI
