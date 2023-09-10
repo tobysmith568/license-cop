@@ -6,6 +6,10 @@ Yet another license checker tool for your dependencies; focused on simplicity.
   <img alt="npm" src="https://img.shields.io/npm/v/license-cop?logo=npm">
 </a>
 
+<a href="https://app.codecov.io/gh/tobysmith568/license-cop">
+  <img alt="Codecov" src="https://img.shields.io/codecov/c/github/tobysmith568/license-cop?logo=codecov&label=Coverage">
+</a>
+
 <a href="https://license-cop.js.org">
   <img alt="Protected by: License-Cop" src="https://license-cop.js.org/shield.svg">
 </a>
