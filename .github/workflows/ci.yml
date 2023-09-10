@@ -119,14 +119,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  codeql:
-    name: CodeQL
-    uses: ./.github/workflows/codeql.yml
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
   licenses:
     name: Check Licenses
 
