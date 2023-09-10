@@ -6,14 +6,21 @@ import { readPackageJson } from "../../package-json";
 import { createCommandWithGlobalOptions } from "../create-command";
 import { reportFailure } from "../report-failure";
 import { reportSuccess } from "../report-success";
+import { initCommandAction } from "./init";
 
 export const mainCommand = createCommandWithGlobalOptions()
   .name("license-cop")
   .description("Yet another license checker tool for your dependencies; focused on simplicity")
   .option("-D,--include-dev", "Include dev dependencies", false)
   .option("--dev-only", "Only check dev dependencies", false)
+  .option("--init", "An alias for 'license-cop init'", false)
   .action(async options => {
     const { directory, includeDev, devOnly } = options;
+
+    if (options.init) {
+      await initCommandAction(directory);
+      return;
+    }
 
     await runLicenseCop(directory, includeDev, devOnly);
   });
