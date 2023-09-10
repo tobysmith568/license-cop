@@ -11,15 +11,15 @@ const defaultConfig = `{
 `;
 
 export const initCommand = createCommandWithGlobalOptions()
-  .name("--init")
+  .name("init")
   .description("Create a new license-cop configuration file")
   .action(async options => {
     const { directory } = options;
 
-    await init(directory);
+    await initCommandAction(directory);
   });
 
-const init = async (rootDir: string) => {
+export const initCommandAction = async (rootDir: string) => {
   logger.log("Setting up a new license-cop config file...");
 
   const configPath = join(rootDir, ".licenses.json");
