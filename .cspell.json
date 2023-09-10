@@ -27,7 +27,8 @@
     "unist-util-visit",
     "hastscript",
     "shiki",
-    "Fira"
+    "Fira",
+    "Codecov"
   ],
   "import": [],
   "ignoreRegExpList": [],

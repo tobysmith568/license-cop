@@ -103,6 +103,8 @@ const unhappyPathTestCases: string[] = [
   "(OR MIT)",
   "(AND MIT)",
   "(WITH MIT)",
+  "(",
+  ")",
   "()",
   "(MIT OR ISC",
   "MIT OR ISC)",

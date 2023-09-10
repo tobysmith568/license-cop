@@ -4,7 +4,10 @@ import { Token, Parenthesis, Operator } from "./types/token";
 export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpression => {
   let index = 0;
 
+  console.log({ tokens });
+
   const throwNotValid = () => {
+    console.trace();
     throw new Error(`'${originalInput}' is not a valid SPDX expression`);
   };
 
@@ -13,6 +16,7 @@ export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpress
   const getCurrentToken = (): Token | null => (hasMore() ? tokens[index] : null);
 
   const moveToNextToken = () => {
+    // istanbul ignore next
     if (!hasMore()) {
       throwNotValid();
     }
