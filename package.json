@@ -29,7 +29,7 @@
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "astro": "^2.0.0",
-    "astro-webmanifest": "^0.6.0",
+    "astro-webmanifest": "^1.0.0",
     "cspell": "^7.0.0",
     "eslint": "8.49.0",
     "eslint-config-prettier": "8.10.0",
