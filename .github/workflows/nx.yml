@@ -27,6 +27,7 @@ jobs:
     name: Run CI
     needs:
       - prepare
+    if: ${{ needs.prepare.outputs.should_continue }}
     uses: ./.github/workflows/ci.yml
     with:
       version: ${{ inputs.version }}
