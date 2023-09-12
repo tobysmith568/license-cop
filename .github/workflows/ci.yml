@@ -19,6 +19,11 @@ on:
         description: The name of the branch
         required: true
         type: string
+      continue_on_error:
+        description: Continue on error
+        default: false
+        required: false
+        type: boolean
 
 env:
   NODE_VERSION: 18
@@ -32,6 +37,8 @@ jobs:
     name: Lint
 
     runs-on: ubuntu-latest
+
+    continue-on-error: ${{ inputs.continue_on_error }}
 
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
@@ -60,6 +67,8 @@ jobs:
     name: Build
 
     runs-on: ubuntu-latest
+
+    continue-on-error: ${{ inputs.continue_on_error }}
 
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
@@ -97,6 +106,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    continue-on-error: ${{ inputs.continue_on_error }}
+
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
@@ -126,6 +137,8 @@ jobs:
       - build
 
     runs-on: ubuntu-latest
+
+    continue-on-error: ${{ inputs.continue_on_error }}
 
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
@@ -157,6 +170,8 @@ jobs:
       - build
 
     runs-on: ubuntu-latest
+
+    continue-on-error: ${{ inputs.continue_on_error }}
 
     steps:
       - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
