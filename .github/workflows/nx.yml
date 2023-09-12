@@ -29,7 +29,6 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       branch_name: ${{ needs.prepare.outputs.branch_name }}-broken # Broken the branch name to help the development of the nx shared steps
-      continue_on_error: true
     secrets: inherit
 
   pr:
