@@ -19,6 +19,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       version: ${{ inputs.version }}
+      branch_name: main
     secrets: inherit
 
   publish:
