@@ -28,12 +28,25 @@ jobs:
     if: ${{ needs.prepare.outputs.should_continue }}
     uses: ./.github/workflows/ci.yml
     with:
-      version: ${{ inputs.version }}
-      branch_name: ${{ needs.prepare.outputs.branch_name }}
+      branch_name: ${{ needs.prepare.outputs.branch_name }}-broken # Broken the branch name to help the development of the nx shared steps
     secrets: inherit
-#  merge:
-#    name: Merge Nx Branch
-#    needs:
-#      - ci
-#    if: ${{
-#    uses: tobysmith568/actions/.github/workflows/nx-merge.yml@main
+
+  pr:
+    name: Create pull request
+    needs:
+      - ci
+    if: ${{ always() && needs.ci.result == 'failure' }}
+    uses: tobysmith568/actions/.github/workflows/nx-pr.yml@main
+    with:
+      node_version: 18
+    permissions:
+      pull-requests: write
+
+  merge:
+    name: Merge Nx Branch
+    needs:
+      - ci
+    if: ${{ always() && needs.ci.result == 'success' }}
+    uses: tobysmith568/actions/.github/workflows/nx-merge.yml@main
+    permissions:
+      contents: write
