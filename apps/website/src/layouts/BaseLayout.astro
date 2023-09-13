@@ -50,10 +50,20 @@ const { title, metaDescription, noIndex, navbarColor } = Astro.props;
     font-family: system-ui, sans-serif;
   }
 
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   html,
   body {
     margin: 0;
     padding: 0;
+  }
+
+  main {
+    flex: 1;
   }
 
   code {
