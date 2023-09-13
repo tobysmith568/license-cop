@@ -1,6 +1,7 @@
 import devkit from "@nx/devkit";
 import chalk from "chalk";
 import { execSync } from "child_process";
+import { join } from "path";
 
 const { createProjectGraphAsync, readCachedProjectGraph } = devkit;
 
