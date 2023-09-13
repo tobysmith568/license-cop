@@ -20,7 +20,7 @@ describe("Header", () => {
     pageObject.header().containsAPermissiveLink();
   });
 
-  it("should have a link to the shields page", () => {
+  it("should have a link to the shield page", () => {
     pageObject.header().containsAShieldLink();
   });
 
