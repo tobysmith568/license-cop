@@ -29,4 +29,4 @@ process.chdir(outputDir);
 
 const tag = await getLatestTag("./package.json");
 
-execSync(`npm publish --access public --tag ${tag}`);
+execSync(`npm publish --access public --tag ${tag} --provenance`);
