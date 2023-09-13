@@ -29,6 +29,9 @@
     },
     "check": {
       "inputs": ["production", "^production"]
+    },
+    "e2e": {
+      "inputs": ["default", "^production"]
     }
   },
   "workspaceLayout": {
