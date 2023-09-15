@@ -51,10 +51,36 @@ jobs:
         with:
           path: ./dist/apps/website
 
+  e2e:
+    name: E2E Test Website
+
+    needs:
+      - build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
+        with:
+          ref: ${{ inputs.branch_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run E2E Tests
+        run: npx nx run website-e2e:e2e:ci
+
   deploy:
     name: Deploy Website
 
-    needs: build
+    needs:
+      - e2e
 
     runs-on: ubuntu-latest
 

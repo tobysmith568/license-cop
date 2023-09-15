@@ -16,8 +16,7 @@
       },
       "configurations": {
         "ci": {
-          "watch": false,
-          "skipServe": true
+          "watch": false
         }
       }
     },
