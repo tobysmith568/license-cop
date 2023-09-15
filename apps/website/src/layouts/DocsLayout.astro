@@ -1,15 +1,16 @@
 ---
+import type { MarkdownLayoutProps } from "astro";
 import Footer from "../components/Footer.astro";
 import BaseLayout from "./BaseLayout.astro";
 
-interface Props {
+interface LayoutProps {
   metaDescription: string;
   noIndex?: boolean;
 }
 
-const noIndex = Astro.props.frontmatter?.noIndex ?? Astro.props.noIndex ?? false;
-const metaDescription =
-  Astro.props.frontmatter?.metaDescription ?? Astro.props.metaDescription ?? null;
+type Props = MarkdownLayoutProps<LayoutProps> & LayoutProps;
+
+const { noIndex, metaDescription } = Astro.props.frontmatter || Astro.props;
 ---
 
 <BaseLayout

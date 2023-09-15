@@ -4,7 +4,7 @@ import FooterItem from "./FooterItem.astro";
 const year = new Date().getFullYear();
 ---
 
-<div class="footer">
+<footer>
   <div class="menu">
     <div class="columns">
       <div class="column left">
@@ -12,6 +12,7 @@ const year = new Date().getFullYear();
         <FooterItem link="/" text="Home" />
         <FooterItem link="/docs" text="Docs" />
         <FooterItem link="/permissive" text="@license-cop/permissive" />
+        <FooterItem link="/shield" text="Shield" />
       </div>
 
       <div class="column">
@@ -37,7 +38,7 @@ const year = new Date().getFullYear();
       and Contributors
     </p>
   </div>
-</div>
+</footer>
 
 <style lang="scss">
   @use "../styles/vars.scss" as *;
