@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@3.6.3",
+  "packageManager": "yarn@3.6.4",
   "name": "should-fail-when-a-package-has-no-license",
   "dependencies": {
     "@license-cop/no-license-test-package": "0.0.1"
