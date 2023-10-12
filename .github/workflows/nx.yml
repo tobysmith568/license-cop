@@ -1,8 +1,9 @@
 name: Migrate NX
 
 on:
-  schedule:
-    - cron: 57 17 * * 3
+  # Removed while this is in development
+  #  schedule:
+  #    - cron: 57 17 * * 3
   workflow_dispatch:
 
 env:
