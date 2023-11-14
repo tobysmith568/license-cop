@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@1.22.21",
   "name": "should-fail-when-the-license-of-a-dep-of-a-dep-is-missing",
   "dependencies": {
     "@license-cop/uses-isc-test-package": "^0.0.1"
