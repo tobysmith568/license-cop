@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@1.22.21",
   "name": "should-fail-when-a-package-is-out-of-its-semver-range",
   "dependencies": {
     "@license-cop/isc-test-package": "latest",
