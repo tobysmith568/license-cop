@@ -5,28 +5,24 @@
   "sourceRoot": "apps/website/src",
   "targets": {
     "build": {
+      "command": "npx astro build",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
-      "executor": "@nxtensions/astro:build",
-      "options": {}
+      "options": {
+        "cwd": "apps/website"
+      }
     },
     "dev": {
-      "executor": "@nxtensions/astro:dev",
-      "options": {}
+      "command": "npx astro dev",
+      "options": {
+        "cwd": "apps/website"
+      }
     },
-    "preview": {
-      "dependsOn": [
-        {
-          "target": "build"
-        }
-      ],
-      "executor": "@nxtensions/astro:preview",
-      "options": {}
-    },
-    "check": {
-      "executor": "@nxtensions/astro:check"
-    },
-    "sync": {
-      "executor": "@nxtensions/astro:sync"
+    "serve": {
+      "command": "npx astro preview",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "apps/website"
+      }
     }
   },
   "tags": []
