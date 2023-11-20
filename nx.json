@@ -1,5 +1,5 @@
 {
-  "plugins": ["@nxtensions/astro"],
+  "plugins": [],
   "npmScope": "license-cop",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
