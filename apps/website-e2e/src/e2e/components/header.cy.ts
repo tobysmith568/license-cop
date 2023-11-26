@@ -1,34 +1,60 @@
 import { IndexPageObject } from "../../support/page-objects/index.po";
+import { HeaderComponent } from "../../support/page-objects/components/header";
+import { DocsPageObject } from "../../support/page-objects/docs.po";
+import { PermissivePageObject } from "../../support/page-objects/permissive.po";
+import { ShieldPageObject } from "../../support/page-objects/shield.po";
+import { TermsPageObject } from "../../support/page-objects/terms.po";
+import { PrivacyPageObject } from "../../support/page-objects/privacy.po";
+import { CookiesPageObject } from "../../support/page-objects/cookies.po";
+import { ThirdPartyPageObject } from "../../support/page-objects/third-party.po";
+
+type PageWithHeader = {
+  header(): HeaderComponent;
+};
+
+type Fixture = [string, PageWithHeader];
 
 describe("Header", () => {
-  let pageObject: IndexPageObject;
+  const fixtures: Fixture[] = [
+    ["/", new IndexPageObject()],
+    ["/docs", new DocsPageObject()],
+    ["/permissive", new PermissivePageObject()],
+    ["/shield", new ShieldPageObject()],
+    ["/terms", new TermsPageObject()],
+    ["/privacy", new PrivacyPageObject()],
+    ["/cookies", new CookiesPageObject()],
+    ["/third-party", new ThirdPartyPageObject()]
+  ];
 
-  beforeEach(() => {
-    cy.visit("/");
-    pageObject = new IndexPageObject();
-  });
+  fixtures.forEach(([path, pageWithHeaderObject]) =>
+    describe(`on the ${path} page`, () => {
+      beforeEach(() => {
+        cy.visit(path);
+      });
 
-  it("should have a link to the index", () => {
-    pageObject.header().containsAnIndexLink();
-  });
+      it("should have a link to the index", () => {
+        pageWithHeaderObject.header().containsAnIndexLink();
+      });
 
-  it("should have a link to the docs", () => {
-    pageObject.header().containsADocsLink();
-  });
+      it("should have a link to the docs", () => {
+        pageWithHeaderObject.header().containsADocsLink();
+      });
 
-  it("should have a link to the permissive package docs", () => {
-    pageObject.header().containsAPermissiveLink();
-  });
+      it("should have a link to the permissive package docs", () => {
+        pageWithHeaderObject.header().containsAPermissiveLink();
+      });
 
-  it("should have a link to the shield page", () => {
-    pageObject.header().containsAShieldLink();
-  });
+      it("should have a link to the shield page", () => {
+        pageWithHeaderObject.header().containsAShieldLink();
+      });
 
-  it("should have a link to the GitHub repository", () => {
-    pageObject.header().containsALinkToGitHub();
-  });
+      it("should have a link to the GitHub repository", () => {
+        pageWithHeaderObject.header().containsALinkToGitHub();
+      });
 
-  it("should have a link to the npm page", () => {
-    pageObject.header().containsALinkToNpm();
-  });
+      it("should have a link to the npm page", () => {
+        pageWithHeaderObject.header().containsALinkToNpm();
+      });
+    })
+  );
 });

@@ -1,8 +1,10 @@
 ---
 import { getProjectLicenses } from "generate-license-file";
 import DocsLayout from "../layouts/DocsLayout.astro";
+import {join} from "path";
 
-const licenses = await getProjectLicenses("./package.json");
+const packageJsonPath = join(process.cwd(),  "../../package.json");
+const licenses = await getProjectLicenses(packageJsonPath);
 
 const getPackageUrl = (packageNameAndVersion: string) => {
   const indexOfLastAt = packageNameAndVersion.lastIndexOf("@");

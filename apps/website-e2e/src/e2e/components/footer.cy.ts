@@ -1,62 +1,89 @@
 import { IndexPageObject } from "../../support/page-objects/index.po";
+import { DocsPageObject } from "../../support/page-objects/docs.po";
+import { PermissivePageObject } from "../../support/page-objects/permissive.po";
+import { ShieldPageObject } from "../../support/page-objects/shield.po";
+import { TermsPageObject } from "../../support/page-objects/terms.po";
+import { PrivacyPageObject } from "../../support/page-objects/privacy.po";
+import { CookiesPageObject } from "../../support/page-objects/cookies.po";
+import { ThirdPartyPageObject } from "../../support/page-objects/third-party.po";
+import { FooterComponent } from "../../support/page-objects/components/footer";
+
+type PageWithFooter = {
+  footer(): FooterComponent;
+};
+
+type Fixture = [string, PageWithFooter];
 
 describe("Footer", () => {
-  let pageObject: IndexPageObject;
+  const fixtures: Fixture[] = [
+    ["/", new IndexPageObject()],
+    ["/docs", new DocsPageObject()],
+    ["/permissive", new PermissivePageObject()],
+    ["/shield", new ShieldPageObject()],
+    ["/terms", new TermsPageObject()],
+    ["/privacy", new PrivacyPageObject()],
+    ["/cookies", new CookiesPageObject()],
+    ["/third-party", new ThirdPartyPageObject()]
+  ];
 
-  beforeEach(() => {
-    cy.visit("/");
-    pageObject = new IndexPageObject();
-  });
+  fixtures.forEach(([path, pageWithFooterObject]) =>
+    describe(`on the ${path} page`, () => {
+      beforeEach(() => {
+        cy.visit(path);
+        pageWithFooterObject = new IndexPageObject();
+      });
 
-  describe("first column", () => {
-    it("should have a link to the index", () => {
-      pageObject.footer().containsAnIndexLink();
-    });
+      describe("first column", () => {
+        it("should have a link to the index", () => {
+          pageWithFooterObject.footer().containsAnIndexLink();
+        });
 
-    it("should have a link to the docs", () => {
-      pageObject.footer().containsADocsLink();
-    });
+        it("should have a link to the docs", () => {
+          pageWithFooterObject.footer().containsADocsLink();
+        });
 
-    it("should have a link to the permissive package docs", () => {
-      pageObject.footer().containsAPermissiveLink();
-    });
+        it("should have a link to the permissive package docs", () => {
+          pageWithFooterObject.footer().containsAPermissiveLink();
+        });
 
-    it("should have a link to the shield page", () => {
-      pageObject.footer().containsAShieldLink();
-    });
-  });
+        it("should have a link to the shield page", () => {
+          pageWithFooterObject.footer().containsAShieldLink();
+        });
+      });
 
-  describe("second column", () => {
-    it("should have a link to the GitHub repository", () => {
-      pageObject.footer().containsALinkToGitHub();
-    });
+      describe("second column", () => {
+        it("should have a link to the GitHub repository", () => {
+          pageWithFooterObject.footer().containsALinkToGitHub();
+        });
 
-    it("should have a link to the npm page", () => {
-      pageObject.footer().containsALinkToNpm();
-    });
-  });
+        it("should have a link to the npm page", () => {
+          pageWithFooterObject.footer().containsALinkToNpm();
+        });
+      });
 
-  describe("third column", () => {
-    it("should have a link to the terms and conditions", () => {
-      pageObject.footer().containsALinkToTheTermsAndConditions();
-    });
+      describe("third column", () => {
+        it("should have a link to the terms and conditions", () => {
+          pageWithFooterObject.footer().containsALinkToTheTermsAndConditions();
+        });
 
-    it("should have a link to the privacy policy", () => {
-      pageObject.footer().containsALinkToThePrivacyPolicy();
-    });
+        it("should have a link to the privacy policy", () => {
+          pageWithFooterObject.footer().containsALinkToThePrivacyPolicy();
+        });
 
-    it("should have a link to the cookies policy", () => {
-      pageObject.footer().containsALinkToTheCookiesPolicy();
-    });
+        it("should have a link to the cookies policy", () => {
+          pageWithFooterObject.footer().containsALinkToTheCookiesPolicy();
+        });
 
-    it("should have a link to the third-party content notices", () => {
-      pageObject.footer().containsALinkToTheThirdPartyContentNotices();
-    });
-  });
+        it("should have a link to the third-party content notices", () => {
+          pageWithFooterObject.footer().containsALinkToTheThirdPartyContentNotices();
+        });
+      });
 
-  describe("final section", () => {
-    it("should have a link to tobysmith.uk", () => {
-      pageObject.footer().containsALinkToTobySmithDotUk();
-    });
-  });
+      describe("final section", () => {
+        it("should have a link to tobysmith.uk", () => {
+          pageWithFooterObject.footer().containsALinkToTobySmithDotUk();
+        });
+      });
+    })
+  );
 });
