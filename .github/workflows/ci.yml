@@ -210,4 +210,4 @@ jobs:
           path: ./dist
 
       - name: Run E2E Tests
-        run: npx start-server-and-test 'nx run website:serve' http://localhost:3000 'nx run website-e2e:e2e:ci'
+        run: npx start-server-and-test 'nx run website:serve' http://localhost:4321 'nx run website-e2e:e2e:ci'
