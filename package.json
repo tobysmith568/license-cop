@@ -59,7 +59,7 @@
     "axios": "^1.6.0",
     "commander": "^11.0.0",
     "compare-versions": "^6.0.0-rc.1",
-    "cosmiconfig": "^8.1.3",
+    "cosmiconfig": "^9.0.0",
     "deepmerge": "^4.3.1",
     "git-filesystem": "^0.0.2",
     "json5": "^2.2.3",
