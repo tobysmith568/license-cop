@@ -35,7 +35,7 @@ for (const moduleName of moduleNames) {
 const json5Loader: Loader = (_filepath, content) => Promise.resolve(json5Parse(content));
 
 export const findConfig = async (rootDir: string): Promise<unknown> => {
-  const options: CosmiconfigOptions = {
+  const options: Partial<CosmiconfigOptions> = {
     stopDir: rootDir,
     searchPlaces,
     loaders: {
