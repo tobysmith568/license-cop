@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 18
+  NODE_VERSION: 20
 
 defaults:
   run:
@@ -18,7 +18,7 @@ jobs:
     name: Prepare Nx Branch
     uses: tobysmith568/actions/.github/workflows/nx-preparation.yml@main
     with:
-      node_version: 18
+      node_version: 20
     permissions:
       contents: write
 
@@ -39,7 +39,7 @@ jobs:
     if: ${{ always() && needs.ci.result == 'failure' }}
     uses: tobysmith568/actions/.github/workflows/nx-pr.yml@main
     with:
-      node_version: 18
+      node_version: 20
     permissions:
       pull-requests: write
 

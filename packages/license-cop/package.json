@@ -1,6 +1,6 @@
 {
   "name": "license-cop",
-  "version": "0.0.0",
+  "version": "*",
   "type": "commonjs",
   "bin": {
     "license-cop": "./src/bin/license-cop"
@@ -29,5 +29,17 @@
     "spdx",
     "dependencies",
     "oss"
-  ]
+  ],
+  "dependencies": {
+    "@commander-js/extra-typings": "^11.0.0",
+    "@npmcli/arborist": "^7.0.0",
+    "@swc/helpers": "^0.5.3",
+    "axios": "^1.6.0",
+    "compare-versions": "^6.0.0-rc.1",
+    "cosmiconfig": "^9.0.0",
+    "deepmerge": "^4.3.1",
+    "git-filesystem": "^0.0.2",
+    "json5": "^2.2.3",
+    "zod": "^3.22.3"
+  }
 }

@@ -11,8 +11,7 @@
         "outputPath": "dist/packages/license-cop",
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
-        "assets": ["packages/license-cop/src/bin/**", "README.md", "LICENSE.md"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "assets": ["packages/license-cop/src/bin/**", "README.md", "LICENSE.md"]
       },
       "buildableProjectDepsInPackageJsonType": "dependencies"
     },
@@ -23,11 +22,8 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/license-cop/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -35,12 +31,6 @@
       "options": {
         "jestConfig": "packages/license-cop/jest.config.ts",
         "passWithNoTests": false
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
       }
     },
     "version": {
