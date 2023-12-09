@@ -1,5 +1,5 @@
 import { Identifier, SpdxExpression } from "./types/spdx-expression";
-import { Token, Parenthesis, Operator } from "./types/token";
+import { Operator, Parenthesis, Token } from "./types/token";
 
 export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpression => {
   let index = 0;

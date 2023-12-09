@@ -1,12 +1,12 @@
-import { IndexPageObject } from "../../support/page-objects/index.po";
+import { FooterComponent } from "../../support/page-objects/components/footer";
+import { CookiesPageObject } from "../../support/page-objects/cookies.po";
 import { DocsPageObject } from "../../support/page-objects/docs.po";
+import { IndexPageObject } from "../../support/page-objects/index.po";
 import { PermissivePageObject } from "../../support/page-objects/permissive.po";
+import { PrivacyPageObject } from "../../support/page-objects/privacy.po";
 import { ShieldPageObject } from "../../support/page-objects/shield.po";
 import { TermsPageObject } from "../../support/page-objects/terms.po";
-import { PrivacyPageObject } from "../../support/page-objects/privacy.po";
-import { CookiesPageObject } from "../../support/page-objects/cookies.po";
 import { ThirdPartyPageObject } from "../../support/page-objects/third-party.po";
-import { FooterComponent } from "../../support/page-objects/components/footer";
 
 type PageWithFooter = {
   footer(): FooterComponent;
