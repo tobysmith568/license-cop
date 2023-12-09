@@ -1,5 +1,5 @@
-import JSON5 from "json5";
 import { readFile } from "fs/promises";
+import JSON5 from "json5";
 import { join } from "path";
 
 const filePath = join(__dirname, "../", ".licenses.jsonc");

@@ -1,6 +1,6 @@
-import { visit } from "unist-util-visit";
-import { h, s } from "hastscript";
 import octicons from "@primer/octicons";
+import { h } from "hastscript";
+import { visit } from "unist-util-visit";
 
 const admonitionTypes = {
   important: { cssClass: "admonition-important", iconClass: "alert", title: "Important" },

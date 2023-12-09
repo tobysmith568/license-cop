@@ -1,11 +1,11 @@
-import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import directive from "remark-directive";
 import webmanifest, { WebmanifestOptions } from "astro-webmanifest";
-import admonitionsPlugin from "./plugins/admonitions.mjs";
-import { fileURLToPath } from "url";
+import { defineConfig } from "astro/config";
 import { dirname } from "path";
+import directive from "remark-directive";
+import { fileURLToPath } from "url";
+import admonitionsPlugin from "./plugins/admonitions.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

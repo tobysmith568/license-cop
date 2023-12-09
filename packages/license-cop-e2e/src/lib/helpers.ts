@@ -1,6 +1,6 @@
-import { PackageManager, TestOptions } from "./test-options";
 import * as childProcess from "child_process";
 import { join } from "path";
+import { PackageManager, TestOptions } from "./test-options";
 
 export const runTest = async (options: TestOptions) => {
   const { packageManager, directory, args, expectedExitCode } = options;

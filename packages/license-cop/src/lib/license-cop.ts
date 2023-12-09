@@ -1,12 +1,9 @@
-import { Node, Link } from "@npmcli/arborist";
 import * as Arborist from "@npmcli/arborist";
+import { Link, Node } from "@npmcli/arborist";
 import { isAbsolute, join } from "path";
 import logger from "./logger";
 import { getLicenseExpression, readPackageJson } from "./package-json";
 import { isAllowedPackage } from "./package-rules";
-import { calculateIssues } from "./spdx/calculate-issues";
-import { joinStringArray } from "./utils/join-string-array";
-import { parseLicenseExpression } from "./spdx/parse-license-expression";
 import {
   AllowedPackage,
   CheckLicensesResult,
@@ -14,6 +11,9 @@ import {
   LicensedPackage,
   NoLicenseResult
 } from "./result";
+import { calculateIssues } from "./spdx/calculate-issues";
+import { parseLicenseExpression } from "./spdx/parse-license-expression";
+import { joinStringArray } from "./utils/join-string-array";
 
 export interface LicenseCopOptions {
   allowedLicenses: string[];

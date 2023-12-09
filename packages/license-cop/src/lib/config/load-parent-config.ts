@@ -1,7 +1,7 @@
-import { githubResolution } from "./parent-resolutions/github";
-import { nodeModuleExists, npmResolution } from "./parent-resolutions/npm";
-import { httpResolution } from "./parent-resolutions/http";
 import { ConfigError } from "./config-error";
+import { githubResolution } from "./parent-resolutions/github";
+import { httpResolution } from "./parent-resolutions/http";
+import { nodeModuleExists, npmResolution } from "./parent-resolutions/npm";
 
 export const loadParentConfig = async (
   parentConfigPath: string,

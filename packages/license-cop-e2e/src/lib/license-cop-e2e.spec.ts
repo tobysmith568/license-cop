@@ -1,5 +1,5 @@
-import { PackageManager, TestOptions } from "./test-options";
 import { runTest } from "./helpers";
+import { PackageManager, TestOptions } from "./test-options";
 
 describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-modules"])(
   "%s",

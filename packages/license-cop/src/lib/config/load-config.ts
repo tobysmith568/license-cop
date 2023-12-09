@@ -1,8 +1,8 @@
-import { parseConfig } from "./config";
-import { loadParentConfig } from "./load-parent-config";
 import * as deepMerge from "deepmerge";
-import { findConfig } from "./find-config";
 import logger from "../logger";
+import { parseConfig } from "./config";
+import { findConfig } from "./find-config";
+import { loadParentConfig } from "./load-parent-config";
 
 export const loadConfig = async (rootDir: string) => {
   const foundConfig = await findConfig(rootDir);
