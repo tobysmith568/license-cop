@@ -11,16 +11,12 @@
         "outputPath": "dist/packages/e2e/unlicensed-package",
         "main": "packages/e2e/unlicensed-package/src/index.ts",
         "tsConfig": "packages/e2e/unlicensed-package/tsconfig.lib.json",
-        "assets": ["packages/e2e/unlicensed-package/*.md"],
-        "updateBuildableProjectDepsInPackageJson": true
+        "assets": ["packages/e2e/unlicensed-package/*.md"]
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/e2e/unlicensed-package/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     }
   },
   "tags": []

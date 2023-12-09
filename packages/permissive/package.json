@@ -1,6 +1,6 @@
 {
   "name": "@license-cop/permissive",
-  "version": "0.0.0",
+  "version": "*",
   "type": "commonjs",
   "main": "./.licenses.jsonc",
   "author": {

@@ -3,3 +3,5 @@
 /dist
 /coverage
 **/.yarn/releases/**
+
+/.nx/cache
