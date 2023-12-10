@@ -7,8 +7,9 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/packages/permissive"],
+      "outputs": ["{options.outputPath}"],
       "options": {
+        "outputPath": "{workspaceRoot}/dist/packages/permissive",
         "commands": [
           "node tools/scripts/copy-asset.mjs permissive packages/permissive/.licenses.jsonc",
           "node tools/scripts/copy-asset.mjs permissive packages/permissive/README.md",
