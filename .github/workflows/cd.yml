@@ -52,7 +52,7 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
 
       - name: Publish
@@ -86,7 +86,7 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
 
       - name: Pack assets
