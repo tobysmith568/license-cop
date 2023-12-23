@@ -85,7 +85,7 @@ jobs:
       - name: Upload Build
         uses: actions/upload-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
           retention-days: 1
 
@@ -141,7 +141,7 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
 
       - name: Check licenses
@@ -172,7 +172,7 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
 
       - name: Run E2E Tests
@@ -203,7 +203,7 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v3
         with:
-          name: Build
+          name: build
           path: ./dist
 
       - name: Run E2E Tests
