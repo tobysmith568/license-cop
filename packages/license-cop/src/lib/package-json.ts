@@ -4,17 +4,16 @@ import { z } from "zod";
 import { json5Parse } from "./config/parsers/json5";
 import logger from "./logger";
 
+const licenseSectionValidator = z.object({
+  type: z.string(),
+  url: z.string().optional()
+});
+
 const packageJsonValidator = z.object({
   name: z.string(),
   version: z.string(),
-  license: z.string().optional(),
-  licenses: z
-    .object({
-      type: z.string(),
-      url: z.string().optional()
-    })
-    .array()
-    .optional()
+  license: z.union([z.string(), licenseSectionValidator]).optional(),
+  licenses: licenseSectionValidator.array().optional()
 });
 
 type PackageJson = z.infer<typeof packageJsonValidator>;
@@ -42,8 +41,12 @@ export const readPackageJson = async (pathToPackageJson: string): Promise<Packag
 };
 
 export const getLicenseExpression = (packageJson: PackageJson): string => {
-  if (packageJson.license) {
+  if (packageJson.license && typeof packageJson.license === "string") {
     return packageJson.license;
+  }
+
+  if (packageJson.license && typeof packageJson.license === "object") {
+    return packageJson.license.type;
   }
 
   if (packageJson.licenses) {
