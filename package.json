@@ -24,7 +24,7 @@
     "@tobysmith568/eslint-config": "^1.1.2",
     "@tobysmith568/prettier-config": "^2.1.0",
     "@types/jest": "^29.4.0",
-    "@types/node": "18.19.21",
+    "@types/node": "18.19.22",
     "@types/npmcli__arborist": "^5.6.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
