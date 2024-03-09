@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@1.22.21",
+  "packageManager": "yarn@1.22.22",
   "name": "should-fail-when-a-package-is-specified-with-a-tilde",
   "dependencies": {
     "@license-cop/mit-test-package": "4.5.6"
