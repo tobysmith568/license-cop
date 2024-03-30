@@ -57,5 +57,6 @@
     "appsDir": "apps",
     "libsDir": "packages"
   },
-  "defaultProject": "website"
+  "defaultProject": "website",
+  "useInferencePlugins": false
 }
