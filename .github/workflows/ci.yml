@@ -48,7 +48,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx nx run-many --target lint --max-warnings 0
+        run: npm run lint
 
       - name: Run Prettier
         run: npx prettier --check .
