@@ -1,5 +1,6 @@
-export { LicenseCopOptions, checkLicenses } from "./lib/license-cop";
-export {
+export { checkLicenses } from "./lib/license-cop";
+export type { LicenseCopOptions } from "./lib/license-cop";
+export type {
   AllowedPackage,
   CheckLicensesResult,
   ForbiddenLicenseResult,
