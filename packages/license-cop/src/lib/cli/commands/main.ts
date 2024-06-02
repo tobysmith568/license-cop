@@ -1,8 +1,8 @@
 import { join } from "path";
 import { loadConfig } from "../../config/load-config";
+import { readPackageJson } from "../../dependency/package-json";
 import { checkLicenses, LicenseCopOptions } from "../../license-cop";
 import logger from "../../logger";
-import { readPackageJson } from "../../package-json";
 import { createCommandWithGlobalOptions } from "../create-command";
 import { reportFailure } from "../report-failure";
 import { reportSuccess } from "../report-success";
