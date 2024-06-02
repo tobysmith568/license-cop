@@ -1,8 +1,8 @@
 import { Stats } from "fs";
 import { readFile, stat } from "fs/promises";
 import { z } from "zod";
-import { json5Parse } from "./config/parsers/json5";
-import logger from "./logger";
+import { json5Parse } from "../config/parsers/json5";
+import logger from "../logger";
 
 const licenseSectionValidator = z.object({
   type: z.string(),
@@ -13,7 +13,8 @@ const packageJsonValidator = z.object({
   name: z.string(),
   version: z.string(),
   license: z.union([z.string(), licenseSectionValidator]).optional(),
-  licenses: licenseSectionValidator.array().optional()
+  licenses: licenseSectionValidator.array().optional(),
+  packageManager: z.string().optional()
 });
 
 type PackageJson = z.infer<typeof packageJsonValidator>;

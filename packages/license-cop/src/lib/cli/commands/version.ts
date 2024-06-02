@@ -1,6 +1,6 @@
 import { join } from "path";
+import { readPackageJson } from "../../dependency/package-json";
 import logger from "../../logger";
-import { readPackageJson } from "../../package-json";
 import { createCommandWithGlobalOptions } from "../create-command";
 
 export const versionCommand = createCommandWithGlobalOptions()
