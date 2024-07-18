@@ -50,7 +50,7 @@
     "remark-directive": "^3.0.0",
     "sass": "^1.61.0",
     "start-server-and-test": "^2.0.3",
-    "ts-jest": "29.2.2",
+    "ts-jest": "29.2.3",
     "ts-node": "10.9.2",
     "typescript": "5.5.3",
     "unist-util-visit": "^5.0.0"
