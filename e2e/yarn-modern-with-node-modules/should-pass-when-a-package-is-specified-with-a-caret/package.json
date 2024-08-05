@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@3.8.3",
+  "packageManager": "yarn@3.8.4",
   "name": "should-pass-when-a-package-is-specified-with-a-caret",
   "dependencies": {
     "@license-cop/mit-test-package": "4.5.6"
