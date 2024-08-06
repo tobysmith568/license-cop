@@ -1,7 +1,7 @@
 {
   "private": true,
   "version": "0.0.0",
-  "packageManager": "yarn@3.8.3",
+  "packageManager": "yarn@3.8.4",
   "name": "should-pass-when-all-licenses-are-present",
   "dependencies": {
     "@license-cop/isc-test-package": "latest",
