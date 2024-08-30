@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "should-fail-when-a-package-is-out-of-its-semver-range",
+  "dependencies": {
+    "@license-cop/isc-test-package": "latest",
+    "@license-cop/mit-test-package": "4.5.6"
+  }
+}

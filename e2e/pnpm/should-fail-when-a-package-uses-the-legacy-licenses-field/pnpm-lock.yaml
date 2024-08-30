@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@license-cop/isc-legacy-test-package':
+        specifier: 0.0.1
+        version: 0.0.1
+
+packages:
+
+  '@license-cop/isc-legacy-test-package@0.0.1':
+    resolution: {integrity: sha512-ZX+T5L8i7eB3dl5VaLVSOLUG9mOzf7sV2Rn8a+aYsqcNM23MgBDbd23AyZ4rhHkU/ZmJ7nkfuC9SqwBMdFHWJg==}
+
+snapshots:
+
+  '@license-cop/isc-legacy-test-package@0.0.1': {}

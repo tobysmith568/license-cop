@@ -1,0 +1,30 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@license-cop/isc-test-package':
+        specifier: latest
+        version: 1.2.3
+      '@license-cop/mit-test-package':
+        specifier: latest
+        version: 4.5.6
+
+packages:
+
+  '@license-cop/isc-test-package@1.2.3':
+    resolution: {integrity: sha512-HcoMCLdl7UooVRLmNkNn632H9eCVMgZwfXcStkbcLqyhHLMV4uQACzSgSPtENWUFR+x6esYVD06UrOkJurpd6w==}
+
+  '@license-cop/mit-test-package@4.5.6':
+    resolution: {integrity: sha512-fb/pwsS3MsNRKfWq5TKX9zDdwbqTn4hbHvMAC43hyGyggrHfwWD5dChrlKJRqiDFbo5zUIXUQdWCb8mnHa7OQA==}
+
+snapshots:
+
+  '@license-cop/isc-test-package@1.2.3': {}
+
+  '@license-cop/mit-test-package@4.5.6': {}

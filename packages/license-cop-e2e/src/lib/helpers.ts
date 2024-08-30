@@ -60,6 +60,8 @@ const getInstallProgram = (packageManager: PackageManager): string => {
       return "yarn";
     case "yarn-modern-with-node-modules":
       return "yarn";
+    case "pnpm":
+      return "pnpm";
     default: {
       const _exhaustiveCheck: never = packageManager;
       throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
@@ -75,6 +77,8 @@ const getInstallArgs = (packageManager: PackageManager): string[] => {
       return ["install", "--frozen-lockfile"];
     case "yarn-modern-with-node-modules":
       return ["install", "--immutable"];
+    case "pnpm":
+      return ["install", "--frozen-lockfile"];
     default: {
       const _exhaustiveCheck: never = packageManager;
       throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
