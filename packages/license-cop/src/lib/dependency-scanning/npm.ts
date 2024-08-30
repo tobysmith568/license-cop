@@ -2,8 +2,8 @@ import Arborist = require("@npmcli/arborist");
 import { Link, Node } from "@npmcli/arborist";
 import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
+import { isAllowedPackage } from "../dependency/package-rules";
 import logger from "../logger";
-import { isAllowedPackage } from "../package-rules";
 import {
   AllowedPackage,
   CheckLicensesResult,

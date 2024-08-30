@@ -1,6 +1,7 @@
 import { isAbsolute, join } from "path";
 import { npmDependencyScanning } from "./dependency-scanning/npm";
 import { DependencyScanningOptions } from "./dependency-scanning/options";
+import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
 import { getPackageManager } from "./dependency/get-package-manager";
 import { CheckLicensesResult } from "./result";
 
@@ -28,7 +29,7 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLi
 
   switch (packageManager) {
     case "pnpm":
-      throw new Error("pnpm is not yet supported by license-cop");
+      return pnpmDependencyScanning(dependencyScanningOptions);
     default:
       return npmDependencyScanning(dependencyScanningOptions);
   }
