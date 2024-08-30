@@ -36,6 +36,8 @@ export const npmDependencyScanning = async (
 
   const topNode = await arborist.loadActual();
 
+  // This function is very similar to the one in pnpm.ts
+  // If you change this, you probably want to change that one too
   const parseNode = async (node: Node | Link) => {
     logger.verbose(`Parsing node: ${node.name}`);
 
@@ -53,6 +55,7 @@ export const npmDependencyScanning = async (
     const packageJson = await readPackageJson(packageJsonPath);
 
     if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
+      logger.verbose(`Package ${packageJson.name} is an allowed package`);
       foundAllowedPackages.add({
         name: packageJson.name,
         version: packageJson.version
@@ -68,6 +71,7 @@ export const npmDependencyScanning = async (
     const licenseExpression = parseLicenseExpression(rawLicenseExpression);
 
     if (licenseExpression.type === "unlicensed") {
+      logger.verbose(`Package ${packageJson.name} is unlicensed`);
       packagesWithNoLicenses.add({
         name: packageJson.name,
         version: packageJson.version
@@ -83,6 +87,7 @@ export const npmDependencyScanning = async (
     const joinedIssues = joinStringArray(licenseIssues);
 
     if (licenseIssues.length > 0) {
+      logger.verbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
       packagesWithForbiddenLicenses.add({
         name: packageJson.name,
         version: packageJson.version,
@@ -90,6 +95,9 @@ export const npmDependencyScanning = async (
         spdxExpression: rawLicenseExpression
       });
     } else {
+      logger.verbose(
+        `Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`
+      );
       packagesWithAllowedLicenses.add({
         name: packageJson.name,
         version: packageJson.version,
