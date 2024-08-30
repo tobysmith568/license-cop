@@ -11,7 +11,15 @@
         "outputPath": "dist/packages/license-cop",
         "main": "packages/license-cop/src/index.ts",
         "tsConfig": "packages/license-cop/tsconfig.lib.json",
-        "assets": ["packages/license-cop/src/bin/**", "README.md", "LICENSE.md"]
+        "assets": [
+          {
+            "input": "packages/license-cop",
+            "glob": "src/bin/**",
+            "output": ""
+          },
+          "README.md",
+          "LICENSE.md"
+        ]
       }
     },
     "run": {
