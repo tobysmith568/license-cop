@@ -9,7 +9,7 @@ export const runTest = async (options: TestOptions) => {
 
   const testProcess = childProcess.spawn(
     "npm",
-    ["exec", '"../../../dist/packages/license-cop"', ...args],
+    ["exec", '"../../../dist/packages/license-cop"', "--", "--verbose", ...args],
     {
       cwd: join("./e2e", packageManager, directory),
       shell: true

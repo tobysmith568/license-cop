@@ -61,6 +61,8 @@ export const pnpmDependencyScanning = async (
         name: packageJson.name,
         version: packageJson.version
       });
+
+      await parseNodes(node.dependencies ?? emptyPackageNodes);
       return;
     }
 
@@ -73,6 +75,8 @@ export const pnpmDependencyScanning = async (
         name: packageJson.name,
         version: packageJson.version
       });
+
+      await parseNodes(node.dependencies ?? emptyPackageNodes);
       return;
     }
 
@@ -98,21 +102,21 @@ export const pnpmDependencyScanning = async (
         licenses: licenseExpression
       });
     }
+
+    await parseNodes(node.dependencies ?? emptyPackageNodes);
+  };
+
+  const parseNodes = async (nodes: PackageNode[]) => {
+    for (const node of nodes) {
+      await parseNode(node);
+    }
   };
 
   for (const hierarchies of Object.values(dependencyHierarchies)) {
-    for (const dep of hierarchies.dependencies ?? emptyPackageNodes) {
-      await parseNode(dep);
-    }
-    for (const dep of hierarchies.devDependencies ?? emptyPackageNodes) {
-      await parseNode(dep);
-    }
-    for (const dep of hierarchies.optionalDependencies ?? emptyPackageNodes) {
-      await parseNode(dep);
-    }
-    for (const dep of hierarchies.unsavedDependencies ?? emptyPackageNodes) {
-      await parseNode(dep);
-    }
+    await parseNodes(hierarchies.dependencies ?? emptyPackageNodes);
+    await parseNodes(hierarchies.devDependencies ?? emptyPackageNodes);
+    await parseNodes(hierarchies.optionalDependencies ?? emptyPackageNodes);
+    await parseNodes(hierarchies.unsavedDependencies ?? emptyPackageNodes);
   }
 
   return {
