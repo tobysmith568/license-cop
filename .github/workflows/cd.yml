@@ -60,6 +60,23 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  purge-jsdelivr:
+    name: Purge JsDelivr
+
+    needs:
+      - publish
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: Invoke-WebRequest -Uri "https://purge.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc"
+
+  deploy-website:
+    name: Deploy Website
+    uses: ./.github/workflows/website.yml
+    needs:
+      - purge-jsdelivr
+
   create-release:
     name: Create GitHub Release
 
