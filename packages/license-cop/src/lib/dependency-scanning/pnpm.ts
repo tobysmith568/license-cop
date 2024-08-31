@@ -119,7 +119,6 @@ export const pnpmDependencyScanning = async (
     await parseNodes(hierarchies.dependencies);
     await parseNodes(hierarchies.devDependencies);
     await parseNodes(hierarchies.optionalDependencies);
-    await parseNodes(hierarchies.unsavedDependencies);
   }
 
   return {
