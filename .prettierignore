@@ -5,3 +5,4 @@
 **/.yarn/releases/**
 
 /.nx/cache
+/.nx/workspace-data
