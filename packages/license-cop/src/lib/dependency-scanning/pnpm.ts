@@ -18,8 +18,6 @@ import { parseLicenseExpression } from "../spdx/parse-license-expression";
 import { joinStringArray } from "../utils/join-string-array";
 import { DependencyScanningOptions } from "./options";
 
-const emptyPackageNodes: PackageNode[] = [];
-
 export const pnpmDependencyScanning = async (
   options: DependencyScanningOptions
 ): Promise<CheckLicensesResult> => {
@@ -62,7 +60,7 @@ export const pnpmDependencyScanning = async (
         version: packageJson.version
       });
 
-      await parseNodes(node.dependencies ?? emptyPackageNodes);
+      await parseNodes(node.dependencies);
       return;
     }
 
@@ -76,7 +74,7 @@ export const pnpmDependencyScanning = async (
         version: packageJson.version
       });
 
-      await parseNodes(node.dependencies ?? emptyPackageNodes);
+      await parseNodes(node.dependencies);
       return;
     }
 
@@ -103,20 +101,24 @@ export const pnpmDependencyScanning = async (
       });
     }
 
-    await parseNodes(node.dependencies ?? emptyPackageNodes);
+    await parseNodes(node.dependencies);
   };
 
-  const parseNodes = async (nodes: PackageNode[]) => {
+  const parseNodes = async (nodes: PackageNode[] | undefined) => {
+    if (!nodes) {
+      return;
+    }
+
     for (const node of nodes) {
       await parseNode(node);
     }
   };
 
   for (const hierarchies of Object.values(dependencyHierarchies)) {
-    await parseNodes(hierarchies.dependencies ?? emptyPackageNodes);
-    await parseNodes(hierarchies.devDependencies ?? emptyPackageNodes);
-    await parseNodes(hierarchies.optionalDependencies ?? emptyPackageNodes);
-    await parseNodes(hierarchies.unsavedDependencies ?? emptyPackageNodes);
+    await parseNodes(hierarchies.dependencies);
+    await parseNodes(hierarchies.devDependencies);
+    await parseNodes(hierarchies.optionalDependencies);
+    await parseNodes(hierarchies.unsavedDependencies);
   }
 
   return {
