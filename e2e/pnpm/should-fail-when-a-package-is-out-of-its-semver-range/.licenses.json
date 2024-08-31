@@ -1,0 +1,3 @@
+{
+  "packages": ["@license-cop/isc-test-package", "@license-cop/mit-test-package@<4.4"]
+}

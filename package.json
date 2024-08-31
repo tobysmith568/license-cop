@@ -23,7 +23,7 @@
     "@swc/jest": "^0.2.29",
     "@testing-library/cypress": "^10.0.1",
     "@tobysmith568/eslint-config": "^1.1.2",
-    "@tobysmith568/prettier-config": "^2.1.1",
+    "@tobysmith568/prettier-config": "^2.2.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.16.9",
     "@types/npmcli__arborist": "^5.6.1",
@@ -58,6 +58,7 @@
   "dependencies": {
     "@commander-js/extra-typings": "^12.0.0",
     "@npmcli/arborist": "^7.0.0",
+    "@pnpm/reviewing.dependencies-hierarchy": "^3.1.10",
     "@primer/octicons": "^19.0.0",
     "@swc/helpers": "^0.5.3",
     "axios": "^1.6.0",

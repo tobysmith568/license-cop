@@ -1,7 +1,7 @@
 import { runTest } from "./helpers";
 import { PackageManager, TestOptions } from "./test-options";
 
-describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-modules"])(
+describe.each<PackageManager>(["npm", "yarn-classic", "yarn-modern-with-node-modules", "pnpm"])(
   "%s",
   packageManager => {
     afterEach(() => process.stdout.write("\n--------------------------------\n"));

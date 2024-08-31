@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@license-cop/no-license-test-package':
+        specifier: 0.0.1
+        version: 0.0.1
+
+packages:
+
+  '@license-cop/no-license-test-package@0.0.1':
+    resolution: {integrity: sha512-RqBNetn5H6A5Qm/+INyUxz3hwXVWDLcpcB4E6VFfK+7wtKpawWqrLbFOyH+r5CdzkMBGDyOD6RNbCc3qPl458A==}
+
+snapshots:
+
+  '@license-cop/no-license-test-package@0.0.1': {}

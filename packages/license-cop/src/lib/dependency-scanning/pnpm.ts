@@ -1,5 +1,7 @@
-import Arborist = require("@npmcli/arborist");
-import { Link, Node } from "@npmcli/arborist";
+import {
+  buildDependenciesHierarchy,
+  type PackageNode
+} from "@pnpm/reviewing.dependencies-hierarchy";
 import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
 import { isAllowedPackage } from "../dependency/package-rules";
@@ -16,7 +18,7 @@ import { parseLicenseExpression } from "../spdx/parse-license-expression";
 import { joinStringArray } from "../utils/join-string-array";
 import { DependencyScanningOptions } from "./options";
 
-export const npmDependencyScanning = async (
+export const pnpmDependencyScanning = async (
   options: DependencyScanningOptions
 ): Promise<CheckLicensesResult> => {
   const {
@@ -32,38 +34,33 @@ export const npmDependencyScanning = async (
   const packagesWithNoLicenses = new Set<NoLicenseResult>();
   const packagesWithForbiddenLicenses = new Set<ForbiddenLicenseResult>();
 
-  const arborist = new Arborist({ path: workingDirectory });
+  const dependencyHierarchies = await buildDependenciesHierarchy([workingDirectory], {
+    depth: Infinity,
+    include: {
+      dependencies: !devDependenciesOnly,
+      devDependencies: includeDevDependencies,
+      optionalDependencies: false
+    },
+    lockfileDir: workingDirectory,
+    virtualStoreDirMaxLength: Infinity
+  });
 
-  const topNode = await arborist.loadActual();
-
-  // This function is very similar to the one in pnpm.ts
+  // This function is very similar to the one in npm.ts
   // If you change this, you probably want to change that one too
-  const parseNode = async (node: Node | Link) => {
+  const parseNode = async (node: PackageNode) => {
     logger.verbose(`Parsing node: ${node.name}`);
 
-    const isDevDependency = node.dev;
-
-    if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
-      return;
-    }
-
-    if (devDependenciesOnly && !isDevDependency) {
-      return;
-    }
-
-    const packageJsonPath = join(node.realpath, "package.json");
+    const packageJsonPath = join(node.path, "package.json");
     const packageJson = await readPackageJson(packageJsonPath);
 
-    if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
+    if (isAllowedPackage(packageJson.name, packageJson.version, allowedPackages)) {
       logger.verbose(`Package ${packageJson.name} is an allowed package`);
       foundAllowedPackages.add({
         name: packageJson.name,
         version: packageJson.version
       });
 
-      if (node.children.size > 0) {
-        await parseNodes(node.children.values());
-      }
+      await parseNodes(node.dependencies);
       return;
     }
 
@@ -77,9 +74,7 @@ export const npmDependencyScanning = async (
         version: packageJson.version
       });
 
-      if (node.children.size > 0) {
-        await parseNodes(node.children.values());
-      }
+      await parseNodes(node.dependencies);
       return;
     }
 
@@ -106,18 +101,25 @@ export const npmDependencyScanning = async (
       });
     }
 
-    if (node.children.size > 0) {
-      parseNodes(node.children.values());
-    }
+    await parseNodes(node.dependencies);
   };
 
-  const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
+  const parseNodes = async (nodes: PackageNode[] | undefined) => {
+    if (!nodes) {
+      return;
+    }
+
     for (const node of nodes) {
       await parseNode(node);
     }
   };
 
-  await parseNodes(topNode.children.values());
+  for (const hierarchies of Object.values(dependencyHierarchies)) {
+    await parseNodes(hierarchies.dependencies);
+    await parseNodes(hierarchies.devDependencies);
+    await parseNodes(hierarchies.optionalDependencies);
+    await parseNodes(hierarchies.unsavedDependencies);
+  }
 
   return {
     allowedPackages: foundAllowedPackages,

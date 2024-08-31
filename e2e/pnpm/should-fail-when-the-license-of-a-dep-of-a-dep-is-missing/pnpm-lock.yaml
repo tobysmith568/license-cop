@@ -1,0 +1,29 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@license-cop/uses-isc-test-package':
+        specifier: latest
+        version: 0.0.1
+
+packages:
+
+  '@license-cop/isc-test-package@1.2.3':
+    resolution: {integrity: sha512-HcoMCLdl7UooVRLmNkNn632H9eCVMgZwfXcStkbcLqyhHLMV4uQACzSgSPtENWUFR+x6esYVD06UrOkJurpd6w==}
+
+  '@license-cop/uses-isc-test-package@0.0.1':
+    resolution: {integrity: sha512-dAx/ZSUzmXoCUM6hHlikUu9XeA5xmDJQZ5FnQrq8joocKCOY7fX+69F+x6LJUlxzP66q7RrrfCW0oA8VCRH4HQ==}
+
+snapshots:
+
+  '@license-cop/isc-test-package@1.2.3': {}
+
+  '@license-cop/uses-isc-test-package@0.0.1':
+    dependencies:
+      '@license-cop/isc-test-package': 1.2.3
