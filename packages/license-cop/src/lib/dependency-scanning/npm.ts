@@ -27,10 +27,10 @@ export const npmDependencyScanning = async (
     devDependenciesOnly
   } = options;
 
-  const foundAllowedPackages = new Set<AllowedPackage>();
-  const packagesWithAllowedLicenses = new Set<LicensedPackage>();
-  const packagesWithNoLicenses = new Set<NoLicenseResult>();
-  const packagesWithForbiddenLicenses = new Set<ForbiddenLicenseResult>();
+  const foundAllowedPackages = new Map<string, AllowedPackage>();
+  const packagesWithAllowedLicenses = new Map<string, LicensedPackage>();
+  const packagesWithNoLicenses = new Map<string, NoLicenseResult>();
+  const packagesWithForbiddenLicenses = new Map<string, ForbiddenLicenseResult>();
 
   const arborist = new Arborist({ path: workingDirectory });
 
@@ -56,7 +56,7 @@ export const npmDependencyScanning = async (
 
     if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
       logger.verbose(`Package ${packageJson.name} is an allowed package`);
-      foundAllowedPackages.add({
+      foundAllowedPackages.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version
       });
@@ -72,7 +72,7 @@ export const npmDependencyScanning = async (
 
     if (licenseExpression.type === "unlicensed") {
       logger.verbose(`Package ${packageJson.name} is unlicensed`);
-      packagesWithNoLicenses.add({
+      packagesWithNoLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version
       });
@@ -88,7 +88,7 @@ export const npmDependencyScanning = async (
 
     if (licenseIssues.length > 0) {
       logger.verbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
-      packagesWithForbiddenLicenses.add({
+      packagesWithForbiddenLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version,
         licenseIdentifiers: joinedIssues,
@@ -98,7 +98,7 @@ export const npmDependencyScanning = async (
       logger.verbose(
         `Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`
       );
-      packagesWithAllowedLicenses.add({
+      packagesWithAllowedLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version,
         spdxExpression: rawLicenseExpression,
@@ -120,9 +120,9 @@ export const npmDependencyScanning = async (
   await parseNodes(topNode.children.values());
 
   return {
-    allowedPackages: foundAllowedPackages,
-    allowedLicenses: packagesWithAllowedLicenses,
-    noLicenses: packagesWithNoLicenses,
-    forbiddenLicenses: packagesWithForbiddenLicenses
+    allowedPackages: new Set(foundAllowedPackages.values()),
+    allowedLicenses: new Set(packagesWithAllowedLicenses.values()),
+    noLicenses: new Set(packagesWithNoLicenses.values()),
+    forbiddenLicenses: new Set(packagesWithForbiddenLicenses.values())
   };
 };
