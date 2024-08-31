@@ -29,10 +29,10 @@ export const pnpmDependencyScanning = async (
     devDependenciesOnly
   } = options;
 
-  const foundAllowedPackages = new Set<AllowedPackage>();
-  const packagesWithAllowedLicenses = new Set<LicensedPackage>();
-  const packagesWithNoLicenses = new Set<NoLicenseResult>();
-  const packagesWithForbiddenLicenses = new Set<ForbiddenLicenseResult>();
+  const foundAllowedPackages = new Map<string, AllowedPackage>();
+  const packagesWithAllowedLicenses = new Map<string, LicensedPackage>();
+  const packagesWithNoLicenses = new Map<string, NoLicenseResult>();
+  const packagesWithForbiddenLicenses = new Map<string, ForbiddenLicenseResult>();
 
   const dependencyHierarchies = await buildDependenciesHierarchy([workingDirectory], {
     depth: Infinity,
@@ -50,12 +50,13 @@ export const pnpmDependencyScanning = async (
   const parseNode = async (node: PackageNode) => {
     logger.verbose(`Parsing node: ${node.name}`);
 
+    const pkgId = `${node.alias}@${node.version}`;
     const packageJsonPath = join(node.path, "package.json");
     const packageJson = await readPackageJson(packageJsonPath);
 
     if (isAllowedPackage(packageJson.name, packageJson.version, allowedPackages)) {
       logger.verbose(`Package ${packageJson.name} is an allowed package`);
-      foundAllowedPackages.add({
+      foundAllowedPackages.set(pkgId, {
         name: packageJson.name,
         version: packageJson.version
       });
@@ -69,7 +70,7 @@ export const pnpmDependencyScanning = async (
 
     if (licenseExpression.type === "unlicensed") {
       logger.verbose(`Package ${packageJson.name} is unlicensed`);
-      packagesWithNoLicenses.add({
+      packagesWithNoLicenses.set(pkgId, {
         name: packageJson.name,
         version: packageJson.version
       });
@@ -83,7 +84,7 @@ export const pnpmDependencyScanning = async (
 
     if (licenseIssues.length > 0) {
       logger.verbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
-      packagesWithForbiddenLicenses.add({
+      packagesWithForbiddenLicenses.set(pkgId, {
         name: packageJson.name,
         version: packageJson.version,
         licenseIdentifiers: joinedIssues,
@@ -93,7 +94,7 @@ export const pnpmDependencyScanning = async (
       logger.verbose(
         `Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`
       );
-      packagesWithAllowedLicenses.add({
+      packagesWithAllowedLicenses.set(pkgId, {
         name: packageJson.name,
         version: packageJson.version,
         spdxExpression: rawLicenseExpression,
@@ -122,9 +123,9 @@ export const pnpmDependencyScanning = async (
   }
 
   return {
-    allowedPackages: foundAllowedPackages,
-    allowedLicenses: packagesWithAllowedLicenses,
-    noLicenses: packagesWithNoLicenses,
-    forbiddenLicenses: packagesWithForbiddenLicenses
+    allowedPackages: new Set(foundAllowedPackages.values()),
+    allowedLicenses: new Set(packagesWithAllowedLicenses.values()),
+    noLicenses: new Set(packagesWithNoLicenses.values()),
+    forbiddenLicenses: new Set(packagesWithForbiddenLicenses.values())
   };
 };
