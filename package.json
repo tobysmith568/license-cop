@@ -34,7 +34,7 @@
     "astro": "^4.0.7",
     "astro-webmanifest": "^1.0.0",
     "cspell": "^8.0.0",
-    "cypress": "13.14.1",
+    "cypress": "13.14.2",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-cypress": "^3.0.0",
