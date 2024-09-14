@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/isc-test-package@npm:latest":
   version: 0.0.1
   resolution: "@license-cop/isc-test-package@npm:0.0.1"
-  checksum: 21978ea00c57061901179bd03923c1194480967745a6d74f9b9bc4875f8d336f8e7aadf72e6a484c1581a0ef8fed079306a6a4327142926e5d9dc7845be3745e
+  checksum: 8/21978ea00c57061901179bd03923c1194480967745a6d74f9b9bc4875f8d336f8e7aadf72e6a484c1581a0ef8fed079306a6a4327142926e5d9dc7845be3745e
   languageName: node
   linkType: hard
 
@@ -16,8 +16,8 @@ __metadata:
   version: 0.0.1
   resolution: "@license-cop/uses-isc-test-package@npm:0.0.1"
   dependencies:
-    "@license-cop/isc-test-package": latest
-  checksum: 4d919c69ac56e94b33d6cba6ac54b0bdfe3d789573b997378115dd46b94cff4ce579016ce513797aa23c449e4d09ad044e09a7e8693f3691c4f971c986650841
+    "@license-cop/isc-test-package": "npm:latest"
+  checksum: 8/4d919c69ac56e94b33d6cba6ac54b0bdfe3d789573b997378115dd46b94cff4ce579016ce513797aa23c449e4d09ad044e09a7e8693f3691c4f971c986650841
   languageName: node
   linkType: hard
 
@@ -25,7 +25,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-fail-when-the-license-of-a-dep-of-a-dep-is-missing@workspace:."
   dependencies:
-    "@license-cop/uses-isc-test-package": latest
+    "@license-cop/uses-isc-test-package": "npm:latest"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
