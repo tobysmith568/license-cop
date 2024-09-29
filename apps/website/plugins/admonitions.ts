@@ -2,16 +2,24 @@ import octicons from "@primer/octicons";
 import { h } from "hastscript";
 import { visit } from "unist-util-visit";
 
+type AdmonitionType = {
+  cssClass: string;
+  iconClass: keyof typeof octicons;
+  title: string;
+};
+
 const admonitionTypes = {
   important: { cssClass: "admonition-important", iconClass: "alert", title: "Important" },
   tip: { cssClass: "admonition-tip", iconClass: "light-bulb", title: "Tip" },
   note: { cssClass: "admonition-note", iconClass: "info", title: "Note" },
   caution: { cssClass: "admonition-caution", iconClass: "alert", title: "Caution" },
   warning: { cssClass: "admonition-warning", iconClass: "flame", title: "Warning" }
-};
+} satisfies Record<string, AdmonitionType>;
+
+type AdmonitionTypes = keyof typeof admonitionTypes;
 
 const admonitionsPlugin = () => {
-  return tree => {
+  return (tree: any) => {
     visit(tree, node => {
       if (
         node.type === "textDirective" ||
@@ -22,7 +30,8 @@ const admonitionsPlugin = () => {
           return;
         }
 
-        const boxInfo = admonitionTypes[node.name];
+        const type = node.name as AdmonitionTypes;
+        const boxInfo = admonitionTypes[type];
 
         // Adding CSS classes according to the type.
         const data = node.data || (node.data = {});
@@ -32,8 +41,7 @@ const admonitionsPlugin = () => {
 
         const literalSvg = octicons[boxInfo.iconClass].toSVG({
           width: 24,
-          height: 24,
-          xmlns: "http://www.w3.org/2000/svg"
+          height: 24
         });
 
         // Creating the icon.
