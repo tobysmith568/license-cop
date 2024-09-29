@@ -41,8 +41,9 @@ const admonitionsPlugin = () => {
 
         const literalSvg = octicons[boxInfo.iconClass].toSVG({
           width: 24,
-          height: 24
-        });
+          height: 24,
+          xmlns: "http://www.w3.org/2000/svg"
+        } as octicons.SVGOptions);
 
         // Creating the icon.
         const icon = h("img");
