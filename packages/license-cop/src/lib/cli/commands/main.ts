@@ -1,4 +1,5 @@
 import { join } from "path";
+import { ConfigError } from "../../config/config-error";
 import { loadConfig } from "../../config/load-config";
 import { readPackageJson } from "../../dependency/package-json";
 import { checkLicenses, LicenseCopOptions } from "../../license-cop";
@@ -22,7 +23,16 @@ export const mainCommand = createCommandWithGlobalOptions()
       return;
     }
 
-    await runLicenseCop(directory, includeDev, devOnly);
+    try {
+      await runLicenseCop(directory, includeDev, devOnly);
+    } catch (e) {
+      if (e instanceof ConfigError) {
+        logger.error(e.message);
+        process.exitCode = 1;
+        return;
+      }
+      throw e;
+    }
   });
 
 const runLicenseCop = async (
