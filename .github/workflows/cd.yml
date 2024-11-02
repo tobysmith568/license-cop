@@ -76,6 +76,10 @@ jobs:
     uses: ./.github/workflows/website.yml
     needs:
       - purge-jsdelivr
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
   create-release:
     name: Create GitHub Release
