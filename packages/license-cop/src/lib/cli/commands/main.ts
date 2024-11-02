@@ -42,8 +42,8 @@ const runLicenseCop = async (
     allowedPackages: config.packages,
 
     workingDirectory: directory,
-    includeDevDependencies: includeDevDependencies ?? config.includeDevDependencies,
-    devDependenciesOnly: devDependenciesOnly ?? config.devDependenciesOnly
+    includeDevDependencies: includeDevDependencies || config.includeDevDependencies,
+    devDependenciesOnly: devDependenciesOnly || config.devDependenciesOnly
   };
 
   const result = await checkLicenses(options);
