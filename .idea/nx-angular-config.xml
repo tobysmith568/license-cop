@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="NxAngularConfigService" workspaceLocation="file://$PROJECT_DIR$/nx.json">
+    <projects>
+      <project name="e2e-isc-legacy-package" file="file://$PROJECT_DIR$/packages/e2e/isc-legacy-package/project.json" />
+      <project name="e2e-isc-package" file="file://$PROJECT_DIR$/packages/e2e/isc-package/project.json" />
+      <project name="e2e-mit-package" file="file://$PROJECT_DIR$/packages/e2e/mit-package/project.json" />
+      <project name="e2e-no-license-package" file="file://$PROJECT_DIR$/packages/e2e/no-license-package/project.json" />
+      <project name="e2e-unlicensed-package" file="file://$PROJECT_DIR$/packages/e2e/unlicensed-package/project.json" />
+      <project name="e2e-uses-isc-package" file="file://$PROJECT_DIR$/packages/e2e/uses-isc-package/project.json" />
+      <project name="license-cop" file="file://$PROJECT_DIR$/packages/license-cop/project.json" />
+      <project name="license-cop-e2e" file="file://$PROJECT_DIR$/packages/license-cop-e2e/project.json" />
+      <project name="permissive" file="file://$PROJECT_DIR$/packages/permissive/project.json" />
+      <project name="website" file="file://$PROJECT_DIR$/apps/website/project.json" />
+      <project name="website-e2e" file="file://$PROJECT_DIR$/apps/website-e2e/project.json" />
+    </projects>
+  </component>
+</project>
