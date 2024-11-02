@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="UserContentModel">
+    <attachedFolders />
+    <explicitIncludes />
+    <explicitExcludes>
+      <Path>e2e/yarn-classic/should-fail-when-a-license-is-missing/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-has-no-license/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-is-missing/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-is-out-of-its-semver-range/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-is-specified-with-a-caret/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-is-specified-with-a-tilde/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-is-unlicensed/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-a-package-uses-the-legacy-licenses-field/.yarn</Path>
+      <Path>e2e/yarn-classic/should-fail-when-the-license-of-a-dep-of-a-dep-is-missing/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-a-package-is-specified-with-a-caret/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-a-package-is-specified-with-a-tilde/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-a-package-is-within-its-semver-range/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-a-package-uses-the-legacy-licenses-field/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-all-licenses-are-present/.yarn</Path>
+      <Path>e2e/yarn-classic/should-pass-when-all-packages-are-present/.yarn</Path>
+
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-license-is-missing/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-has-no-license/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-is-missing/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-is-out-of-its-semver-range/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-is-specified-with-a-caret/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-is-specified-with-a-tilde/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-is-unlicensed/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-a-package-uses-the-legacy-licenses-field/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-fail-when-the-license-of-a-dep-of-a-dep-is-missing/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-a-package-is-specified-with-a-caret/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-a-package-is-specified-with-a-tilde/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-a-package-is-within-its-semver-range/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-a-package-uses-the-legacy-licenses-field/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-all-licenses-are-present/.yarn</Path>
+      <Path>e2e/yarn-modern-with-node-modules/should-pass-when-all-packages-are-present/.yarn</Path>
+    </explicitExcludes>
+  </component>
+</project>
