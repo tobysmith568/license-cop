@@ -112,11 +112,11 @@ importers:
         specifier: ^19.11.0
         version: 19.11.0
       '@types/react':
-        specifier: ^18.0.21
-        version: 18.0.33
+        specifier: ^19.0.0
+        version: 19.0.1
       '@types/react-dom':
-        specifier: ^18.0.6
-        version: 18.0.11
+        specifier: ^19.0.0
+        version: 19.0.1
       '@typescript-eslint/eslint-plugin':
         specifier: 7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.6.3))(eslint@8.57.1)(typescript@5.6.3)
@@ -169,11 +169,11 @@ importers:
         specifier: ^0.14.0
         version: 0.14.0
       react:
-        specifier: ^18.0.0
-        version: 18.2.0
+        specifier: ^19.0.0
+        version: 19.0.0
       react-dom:
-        specifier: ^18.0.0
-        version: 18.2.0(react@18.2.0)
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
       remark-directive:
         specifier: ^3.0.0
         version: 3.0.0
@@ -2373,23 +2373,17 @@ packages:
   '@types/primer__octicons@19.11.0':
     resolution: {integrity: sha512-NmSSzuKo526mpi7zWStxFej6k0/PLQYHgl/r3gQCqyH5/U2uqRAsMEUFOaIYi2ylFbey33sYdBI5y3xIsfwbEw==}
 
-  '@types/prop-types@15.7.5':
-    resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+  '@types/react-dom@19.0.1':
+    resolution: {integrity: sha512-hljHij7MpWPKF6u5vojuyfV0YA4YURsQG7KT6SzV0Zs2BXAtgdTxG6A229Ub/xiWV4w/7JL8fi6aAyjshH4meA==}
 
-  '@types/react-dom@18.0.11':
-    resolution: {integrity: sha512-O38bPbI2CWtgw/OoQoY+BRelw7uysmXbWvw3nLWO21H1HSh+GOlqPuXshJfjmpNlKiiSDG9cc1JZAaMmVdcTlw==}
-
-  '@types/react@18.0.33':
-    resolution: {integrity: sha512-sHxzVxeanvQyQ1lr8NSHaj0kDzcNiGpILEVt69g9S31/7PfMvNCKLKcsHw4lYKjs3cGNJjXSP4mYzX43QlnjNA==}
+  '@types/react@19.0.1':
+    resolution: {integrity: sha512-YW6614BDhqbpR5KtUYzTA+zlA7nayzJRA9ljz9CQoxthR0sDisYZLuvSMsil36t4EH/uAt8T52Xb4sVw17G+SQ==}
 
   '@types/responselike@1.0.0':
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
 
   '@types/sax@1.2.4':
     resolution: {integrity: sha512-pSAff4IAxJjfAXUG6tFkO7dsSbTmf8CtUpfhhZ5VhkRpC4628tJhh3+V6H1E+/Gs9piSzYKT5yzHO5M4GG9jkw==}
-
-  '@types/scheduler@0.16.3':
-    resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
 
   '@types/semver@7.5.8':
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
@@ -5837,10 +5831,10 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
-  react-dom@18.2.0:
-    resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
+  react-dom@19.0.0:
+    resolution: {integrity: sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==}
     peerDependencies:
-      react: ^18.2.0
+      react: ^19.0.0
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -5851,8 +5845,8 @@ packages:
   react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
 
-  react@18.2.0:
-    resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
+  react@19.0.0:
+    resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
 
   read-cmd-shim@4.0.0:
@@ -6116,8 +6110,8 @@ packages:
   sax@1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
 
-  scheduler@0.23.0:
-    resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
+  scheduler@0.25.0:
+    resolution: {integrity: sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==}
 
   section-matter@1.0.0:
     resolution: {integrity: sha512-vfD3pmTzGpufjScBh50YHKzEu2lxBWhVEHsNGoEXmCmn2hKGfeNLYMzCJpe8cD7gqX7TJluOVpBkAequ6dgMmA==}
@@ -10026,16 +10020,12 @@ snapshots:
 
   '@types/primer__octicons@19.11.0': {}
 
-  '@types/prop-types@15.7.5': {}
-
-  '@types/react-dom@18.0.11':
+  '@types/react-dom@19.0.1':
     dependencies:
-      '@types/react': 18.0.33
+      '@types/react': 19.0.1
 
-  '@types/react@18.0.33':
+  '@types/react@19.0.1':
     dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.3
       csstype: 3.1.2
 
   '@types/responselike@1.0.0':
@@ -10045,8 +10035,6 @@ snapshots:
   '@types/sax@1.2.4':
     dependencies:
       '@types/node': 18.19.28
-
-  '@types/scheduler@0.16.3': {}
 
   '@types/semver@7.5.8': {}
 
@@ -14561,11 +14549,10 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-dom@18.2.0(react@18.2.0):
+  react-dom@19.0.0(react@19.0.0):
     dependencies:
-      loose-envify: 1.4.0
-      react: 18.2.0
-      scheduler: 0.23.0
+      react: 19.0.0
+      scheduler: 0.25.0
 
   react-is@16.13.1: {}
 
@@ -14573,9 +14560,7 @@ snapshots:
 
   react-is@18.2.0: {}
 
-  react@18.2.0:
-    dependencies:
-      loose-envify: 1.4.0
+  react@19.0.0: {}
 
   read-cmd-shim@4.0.0: {}
 
@@ -14942,9 +14927,7 @@ snapshots:
 
   sax@1.2.4: {}
 
-  scheduler@0.23.0:
-    dependencies:
-      loose-envify: 1.4.0
+  scheduler@0.25.0: {}
 
   section-matter@1.0.0:
     dependencies:
