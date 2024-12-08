@@ -14,7 +14,7 @@ defaults:
     shell: pwsh
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 22
 
 jobs:
   ci:
@@ -37,17 +37,11 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
+          ref: ${{ inputs.branch_name }}
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          registry-url: https://registry.npmjs.org
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Download Build
         uses: actions/download-artifact@v4
@@ -56,7 +50,7 @@ jobs:
           path: ./dist
 
       - name: Publish
-        run: npx nx run-many --target publish
+        run: pnpm nx run-many --target publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -93,16 +87,11 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
+          ref: ${{ inputs.branch_name }}
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Download Build
         uses: actions/download-artifact@v4
@@ -111,7 +100,7 @@ jobs:
           path: ./dist
 
       - name: Pack assets
-        run: npx nx run-many --target pack
+        run: pnpm nx run-many --target pack
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
