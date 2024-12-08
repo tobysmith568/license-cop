@@ -14,6 +14,7 @@
     "@astrojs/mdx": "^2.0.2",
     "@astrojs/sitemap": "^3.0.3",
     "@nx/cypress": "19.8.2",
+    "@nx/devkit": "^20.2.1",
     "@nx/eslint": "19.8.2",
     "@nx/eslint-plugin": "19.8.2",
     "@nx/jest": "19.8.2",
@@ -35,6 +36,7 @@
     "@typescript-eslint/parser": "7.18.0",
     "astro": "^4.16.3",
     "astro-webmanifest": "^1.0.0",
+    "chalk": "^5.3.0",
     "cspell": "^8.0.0",
     "cypress": "^13.15.1",
     "eslint": "8.57.1",
@@ -69,6 +71,7 @@
     "cosmiconfig": "^9.0.0",
     "deepmerge": "^4.3.1",
     "git-filesystem": "^0.0.6",
+    "hastscript": "^9.0.0",
     "json5": "^2.2.3",
     "tslib": "^2.3.0",
     "zod": "^3.23.8"

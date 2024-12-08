@@ -41,6 +41,9 @@ importers:
       git-filesystem:
         specifier: ^0.0.6
         version: 0.0.6(encoding@0.1.13)(graphql@16.9.0)
+      hastscript:
+        specifier: ^9.0.0
+        version: 9.0.0
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -60,6 +63,9 @@ importers:
       '@nx/cypress':
         specifier: 19.8.2
         version: 19.8.2(@babel/traverse@7.25.7)(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@18.19.28)(@zkochan/js-yaml@0.0.7)(cypress@13.15.1)(eslint@8.57.1)(nx@19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13)))(typescript@5.6.3)
+      '@nx/devkit':
+        specifier: ^20.2.1
+        version: 20.2.1(nx@19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13)))
       '@nx/eslint':
         specifier: 19.8.2
         version: 19.8.2(@babel/traverse@7.25.7)(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@18.19.28)(@zkochan/js-yaml@0.0.7)(eslint@8.57.1)(nx@19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13)))
@@ -123,6 +129,9 @@ importers:
       astro-webmanifest:
         specifier: ^1.0.0
         version: 1.0.0
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
       cspell:
         specifier: ^8.0.0
         version: 8.0.0
@@ -1589,6 +1598,11 @@ packages:
     resolution: {integrity: sha512-SoCPy24hkzyrANbZhc3/40uWXnOIISC0jk49BcapC9Zykv9/8lCxiaNtB68b00QKEFISkxOeA703D7GCC4sA0Q==}
     peerDependencies:
       nx: '>= 17 <= 20'
+
+  '@nx/devkit@20.2.1':
+    resolution: {integrity: sha512-boNTu7Z7oHkYjrYg5Wzg+cQfbEJ2nntRj1eI99w8mp4qz2B4PEEjJOB0BZafR54ZcKpGEbyp/QBB945GsjTUbw==}
+    peerDependencies:
+      nx: '>= 19 <= 21'
 
   '@nx/eslint-plugin@19.8.2':
     resolution: {integrity: sha512-BT6xJMumoc7NhM9xc+zOzeDB7/N/XSrYseqyQW6vmhRlTp6VJnheh7MfpC4RgcrKT1QWxRNbGppZKD/SCZl3Qw==}
@@ -4171,6 +4185,9 @@ packages:
 
   hastscript@8.0.0:
     resolution: {integrity: sha512-dMOtzCEd3ABUeSIISmrETiKuyydk1w0pa+gE/uormcTpSYuaNJPbX1NU3JLyscSLjwAQM8bWMhhIlnCqnRvDTw==}
+
+  hastscript@9.0.0:
+    resolution: {integrity: sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw==}
 
   hosted-git-info@4.1.0:
     resolution: {integrity: sha512-kyCuEOWjJqZuDbRHzL8V93NzQhwIB71oFWSyzVo+KPZI+pnQPPxucdkrOZvkLRnrf5URsQM+IJ09Dw29cRALIA==}
@@ -8958,6 +8975,18 @@ snapshots:
       tslib: 2.6.2
       yargs-parser: 21.1.1
 
+  '@nx/devkit@20.2.1(nx@19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13)))':
+    dependencies:
+      ejs: 3.1.10
+      enquirer: 2.3.6
+      ignore: 5.3.1
+      minimatch: 9.0.3
+      nx: 19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13))
+      semver: 7.6.3
+      tmp: 0.2.3
+      tslib: 2.6.2
+      yargs-parser: 21.1.1
+
   '@nx/eslint-plugin@19.8.2(@babel/traverse@7.25.7)(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@18.19.28)(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.6.3))(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint@8.57.1)(nx@19.8.2(@swc/core@1.7.42(@swc/helpers@0.5.13)))(typescript@5.6.3)':
     dependencies:
       '@eslint/compat': 1.1.1
@@ -12319,6 +12348,14 @@ snapshots:
       '@types/hast': 3.0.4
 
   hastscript@8.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      comma-separated-tokens: 2.0.3
+      hast-util-parse-selector: 4.0.0
+      property-information: 6.4.0
+      space-separated-tokens: 2.0.2
+
+  hastscript@9.0.0:
     dependencies:
       '@types/hast': 3.0.4
       comma-separated-tokens: 2.0.3
