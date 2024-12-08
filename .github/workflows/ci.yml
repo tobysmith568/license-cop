@@ -96,8 +96,8 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  licenses:
-    name: Check Licenses
+  local-licenses:
+    name: Check Licenses using Build
 
     needs:
       - build
@@ -118,7 +118,31 @@ jobs:
           path: ./dist
 
       - name: Check licenses
-        run: pnpm exec ./dist/packages/license-cop
+        run: node ./dist/packages/license-cop/src/bin/license-cop
+
+  published-licenses:
+    name: Check Licenses using the Published Version
+
+    needs:
+      - build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
+        with:
+          ref: ${{ inputs.branch_name }}
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download Build
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./dist
+
+      - name: Check licenses
+        run: pnpm license-cop
 
   e2e:
     name: E2E Test License-Cop
@@ -168,5 +192,8 @@ jobs:
           name: build
           path: ./dist
 
+      - name: Install Cypress
+        run: pnpm cypress install
+
       - name: Run E2E Tests
-        run: pnpm start-server-and-test 'nx run website:serve' http://localhost:4321 'nx run website-e2e:e2e:ci'
+        run: pnpm start-server-and-test 'pnpm nx run website:serve' http://localhost:4321 'pnpm nx run website-e2e:e2e:ci'
