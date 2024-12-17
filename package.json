@@ -63,7 +63,7 @@
   "dependencies": {
     "@commander-js/extra-typings": "^12.0.0",
     "@npmcli/arborist": "^9.0.0",
-    "@pnpm/reviewing.dependencies-hierarchy": "^900.0.0",
+    "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
     "@primer/octicons": "^19.0.0",
     "@swc/helpers": "0.5.13",
     "axios": "^1.7.7",
