@@ -92,7 +92,7 @@ jobs:
         run: pnpm nx run-many --target test --configuration ci
 
       - name: Codecov
-        uses: codecov/codecov-action@v5.1.1
+        uses: codecov/codecov-action@v5.1.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
