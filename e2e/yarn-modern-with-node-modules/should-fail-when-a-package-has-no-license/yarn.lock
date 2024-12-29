@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/no-license-test-package@npm:0.0.1":
   version: 0.0.1
   resolution: "@license-cop/no-license-test-package@npm:0.0.1"
-  checksum: fcb06cc49d7c126c1542c8b6d97de968d427b0374590bdb2c26a2fe333fee94be160c258d244b3f6f2424bbc7ac0d827d0c951e3236b73a0a088ef0e78e2272e
+  checksum: 8/fcb06cc49d7c126c1542c8b6d97de968d427b0374590bdb2c26a2fe333fee94be160c258d244b3f6f2424bbc7ac0d827d0c951e3236b73a0a088ef0e78e2272e
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-fail-when-a-package-has-no-license@workspace:."
   dependencies:
-    "@license-cop/no-license-test-package": 0.0.1
+    "@license-cop/no-license-test-package": "npm:0.0.1"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
