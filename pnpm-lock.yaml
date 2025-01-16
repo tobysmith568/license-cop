@@ -106,8 +106,8 @@ importers:
         specifier: ^18.16.9
         version: 18.19.28
       '@types/npmcli__arborist':
-        specifier: ^5.6.1
-        version: 5.6.1
+        specifier: ^6.0.0
+        version: 6.3.0
       '@types/primer__octicons':
         specifier: ^19.11.0
         version: 19.11.0
@@ -2503,8 +2503,8 @@ packages:
   '@types/npm-registry-fetch@8.0.4':
     resolution: {integrity: sha512-R9yEj6+NDmXLpKNS19cIaMyaHfV0aHjy/1qbo8K9jiHyjyaYg0CEmuOV/L0Q91DZDi3SuxlYY+2XYwh9TbB+eQ==}
 
-  '@types/npmcli__arborist@5.6.1':
-    resolution: {integrity: sha512-P1yTbo37AGiSupaqIvMfucZs4ok9Qntm4pBodz6bpGmpvKX649pDMJx+woJ4sUDVa+qh03Ihy2gXUlDWPhR+yQ==}
+  '@types/npmcli__arborist@6.3.0':
+    resolution: {integrity: sha512-CXkuOBZDlcb+r0UMlmEAq3XOUZrL9XfZ2MXIwCSo726OBkkg+UIWlZ9h3n6To9w1WqMEIOZT2LkerhLgnsPV+Q==}
 
   '@types/npmcli__package-json@2.0.0':
     resolution: {integrity: sha512-8/+/ZIuh9aZjW8QIrnpRwUqUoEXCQePzH03WRZSx+3RtBZhQI4ytVRVsfhMjYtxZpJiepXLW27WKPfDl2o/i8Q==}
@@ -10564,10 +10564,11 @@ snapshots:
       '@types/npmlog': 4.1.4
       '@types/ssri': 7.1.1
 
-  '@types/npmcli__arborist@5.6.1':
+  '@types/npmcli__arborist@6.3.0':
     dependencies:
       '@npm/types': 1.0.2
       '@types/cacache': 15.0.1
+      '@types/node': 18.19.28
       '@types/npmcli__package-json': 2.0.0
       '@types/pacote': 11.1.5
 
