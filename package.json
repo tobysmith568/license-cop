@@ -43,7 +43,7 @@
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-cypress": "^3.0.0",
-    "generate-license-file": "^3.5.1",
+    "generate-license-file": "^4.0.0",
     "jest": "29.7.0",
     "jest-environment-node": "^29.4.1",
     "npm-publish-latest-tag": "^1.1.3",
