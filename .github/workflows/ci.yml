@@ -139,19 +139,34 @@ jobs:
         run: pnpm dlx license-cop
 
   e2e:
-    name: E2E Test License-Cop
-
     needs:
       - build
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: Ubuntu
+            value: ubuntu-latest
+          - name: MacOS
+            value: macos-latest
+          - name: Windows
+            value: windows-latest
+        node:
+          - 20
+          - 22
+          - 23
+
+    name: E2E Test License-Cop (Node ${{ matrix.node }} on ${{ matrix.os.name }})
+
+    runs-on: ${{ matrix.os.value }}
 
     steps:
       - name: Checkout
         uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
           ref: ${{ inputs.branch_name }}
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ matrix.node }}
 
       - name: Install Package Managers
         run: corepack enable
