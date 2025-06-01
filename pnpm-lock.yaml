@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^13.0.0
-        version: 13.1.0(commander@13.1.0)
+        specifier: ^14.0.0
+        version: 14.0.0(commander@14.0.0)
       '@npmcli/arborist':
         specifier: ^9.0.0
         version: 9.0.0
@@ -27,8 +27,8 @@ importers:
         specifier: ^1.7.7
         version: 1.8.2(debug@4.3.4)
       commander:
-        specifier: ^13.0.0
-        version: 13.1.0
+        specifier: ^14.0.0
+        version: 14.0.0
       compare-versions:
         specifier: ^6.1.1
         version: 6.1.1
@@ -954,6 +954,11 @@ packages:
     resolution: {integrity: sha512-q5P52BYb1hwVWE6dtID7VvuJWrlfbCv4klj7BjUUOqMz4jbSZD4C9fJ9lRjL2jnBGTg+gDDlaXN51rkWcLk4fg==}
     peerDependencies:
       commander: ~13.1.0
+
+  '@commander-js/extra-typings@14.0.0':
+    resolution: {integrity: sha512-hIn0ncNaJRLkZrxBIp5AsW/eXEHNKYQBh0aPdoUqNgD+Io3NIykQqpKFyKcuasZhicGaEZJX/JBSIkZ4e5x8Dg==}
+    peerDependencies:
+      commander: ~14.0.0
 
   '@cspell/cspell-bundled-dicts@9.0.2':
     resolution: {integrity: sha512-gGFSfVIvYtO95O3Yhcd1o0sOZHjVaCPwYq3MnaNsBBzaMviIZli4FZW9Z+XNKsgo1zRzbl2SdOXJPP0VcyAY0A==}
@@ -8145,6 +8150,10 @@ snapshots:
   '@commander-js/extra-typings@13.1.0(commander@13.1.0)':
     dependencies:
       commander: 13.1.0
+
+  '@commander-js/extra-typings@14.0.0(commander@14.0.0)':
+    dependencies:
+      commander: 14.0.0
 
   '@cspell/cspell-bundled-dicts@9.0.2':
     dependencies:
