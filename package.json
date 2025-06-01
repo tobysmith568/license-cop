@@ -75,7 +75,7 @@
     "hastscript": "^9.0.0",
     "json5": "^2.2.3",
     "tslib": "^2.3.0",
-    "zod": "^3.23.8"
+    "zod": "^3.25.46"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
