@@ -41,7 +41,7 @@
     "cspell": "^9.0.0",
     "cypress": "^13.15.1",
     "eslint": "8.57.1",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "9.1.2",
     "eslint-plugin-cypress": "^3.0.0",
     "generate-license-file": "^4.0.0",
     "jest": "30.0.4",
