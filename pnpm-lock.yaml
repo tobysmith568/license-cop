@@ -187,8 +187,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       ts-jest:
-        specifier: 29.4.0
-        version: 29.4.0(@babel/core@7.28.0)(@jest/transform@30.0.5)(@jest/types@30.0.5)(babel-jest@30.0.5(@babel/core@7.28.0))(jest-util@30.0.5)(jest@30.0.5(@types/node@22.15.29)(ts-node@10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2)))(typescript@5.9.2)
+        specifier: 29.4.1
+        version: 29.4.1(@babel/core@7.28.0)(@jest/transform@30.0.5)(@jest/types@30.0.5)(babel-jest@30.0.5(@babel/core@7.28.0))(jest-util@30.0.5)(jest@30.0.5(@types/node@22.15.29)(ts-node@10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2)))(typescript@5.9.2)
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2)
@@ -4517,6 +4517,11 @@ packages:
     resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
     engines: {node: '>=6.0'}
 
+  handlebars@4.7.8:
+    resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
+    engines: {node: '>=0.4.7'}
+    hasBin: true
+
   harmony-reflect@1.6.2:
     resolution: {integrity: sha512-HIp/n38R9kQjDEziXyDTuW3vvoxxyxjxFzXLrBr18uB47GnSt+G9D29fqrpM5ZkspMcPICud3XsBJQ4Y2URg8g==}
 
@@ -5845,6 +5850,9 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
+  neo-async@2.6.2:
+    resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+
   neotraverse@0.6.18:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
     engines: {node: '>= 10'}
@@ -7086,8 +7094,8 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-jest@29.4.0:
-    resolution: {integrity: sha512-d423TJMnJGu80/eSgfQ5w/R+0zFJvdtTxwtF9KzFFunOpSeD+79lHJQIiAhluJoyGRbvj9NZJsl9WjCUo0ND7Q==}
+  ts-jest@29.4.1:
+    resolution: {integrity: sha512-SaeUtjfpg9Uqu8IbeDKtdaS0g8lS6FT6OzM3ezrDfErPJPHNDo/Ey+VFGP1bQIDfagYDLyRpd7O15XpG1Es2Uw==}
     engines: {node: ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -7229,6 +7237,11 @@ packages:
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
+    hasBin: true
+
+  uglify-js@3.19.3:
+    resolution: {integrity: sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ==}
+    engines: {node: '>=0.8.0'}
     hasBin: true
 
   unbox-primitive@1.0.2:
@@ -7511,6 +7524,9 @@ packages:
   widest-line@5.0.0:
     resolution: {integrity: sha512-c9bZp7b5YtRj2wOe6dlj32MK+Bx/M/d+9VB2SHM1OtsUHR0aV0tdP6DWh/iMt0kWi1t5g1Iudu6hQRNd1A4PVA==}
     engines: {node: '>=18'}
+
+  wordwrap@1.0.0:
+    resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
 
   wrap-ansi@6.2.0:
     resolution: {integrity: sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==}
@@ -13256,6 +13272,15 @@ snapshots:
       section-matter: 1.0.0
       strip-bom-string: 1.0.0
 
+  handlebars@4.7.8:
+    dependencies:
+      minimist: 1.2.8
+      neo-async: 2.6.2
+      source-map: 0.6.1
+      wordwrap: 1.0.0
+    optionalDependencies:
+      uglify-js: 3.19.3
+
   harmony-reflect@1.6.2: {}
 
   has-bigints@1.0.2: {}
@@ -15311,6 +15336,8 @@ snapshots:
 
   negotiator@1.0.0: {}
 
+  neo-async@2.6.2: {}
+
   neotraverse@0.6.18: {}
 
   nice-napi@1.0.2:
@@ -16836,11 +16863,11 @@ snapshots:
     dependencies:
       typescript: 5.9.2
 
-  ts-jest@29.4.0(@babel/core@7.28.0)(@jest/transform@30.0.5)(@jest/types@30.0.5)(babel-jest@30.0.5(@babel/core@7.28.0))(jest-util@30.0.5)(jest@30.0.5(@types/node@22.15.29)(ts-node@10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2)))(typescript@5.9.2):
+  ts-jest@29.4.1(@babel/core@7.28.0)(@jest/transform@30.0.5)(@jest/types@30.0.5)(babel-jest@30.0.5(@babel/core@7.28.0))(jest-util@30.0.5)(jest@30.0.5(@types/node@22.15.29)(ts-node@10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2)))(typescript@5.9.2):
     dependencies:
       bs-logger: 0.2.6
-      ejs: 3.1.10
       fast-json-stable-stringify: 2.1.0
+      handlebars: 4.7.8
       jest: 30.0.5(@types/node@22.15.29)(ts-node@10.9.2(@swc/core@1.7.42(@swc/helpers@0.5.13))(@types/node@22.15.29)(typescript@5.9.2))
       json5: 2.2.3
       lodash.memoize: 4.1.2
@@ -17000,6 +17027,9 @@ snapshots:
   typescript@5.6.3: {}
 
   typescript@5.9.2: {}
+
+  uglify-js@3.19.3:
+    optional: true
 
   unbox-primitive@1.0.2:
     dependencies:
@@ -17347,6 +17377,8 @@ snapshots:
   widest-line@5.0.0:
     dependencies:
       string-width: 7.2.0
+
+  wordwrap@1.0.0: {}
 
   wrap-ansi@6.2.0:
     dependencies:
