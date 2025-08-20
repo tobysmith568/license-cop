@@ -35,7 +35,7 @@
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "@typescript-eslint/utils": "^8.13.0",
-    "astro": "^4.16.18",
+    "astro": "^4.16.19",
     "astro-webmanifest": "^1.0.0",
     "chalk": "^5.3.0",
     "cspell": "^9.0.0",
