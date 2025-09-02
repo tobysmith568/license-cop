@@ -44,7 +44,7 @@
     "eslint-config-prettier": "9.1.2",
     "eslint-plugin-cypress": "^3.0.0",
     "generate-license-file": "^4.0.0",
-    "jest": "30.1.2",
+    "jest": "30.1.3",
     "jest-environment-node": "^30.0.0",
     "npm-publish-latest-tag": "^1.1.3",
     "nx": "20.2.1",
