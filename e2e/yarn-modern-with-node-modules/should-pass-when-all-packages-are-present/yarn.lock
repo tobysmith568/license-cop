@@ -2,20 +2,20 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/isc-test-package@npm:latest":
   version: 0.0.1
   resolution: "@license-cop/isc-test-package@npm:0.0.1"
-  checksum: 21978ea00c57061901179bd03923c1194480967745a6d74f9b9bc4875f8d336f8e7aadf72e6a484c1581a0ef8fed079306a6a4327142926e5d9dc7845be3745e
+  checksum: 8/21978ea00c57061901179bd03923c1194480967745a6d74f9b9bc4875f8d336f8e7aadf72e6a484c1581a0ef8fed079306a6a4327142926e5d9dc7845be3745e
   languageName: node
   linkType: hard
 
 "@license-cop/mit-test-package@npm:latest":
   version: 0.0.1
   resolution: "@license-cop/mit-test-package@npm:0.0.1"
-  checksum: 9720d8887f463749e27a23e2701c17b0b394f59d7ba296c8ad3db2df197d7e825171fdd44f5dce3e8a1991b8250e1c9a722b9259a4fee911173c105b222e49a5
+  checksum: 8/9720d8887f463749e27a23e2701c17b0b394f59d7ba296c8ad3db2df197d7e825171fdd44f5dce3e8a1991b8250e1c9a722b9259a4fee911173c105b222e49a5
   languageName: node
   linkType: hard
 
@@ -23,8 +23,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-pass-when-all-packages-are-present@workspace:."
   dependencies:
-    "@license-cop/isc-test-package": latest
-    "@license-cop/mit-test-package": latest
+    "@license-cop/isc-test-package": "npm:latest"
+    "@license-cop/mit-test-package": "npm:latest"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
