@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/mit-test-package@npm:4.5.6":
   version: 4.5.6
   resolution: "@license-cop/mit-test-package@npm:4.5.6"
-  checksum: a47cfa535d0d2fddc74131ed41a406bafd53ab41aafbbfa637b855144fe1c626866feaec51dc78839db66cfe68af40cf69093899c8d8fa17edef0b0b3fb3bd01
+  checksum: 8/a47cfa535d0d2fddc74131ed41a406bafd53ab41aafbbfa637b855144fe1c626866feaec51dc78839db66cfe68af40cf69093899c8d8fa17edef0b0b3fb3bd01
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-pass-when-a-package-is-within-its-semver-range@workspace:."
   dependencies:
-    "@license-cop/mit-test-package": 4.5.6
+    "@license-cop/mit-test-package": "npm:4.5.6"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
