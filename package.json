@@ -57,7 +57,7 @@
     "start-server-and-test": "^2.0.3",
     "ts-jest": "29.4.4",
     "ts-node": "10.9.2",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "unist-util-visit": "^5.0.0"
   },
   "dependencies": {
