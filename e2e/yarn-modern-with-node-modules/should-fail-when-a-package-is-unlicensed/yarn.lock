@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/unlicensed-test-package@npm:0.0.1":
   version: 0.0.1
   resolution: "@license-cop/unlicensed-test-package@npm:0.0.1"
-  checksum: 18ed0655aabdf3f460d3fa777f77a8277111f0d063be3af15312c41febc133bcd88a1fb4edfe3c5c5fe6d0d2740c47f97984e96d0bb647d324ca3c359431ae07
+  checksum: 8/18ed0655aabdf3f460d3fa777f77a8277111f0d063be3af15312c41febc133bcd88a1fb4edfe3c5c5fe6d0d2740c47f97984e96d0bb647d324ca3c359431ae07
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-fail-when-a-package-is-unlicensed@workspace:."
   dependencies:
-    "@license-cop/unlicensed-test-package": 0.0.1
+    "@license-cop/unlicensed-test-package": "npm:0.0.1"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
