@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload E2E screenshots
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: E2E Screenshots
           path: dist/cypress/apps/website-e2e/screenshots/
@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload E2E videos
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: E2E Videos
           path: dist/cypress/apps/website-e2e/videos/
