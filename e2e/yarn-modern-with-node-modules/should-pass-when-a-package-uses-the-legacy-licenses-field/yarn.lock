@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@license-cop/isc-legacy-test-package@npm:0.0.1":
   version: 0.0.1
   resolution: "@license-cop/isc-legacy-test-package@npm:0.0.1"
-  checksum: ec1392d8a6c724e5bdd738c1595837fb780ec0a905082d096d5f039ad9cc4f30e5d341abb5bfcaadb2cd059021fa1537acb5da5ef6435dd31d2aaf2c091489d3
+  checksum: 8/ec1392d8a6c724e5bdd738c1595837fb780ec0a905082d096d5f039ad9cc4f30e5d341abb5bfcaadb2cd059021fa1537acb5da5ef6435dd31d2aaf2c091489d3
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "should-pass-when-a-package-uses-the-legacy-licenses-field@workspace:."
   dependencies:
-    "@license-cop/isc-legacy-test-package": 0.0.1
+    "@license-cop/isc-legacy-test-package": "npm:0.0.1"
   peerDependencies:
     "@swc/helpers": "*"
   languageName: unknown
