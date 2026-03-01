@@ -23,6 +23,7 @@ jobs:
     with:
       version: ${{ inputs.version }}
       branch_name: main
+      is_release: true
     secrets: inherit
 
   publish:
