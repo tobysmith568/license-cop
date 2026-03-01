@@ -1,9 +1,9 @@
 ---
 import { getProjectLicenses } from "generate-license-file";
 import DocsLayout from "../layouts/DocsLayout.astro";
-import {join} from "path";
+import { join } from "path";
 
-const packageJsonPath = join(process.cwd(),  "../../package.json");
+const packageJsonPath = join(process.cwd(), "../../package.json");
 const licenses = await getProjectLicenses(packageJsonPath);
 
 const getPackageUrl = (packageNameAndVersion: string) => {

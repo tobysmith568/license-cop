@@ -12,7 +12,7 @@ export interface Props {
 const { title, metaDescription, noIndex, navbarColor } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -43,8 +43,8 @@ const { title, metaDescription, noIndex, navbarColor } = Astro.props;
 </html>
 
 <style is:global lang="scss">
-  @import "../styles/vars.scss";
-  @import "../styles/admonitions.scss";
+  @use "../styles/vars.scss" as *;
+  @use "../styles/admonitions.scss";
 
   html {
     font-family: system-ui, sans-serif;
