@@ -1,7 +1,4 @@
-import {
-  buildDependenciesHierarchy,
-  type PackageNode
-} from "@pnpm/reviewing.dependencies-hierarchy";
+import { buildDependenciesTree, DependencyNode } from "@pnpm/reviewing.dependencies-hierarchy";
 import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
 import { isAllowedPackage } from "../dependency/package-rules";
@@ -34,7 +31,7 @@ export const pnpmDependencyScanning = async (
   const packagesWithNoLicenses = new Map<string, NoLicenseResult>();
   const packagesWithForbiddenLicenses = new Map<string, ForbiddenLicenseResult>();
 
-  const dependencyHierarchies = await buildDependenciesHierarchy([workingDirectory], {
+  const dependencyHierarchies = await buildDependenciesTree([workingDirectory], {
     depth: Infinity,
     include: {
       dependencies: !devDependenciesOnly,
@@ -47,7 +44,7 @@ export const pnpmDependencyScanning = async (
 
   // This function is very similar to the one in npm.ts
   // If you change this, you probably want to change that one too
-  const parseNode = async (node: PackageNode) => {
+  const parseNode = async (node: DependencyNode) => {
     logger.verbose(`Parsing node: ${node.name}`);
 
     const pkgId = `${node.alias}@${node.version}`;
@@ -105,7 +102,7 @@ export const pnpmDependencyScanning = async (
     await parseNodes(node.dependencies);
   };
 
-  const parseNodes = async (nodes: PackageNode[] | undefined) => {
+  const parseNodes = async (nodes: DependencyNode[] | undefined) => {
     if (!nodes) {
       return;
     }
