@@ -52,8 +52,6 @@ jobs:
 
       - name: Publish
         run: pnpm nx run-many --target publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   purge-jsdelivr:
     name: Purge JsDelivr
