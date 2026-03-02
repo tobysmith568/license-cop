@@ -117,7 +117,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build
           path: ./dist
@@ -181,7 +181,7 @@ jobs:
         run: corepack enable
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build
           path: ./dist
@@ -205,7 +205,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build
           path: ./dist
