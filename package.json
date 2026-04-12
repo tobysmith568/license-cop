@@ -67,7 +67,7 @@
     "@pnpm/reviewing.dependencies-hierarchy": "^1001.3.2",
     "@primer/octicons": "^19.22.0",
     "@swc/helpers": "0.5.19",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "commander": "^14.0.3",
     "compare-versions": "^6.1.1",
     "cosmiconfig": "^9.0.0",
