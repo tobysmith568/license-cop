@@ -11,7 +11,7 @@
     "lint": "npx nx run-many --target lint --max-warnings 0"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/mdx": "^5.0.0",
     "@astrojs/sitemap": "^3.7.0",
     "@nx/cypress": "20.2.1",
     "@nx/devkit": "20.2.1",
