@@ -1,5 +1,8 @@
 tmp/
 .nx/
+/apps/website-e2e/playwright-report/
+/apps/website-e2e/test-results/
+/apps/website-e2e/blob-report/
 # Created by https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,visualstudiocode,rider
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,windows,visualstudiocode,rider
 

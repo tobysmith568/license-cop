@@ -1,48 +1,50 @@
+import { Locator, Page, expect } from "@playwright/test";
+
 export class HeaderComponent {
-  constructor() {
-    this.navigation().should("exist");
+  private readonly navigation: Locator;
+
+  constructor(page: Page) {
+    this.navigation = page.getByRole("navigation");
   }
 
-  containsAnIndexLink = () =>
-    this.navigation().within(() =>
-      cy.findByRole("link", { name: "Home" }).should("exist").and("have.attr", "href", "/")
-    );
+  containsAnIndexLink = async () => {
+    const link = this.navigation.getByRole("link", { name: "Home", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/");
+  };
 
-  containsADocsLink = () =>
-    this.navigation().within(() =>
-      cy.findByRole("link", { name: "Docs" }).should("exist").and("have.attr", "href", "/docs")
-    );
+  containsADocsLink = async () => {
+    const link = this.navigation.getByRole("link", { name: "Docs", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/docs");
+  };
 
-  containsAPermissiveLink = () =>
-    this.navigation().within(() =>
-      cy
-        .findByRole("link", { name: "@license-cop/permissive" })
-        .should("exist")
-        .and("have.attr", "href", "/permissive")
-    );
+  containsAPermissiveLink = async () => {
+    const link = this.navigation.getByRole("link", {
+      name: "@license-cop/permissive",
+      exact: true
+    });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/permissive");
+  };
 
-  containsAShieldLink = () =>
-    this.navigation().within(() =>
-      cy.findByRole("link", { name: "Shield" }).should("exist").and("have.attr", "href", "/shield")
-    );
+  containsAShieldLink = async () => {
+    const link = this.navigation.getByRole("link", { name: "Shield", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/shield");
+  };
 
-  containsALinkToGitHub = () =>
-    this.navigation().within(() =>
-      cy
-        .findByRole("link", { name: "GitHub" })
-        .should("exist")
-        .and("have.attr", "href", "https://github.com/tobysmith568/license-cop")
-        .and("have.attr", "target", "_blank")
-    );
+  containsALinkToGitHub = async () => {
+    const link = this.navigation.getByRole("link", { name: "GitHub", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://github.com/tobysmith568/license-cop");
+    await expect(link).toHaveAttribute("target", "_blank");
+  };
 
-  containsALinkToNpm = () =>
-    this.navigation().within(() =>
-      cy
-        .findByRole("link", { name: "npm" })
-        .should("exist")
-        .and("have.attr", "href", "https://npmjs.com/package/license-cop")
-        .and("have.attr", "target", "_blank")
-    );
-
-  private navigation = () => cy.findByRole("navigation");
+  containsALinkToNpm = async () => {
+    const link = this.navigation.getByRole("link", { name: "npm", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://npmjs.com/package/license-cop");
+    await expect(link).toHaveAttribute("target", "_blank");
+  };
 }

@@ -1,29 +1,38 @@
+import { Page, expect } from "@playwright/test";
 import { FooterComponent } from "./components/footer";
 import { HeaderComponent } from "./components/header";
 
 export class ShieldPageObject {
-  header = () => new HeaderComponent();
+  constructor(private readonly page: Page) {}
 
-  containsTheMainHeading = () =>
-    cy.findByRole("heading", { name: /license-cop shield/i, level: 1 }).should("exist");
+  header = () => new HeaderComponent(this.page);
 
-  containsTheBadge = () =>
-    cy
-      .findByRole("img", { name: /protected by: license-cop/i })
-      .should("exist")
-      .should("be.visible")
-      .and(($img: JQuery<HTMLImageElement>) => {
-        expect($img).to.have.length(1);
+  containsTheMainHeading = async () => {
+    await expect(
+      this.page.getByRole("heading", { name: /license-cop shield/i, level: 1 })
+    ).toBeVisible();
+  };
 
-        expect($img[0].naturalWidth).to.be.greaterThan(0);
-        expect($img[0].naturalHeight).to.be.greaterThan(0);
-      });
+  containsTheBadge = async () => {
+    const badge = this.page.getByRole("img", { name: /protected by: license-cop/i });
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveCount(1);
 
-  containsTheHtmlHeader = () =>
-    cy.findByRole("heading", { name: /html/i, level: 2 }).should("exist");
+    const { naturalWidth, naturalHeight } = await badge.evaluate((img: HTMLImageElement) => ({
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight
+    }));
+    expect(naturalWidth).toBeGreaterThan(0);
+    expect(naturalHeight).toBeGreaterThan(0);
+  };
 
-  containsTheMarkdownHeader = () =>
-    cy.findByRole("heading", { name: /markdown/i, level: 2 }).should("exist");
+  containsTheHtmlHeader = async () => {
+    await expect(this.page.getByRole("heading", { name: /html/i, level: 2 })).toBeVisible();
+  };
 
-  footer = () => new FooterComponent();
+  containsTheMarkdownHeader = async () => {
+    await expect(this.page.getByRole("heading", { name: /markdown/i, level: 2 })).toBeVisible();
+  };
+
+  footer = () => new FooterComponent(this.page);
 }

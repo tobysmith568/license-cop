@@ -1,89 +1,78 @@
+import { Locator, Page, expect } from "@playwright/test";
+
 export class FooterComponent {
-  constructor() {
-    this.footer().should("exist");
+  private readonly footer: Locator;
+
+  constructor(page: Page) {
+    this.footer = page.getByRole("contentinfo");
   }
 
-  containsAnIndexLink = () =>
-    this.footer().within(() =>
-      cy.findByRole("link", { name: "Home" }).should("exist").and("have.attr", "href", "/")
-    );
+  containsAnIndexLink = async () => {
+    const link = this.footer.getByRole("link", { name: "Home", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/");
+  };
 
-  containsADocsLink = () =>
-    this.footer().within(() =>
-      cy.findByRole("link", { name: "Docs" }).should("exist").and("have.attr", "href", "/docs")
-    );
+  containsADocsLink = async () => {
+    const link = this.footer.getByRole("link", { name: "Docs", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/docs");
+  };
 
-  containsAPermissiveLink = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "@license-cop/permissive" })
-        .should("exist")
-        .and("have.attr", "href", "/permissive")
-    );
+  containsAPermissiveLink = async () => {
+    const link = this.footer.getByRole("link", { name: "@license-cop/permissive", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/permissive");
+  };
 
-  containsAShieldLink = () =>
-    this.footer().within(() =>
-      cy.findByRole("link", { name: "Shield" }).should("exist").and("have.attr", "href", "/shield")
-    );
+  containsAShieldLink = async () => {
+    const link = this.footer.getByRole("link", { name: "Shield", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/shield");
+  };
 
-  containsALinkToGitHub = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "GitHub" })
-        .should("exist")
-        .and("have.attr", "href", "https://github.com/tobysmith568/license-cop")
-        .and("have.attr", "target", "_blank")
-    );
+  containsALinkToGitHub = async () => {
+    const link = this.footer.getByRole("link", { name: "GitHub", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://github.com/tobysmith568/license-cop");
+    await expect(link).toHaveAttribute("target", "_blank");
+  };
 
-  containsALinkToNpm = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "npm" })
-        .should("exist")
-        .and("have.attr", "href", "https://npmjs.com/package/license-cop")
-        .and("have.attr", "target", "_blank")
-    );
+  containsALinkToNpm = async () => {
+    const link = this.footer.getByRole("link", { name: "npm", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://npmjs.com/package/license-cop");
+    await expect(link).toHaveAttribute("target", "_blank");
+  };
 
-  containsALinkToTheTermsAndConditions = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "Terms & Conditions" })
-        .should("exist")
-        .and("have.attr", "href", "/terms")
-    );
+  containsALinkToTheTermsAndConditions = async () => {
+    const link = this.footer.getByRole("link", { name: "Terms & Conditions", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/terms");
+  };
 
-  containsALinkToThePrivacyPolicy = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "Privacy Policy" })
-        .should("exist")
-        .and("have.attr", "href", "/privacy")
-    );
+  containsALinkToThePrivacyPolicy = async () => {
+    const link = this.footer.getByRole("link", { name: "Privacy Policy", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/privacy");
+  };
 
-  containsALinkToTheCookiesPolicy = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "Cookies" })
-        .should("exist")
-        .and("have.attr", "href", "/cookies")
-    );
+  containsALinkToTheCookiesPolicy = async () => {
+    const link = this.footer.getByRole("link", { name: "Cookies", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/cookies");
+  };
 
-  containsALinkToTheThirdPartyContentNotices = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "Third-party Content" })
-        .should("exist")
-        .and("have.attr", "href", "/third-party")
-    );
+  containsALinkToTheThirdPartyContentNotices = async () => {
+    const link = this.footer.getByRole("link", { name: "Third-party Content", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/third-party");
+  };
 
-  containsALinkToTobySmithDotUk = () =>
-    this.footer().within(() =>
-      cy
-        .findByRole("link", { name: "Toby Smith" })
-        .should("exist")
-        .and("have.attr", "href", "https://tobysmith.uk")
-        .and("have.attr", "target", "_blank")
-    );
-
-  private footer = () => cy.findByRole("contentinfo");
+  containsALinkToTobySmithDotUk = async () => {
+    const link = this.footer.getByRole("link", { name: "Toby Smith", exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "https://tobysmith.uk");
+    await expect(link).toHaveAttribute("target", "_blank");
+  };
 }

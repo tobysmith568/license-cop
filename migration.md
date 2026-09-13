@@ -251,26 +251,60 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   executor-keyed `"@nx/jest:jest"` entry, which stopped applying the moment these targets switched
   to `nx:run-commands`. That now-orphaned entry was removed.
 
-### 1.4 Cypress → Playwright
+### 1.4 Cypress → Playwright ✅ done
 
-- [ ] Bridge step, done first: swap `website-e2e`'s `e2e` target from `@nx/cypress:cypress` to
+- [x] Bridge step, done first: swap `website-e2e`'s `e2e` target from `@nx/cypress:cypress` to
       `nx:run-commands` running `bunx playwright test`, verified through the existing
       `pnpm nx run-many --target e2e` and existing CI before 1.5 touches anything.
-- [ ] This affects `apps/website-e2e` only (the only Cypress consumer — `packages/license-cop-e2e`
+- [x] This affects `apps/website-e2e` only (the only Cypress consumer — `packages/license-cop-e2e`
       is a Jest/bun:test suite that drives the CLI via `child_process`, not a browser tool, and is
       unaffected by this item).
-- [ ] Install Playwright per-app (`bunx playwright install --with-deps chromium firefox`, cached by
+- [x] Install Playwright per-app (`bunx playwright install --with-deps chromium firefox`, cached by
       `bun.lock`'s hash), and run tests via `bunx playwright test` / `turbo run e2e
       --filter=website-e2e`.
-- [ ] license-cop's existing Cypress suite already uses the page-object pattern
+- [x] license-cop's existing Cypress suite already uses the page-object pattern
       (`apps/website-e2e/src/support/page-objects/*.po.ts`) — that structure translates directly to
       Playwright's `Page`-based fixtures; this is a port of the page objects and specs, not a
-      redesign.
-- [ ] Drop `cypress`, `@nx/cypress`, `@testing-library/cypress`, `eslint-plugin-cypress`,
+      redesign. Each page-object/component class now takes `page: Page` via its constructor instead
+      of reaching for a global `cy`, and every assertion method became `async`.
+- [x] Drop `cypress`, `@nx/cypress`, `@testing-library/cypress`, `eslint-plugin-cypress`,
       `start-server-and-test` (Playwright's own webServer config in `playwright.config.ts` replaces
-      the need to hand-orchestrate "start server, wait, run tests").
-- [ ] Delete `apps/website-e2e/cypress.config.ts`, `.eslintrc.json` cypress override, and
-      `apps/website-e2e/src/support/commands.ts` / `e2e.ts` (Cypress-specific bootstrapping).
+      the need to hand-orchestrate "start server, wait, run tests"). **`eslint-plugin-cypress` was
+      already gone** — 1.2's own found-during-implementation notes record it being dropped back then
+      (it's bundled by `@tobysmith568/eslint-config`), so there was nothing left to remove here.
+- [x] Delete `apps/website-e2e/cypress.config.ts`, `.eslintrc.json` cypress override, and
+      `apps/website-e2e/src/support/commands.ts` / `e2e.ts` (Cypress-specific bootstrapping). **No
+      `.eslintrc.json` cypress override existed to delete** — the repo migrated to flat config
+      (`eslint.config.mjs`) in 1.2, and Cypress's globals there are scoped by the shared config's own
+      `**/*.cy.[cm]?(j|t)s?(x)` glob, not a repo-local override; it simply stops matching anything
+      now that the spec files are `.spec.ts`. Also deleted `src/fixtures/example.json`, Cypress's
+      unused scaffold fixture (nothing in the suite referenced it).
+
+**Found during implementation, not in the original plan:**
+
+- `.github/workflows/website.yml` (the Pages deployment workflow, not just `ci.yml`) has its own
+  `e2e` job with the same Cypress install/`start-server-and-test` invocation and Cypress-specific
+  screenshot/video artifact upload steps — a second Cypress consumer this section's checklist didn't
+  call out. Updated it the same way as `ci.yml`: `bunx playwright install --with-deps chromium
+  firefox` replaces `bunx cypress install`, `bunx nx run website-e2e:e2e` replaces the
+  `start-server-and-test` wrapper (Playwright's own `webServer` config starts/reuses the server), and
+  the screenshot/video artifact uploads became a single `playwright-report/` upload.
+- Playwright's default `outputDir` resolves relative to the *nearest `package.json`*, not the config
+  file's own directory — `apps/website-e2e` has no `package.json` of its own (deliberately, per
+  1.3's note about `packages/license-cop-e2e`), so artifacts were landing in a `test-results/` at the
+  workspace root instead of scoped to the package. Fixed by setting `outputDir: "./test-results"`
+  explicitly in `playwright.config.ts`, which resolves relative to the config file itself.
+- `apps/website-e2e/src/e2e/components/footer.cy.ts`'s `beforeEach` had a latent bug: it always
+  reassigned the loop variable to `new IndexPageObject()` regardless of which page-object the current
+  fixture row actually supplied, so every iteration exercised `IndexPageObject`'s `footer()` rather
+  than the fixture's own. Harmless in practice (`footer()` returns the same `FooterComponent` shape
+  on every page object), but a straightforward port naturally uses the fixture's own factory instead
+  — matching how `header.cy.ts` (no such bug) already did it — so the ported `footer.spec.ts` fixes
+  this along the way rather than carrying it forward.
+- Added `use.screenshot: "only-on-failure"` and `use.video: "retain-on-failure"` plus a CI-only HTML
+  reporter to `playwright.config.ts` — not in the original checklist, but needed to give
+  `website.yml`'s "upload E2E artifacts on failure" step (which existed for Cypress) something
+  equivalent to upload under Playwright.
 
 ### 1.5 nx → turborepo
 

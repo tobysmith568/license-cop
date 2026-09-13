@@ -1,22 +1,31 @@
+import { Page, expect } from "@playwright/test";
 import { FooterComponent } from "./components/footer";
 import { HeaderComponent } from "./components/header";
 
 export class DocsPageObject {
-  header = () => new HeaderComponent();
+  constructor(private readonly page: Page) {}
 
-  containsTheMainHeading = () =>
-    cy.findByRole("heading", { name: /documentation/i, level: 1 }).should("exist");
+  header = () => new HeaderComponent(this.page);
 
-  containsTheSetupHeading = () =>
-    cy.findByRole("heading", { name: /setup/i, level: 2 }).should("exist");
+  containsTheMainHeading = async () => {
+    await expect(
+      this.page.getByRole("heading", { name: /documentation/i, level: 1 })
+    ).toBeVisible();
+  };
 
-  containsTheConfigFileHeading = () =>
-    cy.findByRole("heading", { name: /config file/i, level: 2 }).should("exist");
+  containsTheSetupHeading = async () => {
+    await expect(this.page.getByRole("heading", { name: /setup/i, level: 2 })).toBeVisible();
+  };
 
-  containsTheGitHubCiCdHeading = () =>
-    cy
-      .findByRole("heading", { name: /ci\/cd example \(github actions\)/i, level: 2 })
-      .should("exist");
+  containsTheConfigFileHeading = async () => {
+    await expect(this.page.getByRole("heading", { name: /config file/i, level: 2 })).toBeVisible();
+  };
 
-  footer = () => new FooterComponent();
+  containsTheGitHubCiCdHeading = async () => {
+    await expect(
+      this.page.getByRole("heading", { name: /ci\/cd example \(github actions\)/i, level: 2 })
+    ).toBeVisible();
+  };
+
+  footer = () => new FooterComponent(this.page);
 }

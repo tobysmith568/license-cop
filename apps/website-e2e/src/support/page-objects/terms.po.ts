@@ -1,16 +1,21 @@
+import { Page, expect } from "@playwright/test";
 import { FooterComponent } from "./components/footer";
 import { HeaderComponent } from "./components/header";
 
 export class TermsPageObject {
-  header = () => new HeaderComponent();
+  constructor(private readonly page: Page) {}
 
-  containsTheMainHeading = () =>
-    cy
-      .findByRole("heading", { name: /terms and conditions \(“terms”\)/i, level: 1 })
-      .should("exist");
+  header = () => new HeaderComponent(this.page);
 
-  containsTheContactUsHeading = () =>
-    cy.findByRole("heading", { name: /contact us/i, level: 2 }).should("exist");
+  containsTheMainHeading = async () => {
+    await expect(
+      this.page.getByRole("heading", { name: /terms and conditions \(“terms”\)/i, level: 1 })
+    ).toBeVisible();
+  };
 
-  footer = () => new FooterComponent();
+  containsTheContactUsHeading = async () => {
+    await expect(this.page.getByRole("heading", { name: /contact us/i, level: 2 })).toBeVisible();
+  };
+
+  footer = () => new FooterComponent(this.page);
 }

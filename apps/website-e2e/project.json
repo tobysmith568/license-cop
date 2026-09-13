@@ -6,17 +6,10 @@
   "implicitDependencies": ["website"],
   "targets": {
     "e2e": {
-      "executor": "@nx/cypress:cypress",
+      "executor": "nx:run-commands",
       "options": {
-        "cypressConfig": "apps/website-e2e/cypress.config.ts",
-        "baseUrl": "http://localhost:4321",
-        "testingType": "e2e",
-        "watch": true
-      },
-      "configurations": {
-        "ci": {
-          "watch": false
-        }
+        "command": "bunx playwright test",
+        "cwd": "apps/website-e2e"
       }
     },
     "lint": {

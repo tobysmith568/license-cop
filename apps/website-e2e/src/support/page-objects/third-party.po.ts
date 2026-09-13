@@ -1,22 +1,32 @@
+import { Page, expect } from "@playwright/test";
 import { FooterComponent } from "./components/footer";
 import { HeaderComponent } from "./components/header";
 
 export class ThirdPartyPageObject {
-  header = () => new HeaderComponent();
+  constructor(private readonly page: Page) {}
 
-  containsTheMainHeading = () =>
-    cy.findByRole("heading", { name: /third-party content/i, level: 1 }).should("exist");
+  header = () => new HeaderComponent(this.page);
 
-  containsTheSourcesHeading = () =>
-    cy.findByRole("heading", { name: /sources/i, level: 2 }).should("exist");
+  containsTheMainHeading = async () => {
+    await expect(
+      this.page.getByRole("heading", { name: /third-party content/i, level: 1 })
+    ).toBeVisible();
+  };
 
-  containsTheLicensesHeading = () =>
-    cy.findByRole("heading", { name: /licenses/i, level: 2 }).should("exist");
+  containsTheSourcesHeading = async () => {
+    await expect(this.page.getByRole("heading", { name: /sources/i, level: 2 })).toBeVisible();
+  };
 
-  containsTheGenerateLicenseFileContent = () =>
-    cy
-      .findAllByText(/the following npm packages may be included in this project:/i)
-      .should("have.length.greaterThan", 0);
+  containsTheLicensesHeading = async () => {
+    await expect(this.page.getByRole("heading", { name: /licenses/i, level: 2 })).toBeVisible();
+  };
 
-  footer = () => new FooterComponent();
+  containsTheGenerateLicenseFileContent = async () => {
+    const matches = this.page.getByText(
+      /the following npm packages may be included in this project:/i
+    );
+    expect(await matches.count()).toBeGreaterThan(0);
+  };
+
+  footer = () => new FooterComponent(this.page);
 }
