@@ -16,7 +16,11 @@ order" at the end for the concrete sequencing and dependencies between steps.
   history, so there's no verified reason to swap a working formatter for an unproven one — stay on
   Prettier. ESLint still gets upgraded to latest (see 1.2) since that's independently justified
   (`.eslintrc.json` → flat config) and doesn't touch the formatter question at all; oxlint stays out
-  of scope purely because of its own missing Astro support (also 1.2).
+  of scope purely because of its own missing Astro support. **Correction:** ESLint doesn't have any
+  existing Astro support in this codebase either — `apps/website` (the only place with `.astro`
+  files) currently has no lint target and no `.eslintrc.json` at all. So Astro linting isn't a
+  precedent to preserve through the ESLint upgrade (1.2); it's new functionality, split out into its
+  own milestone (1.7) at the end of Part 1 so 1.2 stays scoped to the version/flat-config migration.
 - **Infrastructure first, architecture second.** The CLI restructure (and the test-coverage work
   it unlocks) is much easier to do once the routine churn (formatter, linter, test runner,
   package manager, task runner) is already settled, so the diff for each is smaller and reviewable
@@ -86,14 +90,19 @@ still assumes a pnpm install — left as-is deliberately, since replacing it wit
 intended sequencing rather than an oversight: CI doesn't need to be green again until Part 1's
 branch actually merges (1.6 included), per this doc's own guiding principles above.
 
-### 1.2 Upgrade ESLint to latest (not oxlint)
+### 1.2 Upgrade ESLint to latest (not oxlint) ✅ done
 
-- [ ] Bridge step, done first: once flat config is in place (below), swap every package's `lint`
+- [x] Bridge step, done first: once flat config is in place (below), swap every package's `lint`
       target from `@nx/eslint:lint` to `nx:run-commands` running `eslint .` (root) / `eslint src`
       (per-package), so the new config is verified through the existing
       `pnpm nx run-many --target lint` and existing CI before 1.5 touches anything.
-- [ ] Bump `eslint` (currently pinned at `8.57.1`) and `@typescript-eslint/*` (currently `7.18.0`)
-      to latest (`eslint@^10`, via `@tobysmith568/eslint-config@^2.7.1`'s flat config). license-cop
+- [x] Bump `eslint` (currently pinned at `8.57.1`) to latest `9.x` (**not** `^10`:
+      `@tobysmith568/eslint-config@^2.7.1`'s own `peerDependencies` pins `eslint: ^9.0.0`, so `^10`
+      is a peer-dependency violation today). Drop `@typescript-eslint/eslint-plugin` and
+      `@typescript-eslint/parser` (currently `7.18.0`) as direct dependencies entirely — flat config
+      pulls `typescript-eslint` in transitively via `@tobysmith568/eslint-config`, and nothing else
+      in the repo imports either package directly (only `.eslintrc.json`'s own rule names reference
+      `@typescript-eslint/*`, which goes away with the legacy config it's part of). license-cop
       is still on the legacy `.eslintrc.json` format (`.eslintrc.json` + `.eslintignore` +
       per-package `.eslintrc.json` overrides); this is also the point to migrate to flat config
       (`eslint.config.mjs`):
@@ -104,14 +113,62 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
         ...tobysmith568.recommended
       ];
       ```
-- [ ] Bump `@tobysmith568/eslint-config` from `^1.1.2` to `^2.x` (breaking major — expect rule
+- [x] Bump `@tobysmith568/eslint-config` from `^1.1.2` to `^2.x` (breaking major — expect rule
       changes to shake out).
-- [ ] Drop the Nx-specific pieces of the current config once 1.5 lands: `@nx/enforce-module-boundaries`
+- [x] Drop the Nx-specific pieces of the current config once 1.5 lands: `@nx/enforce-module-boundaries`
       and the `plugin:@nx/typescript` / `plugin:@nx/javascript` overrides have no turborepo
-      equivalent and simply go away rather than get replaced.
-- [ ] Confirm Astro lint support (`.astro` files, `apps/website-e2e`'s Cypress specs) still works
-      under flat config with the upgraded parser — this is the explicit reason oxlint is off the
-      table for now, so it's worth a real check rather than an assumption once the upgrade lands.
+      equivalent and simply go away rather than get replaced. (1.2's job is only to carry these
+      forward into flat config unchanged — see below — not to drop them; that's still 1.5's job.)
+- [x] Confirm `apps/website-e2e`'s Cypress specs still lint correctly under flat config with the
+      upgraded parser — `@tobysmith568/eslint-config`'s Cypress rules key off a `**/*.cy.ts` glob,
+      which matches this package's spec naming, so this should be a smoke check rather than a real
+      unknown. (`.astro` files are out of scope here — see 1.7: there's no existing Astro lint
+      coverage to carry through this upgrade, since `apps/website` isn't linted at all today.)
+
+**Found during implementation, not in the original plan:**
+
+- Also dropped `eslint-plugin-cypress` and `eslint-config-prettier` as direct devDependencies (the
+  original checklist above only mentions the `@typescript-eslint/*` pair): both are already bundled
+  by `@tobysmith568/eslint-config@2.7.1` and applied internally in its own `base.config.js`, and
+  neither was imported directly anywhere in the repo — the root `.eslintrc.json` only ever extended
+  `@tobysmith568/eslint-config/configs/node`, never either package by name.
+- The real `eslint.config.mjs` is bigger than the sample above: the Nx-specific pieces (previous
+  bullet) needed porting forward too, since dropping them is explicitly deferred to 1.5. `@nx/eslint-
+  plugin@20.2.1` ships an official flat-config surface for this (`configs["flat/base"]`,
+  `["flat/typescript"]`, `["flat/javascript"]` — the same pattern Nx's own generators produce), plus
+  an `@nx/enforce-module-boundaries` rule block carrying forward the exact same options
+  (`enforceBuildableLibDependency`, `allow`, `depConstraints`) from the old root `.eslintrc.json`.
+  The old `@nx/dependency-checks: "off"` override (see 1.1's own found-during-implementation note)
+  needed no equivalent at all — since it was fully disabled already, the new config just never wires
+  that rule up in the first place, which is behaviourally identical with less code.
+- `@typescript-eslint/no-extra-semi` — one of the two rules the `plugin:@nx/typescript` /
+  `plugin:@nx/javascript` overrides existed to configure — no longer exists in modern
+  `typescript-eslint`; it was removed upstream and referencing it throws at config-load time
+  (`Could not find "no-extra-semi" in plugin "@typescript-eslint"`). Dropped the override entirely
+  rather than porting it: plain `no-extra-semi` (already on by default via `eslint:recommended`)
+  handles this correctly under modern parsers, which is exactly why the TS-specific variant was
+  removed upstream in the first place.
+- `eslint src` (per-package) doesn't work universally as originally planned: `packages/permissive`
+  has no `src/` directory at all (it only ships a `.licenses.jsonc` asset — see 2.1's intro). Used
+  `eslint .` (scoped via each `nx:run-commands` target's own `cwd`) for every package instead, which
+  works regardless of a package's internal layout.
+- `--max-warnings 0` moved from the root `nx run-many --target lint` invocation into each project's
+  own `eslint . --max-warnings 0` command — relying on nx to forward an unrecognised flag through to
+  an arbitrary `nx:run-commands` target isn't something to depend on; baking it into each command
+  directly is simpler and unambiguous.
+- The upgrade itself surfaced real, previously-unnoticed issues, fixed in scope rather than deferred:
+  `lib/dependency/get-package-manager.ts`'s `catch (error) { return false; }` had an unused `error`
+  binding that the old `@typescript-eslint` 7.18.0 setup wasn't catching — renamed to `_error` to
+  match the config's `caughtErrorsIgnorePattern`. Separately, four `eslint-disable` comments turned
+  out to be stale under the new rule set (confirmed empirically — ESLint itself reports "unused
+  eslint-disable directive" once nothing on that line trips a rule any more): the blanket
+  `/* eslint-disable */` at the top of all three packages' `jest.config.ts`, and the
+  `// eslint-disable-next-line @typescript-eslint/no-unused-vars` guarding the `commander`-import
+  hack in `packages/license-cop/src/index.ts` (see 1.1's note — the rule it was guarding against,
+  `@nx/dependency-checks`, was already disabled in 1.1, and the underscore-prefixed identifier it
+  disables the rule for already matches the config's own `varsIgnorePattern: "^_"`). Removed all
+  four; the `commander`-import hack itself (the code, not just the disable comment) is untouched —
+  that deletion is still 2.1's job, once `index.ts` is being relocated anyway.
 
 ### 1.3 Jest → bun:test
 
@@ -235,6 +292,25 @@ CodeQL and Pages, so the workflow graph no longer depends on an external repo. C
       `actions/upload-artifact@v7`/`download-artifact@v8`, `github/codeql-action/*@v4`,
       `actions/configure-pages@v6`, `actions/deploy-pages@v5`) rather than license-cop's current
       older pins.
+
+### 1.7 Add Astro linting
+
+New functionality, not a preserved precedent — split out from 1.2 (see that section's correction
+note) once it became clear `apps/website` isn't linted at all today. Done last within Part 1 so it
+lands on top of the already-migrated flat config (1.2) and the already-migrated turborepo scripts
+(1.5) rather than needing its own bridge step through Nx.
+
+- [ ] Add `eslint-plugin-astro` and `astro-eslint-parser` (the plugin's own recommended parser for
+      `.astro` files) as devDependencies.
+- [ ] Extend the root `eslint.config.mjs` (from 1.2) with the plugin's flat `recommended` config,
+      scoped to `apps/website/**/*.astro` — this repo's flat config is a single root file with
+      glob-scoped overrides per package (see 1.2), so this is one more scoped block, not a new file.
+- [ ] Give `apps/website` a `lint` script in its `package.json` (added alongside the rest of its
+      turborepo scripts in 1.5) and wire it into `turbo.json`'s `lint` pipeline / the root
+      `bun run lint`.
+- [ ] Run it against the existing `.astro` files under `apps/website/src` and fix whatever the
+      first real pass surfaces — there's no prior baseline to diff against, so expect some genuine
+      findings rather than pure config churn.
 
 ## Part 2 — Functional changes
 
@@ -457,26 +533,28 @@ agnostically.
    purpose (see 1.5's intro): by this point every target is already a thin `nx:run-commands`
    wrapper around a standalone command, so removing nx is closer to "delete the now-redundant
    wrapper" than "debug a new tool and a rewritten CI at the same time."
-4. **1.6** (workflows) — do last overall, once every command it needs to shell out to
+4. **1.6** (workflows) — do last among the tool swaps, once every command it needs to shell out to
    (`bun run build`, `bun test`, `bunx playwright test`, etc.) already exists and works locally,
    and turborepo's own scripts (1.5) are in place for CI to call directly.
+5. **1.7** (Astro linting) — genuinely last: new functionality layered on top of the already-settled
+   flat config (1.2) and turborepo scripts (1.5), not part of the tool-for-tool swaps above.
 
 **Part 2 (a second branch, after Part 1 merges):**
 
-5. **2.1** (split out `@license-cop/core`) — a pure move; get the package boundary right before
+6. **2.1** (split out `@license-cop/core`) — a pure move; get the package boundary right before
    changing behaviour inside it.
-6. **2.2** (CLI architecture) — restructure `packages/cli`'s `lib/cli/**` around `Io` +
+7. **2.2** (CLI architecture) — restructure `packages/cli`'s `lib/cli/**` around `Io` +
    `parseArgs`/`zod`, now that it's a clean, small package on its own.
-7. **2.3** (flag cleanup) — do this alongside 2.2 rather than after it; the flag schema and the
+8. **2.3** (flag cleanup) — do this alongside 2.2 rather than after it; the flag schema and the
    parsing rewrite are the same diff.
-8. **2.4** (extract the shared classifier) — do this before 2.5; the classifier extraction is what
+9. **2.4** (extract the shared classifier) — do this before 2.5; the classifier extraction is what
    makes the e2e restructuring possible, not the other way round.
-9. **2.5** (restructure the e2e suite) — follows directly from 2.4; land the three tiers
-   incrementally within the branch (classifier unit tests, then per-engine contract fixtures, then
-   trimming `packages/license-cop-e2e` down to seam-level smoke tests) rather than as one giant
-   commit.
+10. **2.5** (restructure the e2e suite) — follows directly from 2.4; land the three tiers
+    incrementally within the branch (classifier unit tests, then per-engine contract fixtures, then
+    trimming `packages/license-cop-e2e` down to seam-level smoke tests) rather than as one giant
+    commit.
 
 **Part 3 (a third branch, after Part 2 merges):**
 
-10. **Part 3** (bun.lock support) — on its own, once `@license-cop/core`'s package-manager
+11. **Part 3** (bun.lock support) — on its own, once `@license-cop/core`'s package-manager
     detection, scanning modules, and the 2.4/2.5 test pyramid have already settled from Part 2.

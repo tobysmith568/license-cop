@@ -20,8 +20,11 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint . --max-warnings 0",
+        "cwd": "apps/website-e2e"
+      }
     }
   },
   "tags": []

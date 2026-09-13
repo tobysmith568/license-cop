@@ -50,7 +50,7 @@ const fileExists = async (path: string): Promise<boolean> => {
   try {
     await access(path);
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 };

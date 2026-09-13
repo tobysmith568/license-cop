@@ -18,5 +18,4 @@ export type {
 // to insure that the same eslint rule continues to catch when the commander
 // version falls out of sync with the @commander-js/extra-typings version.
 import type { Command as _Command } from "commander";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type _UnusedCommand = _Command;
