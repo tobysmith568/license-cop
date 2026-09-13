@@ -1,3 +1,4 @@
+import { expect } from "bun:test";
 import * as childProcess from "child_process";
 import { join } from "path";
 import { PackageManager, TestOptions } from "./test-options";

@@ -1,3 +1,4 @@
+import { afterEach, describe, it } from "bun:test";
 import { runTest } from "./helpers";
 import { PackageManager, TestOptions } from "./test-options";
 

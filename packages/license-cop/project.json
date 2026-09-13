@@ -36,11 +36,16 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/license-cop/jest.config.ts",
-        "passWithNoTests": false
+        "command": "bun test --isolate",
+        "cwd": "packages/license-cop"
+      },
+      "configurations": {
+        "ci": {
+          "command": "bun test --isolate --coverage --coverage-reporter=lcov --coverage-dir=../../coverage/packages/license-cop"
+        }
       }
     },
     "version": {

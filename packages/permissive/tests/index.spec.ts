@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { readFile } from "fs/promises";
 import JSON5 from "json5";
 import { join } from "path";

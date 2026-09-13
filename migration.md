@@ -170,28 +170,86 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   four; the `commander`-import hack itself (the code, not just the disable comment) is untouched —
   that deletion is still 2.1's job, once `index.ts` is being relocated anyway.
 
-### 1.3 Jest → bun:test
+### 1.3 Jest → bun:test ✅ done
 
-- [ ] Bridge step, done first: swap every package's `test`/`e2e` target from `@nx/jest:jest` to
-      `nx:run-commands` running `bun test`, verified through the existing
-      `pnpm nx run-many --target test` and existing CI before 1.5 touches anything.
-- [ ] Every package currently on Jest (`packages/license-cop`, `packages/license-cop-e2e`,
-      `packages/permissive`) moves to `bun test`: `"test": "bun test"` in each package's
-      `package.json`, with no shared jest.config/preset at the root — bun:test's per-package config
-      is simple enough that it doesn't need one.
-- [ ] Remove `@swc/jest`, `ts-jest`, `jest-environment-node`, `@nx/jest`, `@types/jest`,
-      root `jest.config.ts` / `jest.preset.js`, and every per-package `jest.config.ts` / `.swcrc`.
-- [ ] `bun:test`'s API is Jest-compatible for the common matchers/`describe`/`it`/`beforeEach` used
-      today, but `license-cop-e2e`'s spec (`packages/license-cop-e2e/src/lib/license-cop-e2e.spec.ts`)
-      uses `describe.each` and spawns child processes with `child_process.spawn` — confirm both
-      port cleanly (bun supports `describe.each`, but re-verify once ported since this suite is the
-      one most likely to surface a gap).
-- [ ] `packages/permissive/tests/index.spec.ts` is a trivial file-shape check — lowest-risk one to
+- [x] Bridge step, done first: swap every package's `test`/`e2e` target from `@nx/jest:jest` to
+      `nx:run-commands` running `bun test --isolate` (with `cwd` set to the package, the same
+      pattern 1.2 already used for `lint` — a raw command + `cwd` in `project.json`, not a
+      `package.json` script), plus a `ci` configuration overriding the command to add
+      `--coverage --coverage-reporter=lcov` (see the coverage bullet below). Verified through the
+      existing `pnpm nx run-many --target test` and existing CI before 1.5 touches anything.
+      `--isolate` runs each test file in a fresh global object, matching bun's own recommendation
+      for suites like `license-cop-e2e`'s that spawn child processes and could otherwise leak
+      handles across files.
+- [x] Every package currently on Jest (`packages/license-cop`, `packages/license-cop-e2e`,
+      `packages/permissive`) moves to `bun test`, with no shared jest.config/preset at the
+      root — bun:test's per-package config is simple enough that it doesn't need one. **The
+      `"test": "bun test"` `package.json` script itself is deferred to 1.5**, not added here: while
+      nx is still orchestrating targets, the `nx:run-commands` command *is* the invocation (per the
+      bridge-step bullet above), so a package.json script would just be unused duplication until
+      turborepo (which discovers tasks via package.json scripts, not `project.json`) actually needs
+      it. This also means `packages/license-cop-e2e` — which currently has no `package.json` at
+      all — doesn't need one created for this step either; `nx:run-commands` works against a
+      directory with no `package.json`.
+- [x] Remove `@swc/jest`, `ts-jest` (already dead — listed in root `package.json` but not actually
+      referenced anywhere), `jest-environment-node`, `@nx/jest`, `@types/jest`, root
+      `jest.config.ts` / `jest.preset.js`, and every per-package `jest.config.ts`. **`.swcrc` is
+      *not* uniformly safe to remove yet:** `packages/license-cop`'s `build` target is still
+      `@nx/js:swc` until 1.5's tsdown swap, and swc auto-discovers `.swcrc` from the package root
+      with no explicit path configured in `project.json` — deleting it now would silently break
+      that build. `packages/permissive`'s `build` is already plain `nx:run-commands` (no swc
+      involved) and `packages/license-cop-e2e` has no `build` target at all, so those two `.swcrc`
+      files *are* safe to remove now; only `packages/license-cop/.swcrc` stays until 1.5.
+      Add `@types/bun` as a devDependency and swap `"types": ["jest", "node"]` for
+      `"types": ["bun", "node"]` in each package's `tsconfig.spec.json`, so `describe`/`it`/`expect`
+      keep resolving without needing explicit `bun:test` imports.
+- [x] `bun:test`'s API is Jest-compatible for the common matchers/`describe`/`it`/`beforeEach` used
+      today — confirmed by running the existing `packages/license-cop` and `packages/permissive`
+      suites unmodified (bar the `bun:test` imports noted below) under `bun test --isolate` (37 and
+      2 tests respectively, all passing). `license-cop-e2e`'s spec
+      (`packages/license-cop-e2e/src/lib/license-cop-e2e.spec.ts`) uses `describe.each` and spawns
+      child processes with `child_process.spawn` — both confirmed working: the full suite ran 60
+      real-install scenarios across npm/pnpm/yarn-classic/yarn-modern, 42 passing (all of npm's and
+      pnpm's, plus every happy-path case); the remaining 18 failures are all yarn "unhappy path"
+      cases and are fully explained by `yarn` not being installed in the verifying sandbox
+      (`yarn: not found`), not by anything in the port.
+- [x] `packages/permissive/tests/index.spec.ts` is a trivial file-shape check — lowest-risk one to
       port first as a smoke test of the bun:test setup before tackling the bigger suites.
-- [ ] Coverage reporting: current root `jest.preset.js` sets `coverageReporters: ["json", "html"]`
-      for Codecov (see `ci.yml`'s `Codecov` step). `bun test --coverage` has a narrower reporter
-      set — confirm it can still produce something Codecov's action accepts, or adjust/drop that
-      CI step.
+- [x] Coverage reporting: current root `jest.preset.js` sets `coverageReporters: ["json", "html"]`
+      for Codecov (see `ci.yml`'s `Codecov` step). Confirmed `bun test --coverage
+      --coverage-reporter=lcov` produces a standard `lcov.info`, which `codecov/codecov-action`
+      ingests natively — use that reporter (wired into the `ci` configuration in the bridge-step
+      bullet above) instead of `json`/`html`. (`packages/permissive` produces no `lcov.info` at all
+      — expected, since it has no source code to instrument, true under Jest too.)
+
+**Found during implementation, not in the original plan:**
+
+- `describe`/`it`/`expect`/`afterEach` needed explicit `import { ... } from "bun:test"` added to
+  every spec file (and to `license-cop-e2e/helpers.ts`, which calls `expect` outside a test body) —
+  unlike `@types/jest`, `@types/bun` doesn't ambiently declare these as globals for `tsc`, even
+  though `bun test` does inject them as real globals at runtime.
+- `license-cop-e2e`'s spec resolves its e2e fixtures via a workspace-root-relative path
+  (`join("./e2e", packageManager, directory)` in `helpers.ts`), which only worked under the old
+  `@nx/jest:jest` executor because nx always ran jest from the workspace root regardless of where
+  `jest.config.ts` lived. Setting `cwd: "packages/license-cop-e2e"` on the new `nx:run-commands`
+  target broke that path silently — `child_process.spawn`'s `cwd` pointed at a directory that
+  doesn't exist, which surfaced as a confusing `ENOENT: no such file or directory, posix_spawn
+  '/bin/sh'` rather than a clear "directory not found". Fixed by dropping `cwd` (defaulting to the
+  workspace root, matching the old behavior) and instead scoping the command to this package via a
+  `bun test` file-pattern argument: `bun test --isolate --timeout=60000 packages/license-cop-e2e/src`.
+- `packages/license-cop`'s and `packages/permissive`'s `.swcrc` files were listed for removal in the
+  original checklist, but `packages/license-cop`'s is still load-bearing: its `build` target is
+  `@nx/js:swc` until 1.5, and swc auto-discovers `.swcrc` from the package root with no explicit
+  path in `project.json`. Removed `packages/license-cop-e2e`'s and `packages/permissive`'s `.swcrc`
+  (neither's `build` — the latter has none, the former isn't a build target at all — touches swc)
+  but kept `packages/license-cop/.swcrc` until 1.5's tsdown swap.
+- `jest` itself (the core package, not just `@nx/jest`/`@swc/jest`) was dropped from root
+  `package.json` too, even though the original checklist didn't name it explicitly — nothing in the
+  repo imports it directly, and once `@nx/jest:jest` is gone it has no remaining purpose.
+- Added a name-keyed `"test"` entry to `nx.json`'s `targetDefaults` (mirroring the existing `"e2e"`
+  entry) so caching survives the executor swap: the old caching config lived under the
+  executor-keyed `"@nx/jest:jest"` entry, which stopped applying the moment these targets switched
+  to `nx:run-commands`. That now-orphaned entry was removed.
 
 ### 1.4 Cypress → Playwright
 

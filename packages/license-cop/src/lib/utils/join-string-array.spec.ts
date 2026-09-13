@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { joinStringArray } from "./join-string-array";
 
 describe("joinStringArray", () => {
