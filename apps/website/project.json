@@ -5,20 +5,20 @@
   "sourceRoot": "apps/website/src",
   "targets": {
     "build": {
-      "command": "pnpx astro build",
+      "command": "bunx astro build",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
         "cwd": "apps/website"
       }
     },
     "dev": {
-      "command": "pnpx astro dev",
+      "command": "bunx astro dev",
       "options": {
         "cwd": "apps/website"
       }
     },
     "serve": {
-      "command": "pnpx astro preview",
+      "command": "bunx astro preview",
       "dependsOn": ["build"],
       "options": {
         "cwd": "apps/website"

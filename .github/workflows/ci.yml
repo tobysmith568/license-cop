@@ -46,10 +46,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Run ESLint
-        run: pnpm run lint
+        run: bun run lint
 
       - name: Run Prettier
-        run: pnpm prettier --check .
+        run: bunx prettier --check .
 
   build:
     name: Build
@@ -64,14 +64,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Build
-        run: pnpm nx run-many --target build
+        run: bunx nx run-many --target build
 
       - name: Log Version
         run: Write-Host ${{ inputs.version }}
 
       - name: Set Version
         if: inputs.version != ''
-        run: pnpm nx run-many --target version --args="--version=${{ inputs.version }}"
+        run: bunx nx run-many --target version --args="--version=${{ inputs.version }}"
 
       - name: Upload Build
         uses: actions/upload-artifact@v7
@@ -94,7 +94,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Run Unit Tests
-        run: pnpm nx run-many --target test --configuration ci
+        run: bunx nx run-many --target test --configuration ci
 
       - name: Codecov
         uses: codecov/codecov-action@v5.5.2
@@ -145,7 +145,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Check licenses
-        run: pnpm dlx license-cop
+        run: bunx license-cop
 
   e2e:
     needs:
@@ -187,7 +187,7 @@ jobs:
           path: ./dist
 
       - name: Run E2E Tests
-        run: pnpm nx run license-cop-e2e:e2e:ci
+        run: bunx nx run license-cop-e2e:e2e:ci
 
   e2e-website:
     name: E2E Test Website
@@ -211,7 +211,7 @@ jobs:
           path: ./dist
 
       - name: Install Cypress
-        run: pnpm cypress install
+        run: bunx cypress install
 
       - name: Run E2E Tests
-        run: pnpm start-server-and-test 'pnpm nx run website:serve' http://localhost:4321 'pnpm nx run website-e2e:e2e:ci'
+        run: bunx start-server-and-test 'bunx nx run website:serve' http://localhost:4321 'bunx nx run website-e2e:e2e:ci'

@@ -51,7 +51,7 @@ jobs:
           path: ./dist
 
       - name: Publish
-        run: pnpm nx run-many --target publish
+        run: bunx nx run-many --target publish
 
   purge-jsdelivr:
     name: Purge JsDelivr
@@ -99,7 +99,7 @@ jobs:
           path: ./dist
 
       - name: Pack assets
-        run: pnpm nx run-many --target pack
+        run: bunx nx run-many --target pack
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

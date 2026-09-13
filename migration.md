@@ -31,29 +31,60 @@ order" at the end for the concrete sequencing and dependencies between steps.
 
 ## Part 1 — Infrastructure
 
-### 1.1 pnpm → bun
+### 1.1 pnpm → bun ✅ done
 
-- [ ] Add `bun.lock` (remove `pnpm-lock.yaml`), set `"packageManager": "bun@<version>"` in the
+- [x] Add `bun.lock` (remove `pnpm-lock.yaml`), set `"packageManager": "bun@<version>"` in the
       root `package.json`, pinned to an exact version rather than a caret range — a workspace-wide
       bun bump should be a deliberate, reviewed change, not an incidental one.
-- [ ] Add a `bunfig.toml` with `linker = "isolated"` — bun's strict, non-hoisting linker, which
+- [x] Add a `bunfig.toml` with `linker = "isolated"` — bun's strict, non-hoisting linker, which
       keeps each package limited to its own declared dependencies the same way pnpm's own
       node_modules layout already does today, so this preserves an existing property rather than
-      loosening it — plus `publicHoistPattern = ["*prettier-plugin*"]`: Prettier resolves its
-      plugins relative to the project root, so under the isolated linker the plugins pulled in by
+      loosening it — plus a `publicHoistPattern`: Prettier resolves its plugins relative to the
+      project root, so under the isolated linker the plugins pulled in by
       `@tobysmith568/prettier-config` need to be hoisted there explicitly, or Prettier won't find
-      them.
-- [ ] Replace `.npmrc` pnpm settings with the `bunfig.toml` above. Check whether the
+      them. **Landed broader than planned:** ESLint 8's legacy `.eslintrc` resolves plugins (e.g.
+      `eslint-plugin-jest`, pulled in transitively by `@tobysmith568/eslint-config`) relative to the
+      *linted file's* directory rather than the shareable config's install location, so those need
+      hoisting too — the pattern is `["*eslint*", "*prettier-plugin*"]`, matching the old
+      `.npmrc`'s `*eslint*` rule rather than the narrower guess above. **The `*eslint*` half is only
+      needed while on ESLint 8/legacy config** — flat config (1.2) has plugins imported directly by
+      the config module instead of resolved per-linted-file, so drop it from `publicHoistPattern`
+      once 1.2 lands.
+- [x] Replace `.npmrc` pnpm settings with the `bunfig.toml` above. Check whether the
       `onlyBuiltDependencies` list in the current root `package.json` (`@swc/core`, `nx`,
       `cypress`, `sharp`, etc.) has a bun equivalent (`trustedDependencies`) once each of those
       tools is itself replaced/removed by the steps below — the final list will be shorter than
-      today's.
-- [ ] Workspaces: license-cop's `packages/*` layout maps directly to bun workspaces
+      today's. (Carried the list over unchanged for now as `trustedDependencies` — none of the tools
+      it names have been replaced/removed yet, so there's nothing to shorten until later steps land.)
+- [x] Workspaces: license-cop's `packages/*` layout maps directly to bun workspaces
       (`"workspaces": ["apps/*", "packages/*"]`).
-- [ ] Update every `pnpm run` / `pnpm dlx` / `pnpm exec` reference across scripts, CI workflows,
-      READMEs and the `.github/actions/*` composite actions to `bun run` / `bunx`.
-- [ ] `e2e/pnpm/**` fixtures stay (pnpm is a package manager license-cop *scans*, independent of
+- [x] Update every `pnpm run` / `pnpm dlx` / `pnpm exec` reference across scripts, CI workflows,
+      READMEs and the `.github/actions/*` composite actions to `bun run` / `bunx`. Also caught
+      `apps/website/project.json`'s three `pnpx astro *` commands (missed by a plain `pnpm` grep,
+      since `pnpx` is the shorthand and doesn't contain the substring) — worth catching regardless
+      of the rename, since `pnpx` re-resolves via `dlx` and was silently building the website
+      against latest Astro instead of the pinned local version.
+- [x] `e2e/pnpm/**` fixtures stay (pnpm is a package manager license-cop *scans*, independent of
       what the workspace itself uses to install). Only the workspace's own package manager changes.
+
+**Found during implementation, not in the original plan:** nx 20.2.1's package-manager detection
+only recognises the legacy binary `bun.lockb`, and parses it as a yarn-v1 lockfile — it has no
+support for the modern text `bun.lock` this step adds. With `bun.lock` in place, nx's dependency
+graph comes back empty, so `@nx/dependency-checks` started flagging every real dependency in
+`packages/license-cop` and `packages/permissive` as unused. Disabled the rule
+(`"@nx/dependency-checks": "off"`) in both packages' `.eslintrc.json` rather than downgrade to the
+legacy lockfile format — nx is removed outright in 1.5 with no turborepo equivalent for this rule
+(see 1.5's intro), so this just retires it a few steps early. The `Command`-from-`commander` import
+hack in `packages/license-cop/src/index.ts` that this rule used to require (see 2.1) is therefore
+already moot, though it hasn't been deleted yet — that cleanup still happens as part of 2.1, once
+`index.ts` is being relocated anyway.
+
+The workflows still check out via the external
+`tobysmith568/actions/.github/actions/checkout-pnpm-project@main` composite action, which likely
+still assumes a pnpm install — left as-is deliberately, since replacing it with a local
+`.github/actions/setup` running `bun install` is 1.6's job, not this step's. Confirmed as the
+intended sequencing rather than an oversight: CI doesn't need to be green again until Part 1's
+branch actually merges (1.6 included), per this doc's own guiding principles above.
 
 ### 1.2 Upgrade ESLint to latest (not oxlint)
 
