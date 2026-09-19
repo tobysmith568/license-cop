@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "bunx astro dev",
     "build": "bunx astro build",
+    "lint": "eslint . --max-warnings 0",
     "serve": "bunx astro preview"
   }
 }

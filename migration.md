@@ -630,24 +630,26 @@ publish` reads those itself to negotiate the registry token. `turbo.json`'s `pub
      tasks are already `cache: false`, so this is a correctness-of-intent fix rather than one with an
      observable effect today.
 
-### 1.7 Add Astro linting
+### 1.7 Add Astro linting ✅ done
 
 New functionality, not a preserved precedent — split out from 1.2 (see that section's correction
 note) once it became clear `apps/website` isn't linted at all today. Done last within Part 1 so it
 lands on top of the already-migrated flat config (1.2) and the already-migrated turborepo scripts
 (1.5) rather than needing its own bridge step through Nx.
 
-- [ ] Add `eslint-plugin-astro` and `astro-eslint-parser` (the plugin's own recommended parser for
+- [x] Add `eslint-plugin-astro` and `astro-eslint-parser` (the plugin's own recommended parser for
       `.astro` files) as devDependencies.
-- [ ] Extend the root `eslint.config.mjs` (from 1.2) with the plugin's flat `recommended` config,
+- [x] Extend the root `eslint.config.mjs` (from 1.2) with the plugin's flat `recommended` config,
       scoped to `apps/website/**/*.astro` — this repo's flat config is a single root file with
       glob-scoped overrides per package (see 1.2), so this is one more scoped block, not a new file.
-- [ ] Give `apps/website` a `lint` script in its `package.json` (added alongside the rest of its
+- [x] Give `apps/website` a `lint` script in its `package.json` (added alongside the rest of its
       turborepo scripts in 1.5) and wire it into `turbo.json`'s `lint` pipeline / the root
       `bun run lint`.
-- [ ] Run it against the existing `.astro` files under `apps/website/src` and fix whatever the
+- [x] Run it against the existing `.astro` files under `apps/website/src` and fix whatever the
       first real pass surfaces — there's no prior baseline to diff against, so expect some genuine
       findings rather than pure config churn.
+
+  **Done.** Added `eslint-plugin-astro`, `astro-eslint-parser` and `@typescript-eslint/parser` as devDependencies. The plugin's `flat/recommended` config is scoped to `apps/website/**/*.astro` in the root `eslint.config.mjs`, with `@typescript-eslint/parser` set as the frontmatter parser (the plugin's default can't parse the TS in `interface`/typed-destructuring frontmatter). `.astro/**` is now ignored, and `apps/website` has a `lint` script picked up by `turbo run lint`. First pass: all `.astro` files were clean once parsed; the only real findings were an `any` in `plugins/admonitions.ts` and the generated triple-slash reference in `src/env.d.ts`, both silenced with a justified `eslint-disable-next-line`.
 
 ## Part 2 — Functional changes
 
