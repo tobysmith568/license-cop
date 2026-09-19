@@ -7,24 +7,21 @@
   "packageManager": "bun@1.4.0",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/e2e/*"
   ],
   "scripts": {
-    "build": "bunx nx run-many --target build",
-    "test": "bunx nx run-many --target test",
-    "lint": "bunx nx run-many --target lint"
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e",
+    "check": "turbo run build lint test typecheck"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/sitemap": "^3.7.0",
-    "@nx/devkit": "20.2.1",
-    "@nx/eslint": "20.2.1",
-    "@nx/eslint-plugin": "20.2.1",
-    "@nx/js": "20.2.1",
-    "@nx/workspace": "20.2.1",
     "@playwright/test": "^1.63.0",
-    "@swc/cli": "^0.4.0",
-    "@swc/core": "^1.15.18",
     "@tobysmith568/eslint-config": "^2.7.1",
     "@tobysmith568/prettier-config": "^2.2.1",
     "@types/bun": "^1.4.0",
@@ -36,12 +33,9 @@
     "@typescript-eslint/utils": "^8.56.1",
     "astro": "^5.18.0",
     "astro-webmanifest": "^1.0.0",
-    "chalk": "^5.6.2",
     "cspell": "^9.7.0",
     "eslint": "9.39.5",
     "generate-license-file": "^4.1.1",
-    "npm-publish-latest-tag": "^1.1.3",
-    "nx": "20.2.1",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "react": "^19.2.4",
@@ -49,6 +43,8 @@
     "remark-directive": "^4.0.0",
     "sass": "^1.97.3",
     "ts-node": "10.9.2",
+    "tsdown": "^0.23.0",
+    "turbo": "^2.10.12",
     "typescript": "5.9.3",
     "unist-util-visit": "^5.1.0"
   },
@@ -58,7 +54,6 @@
     "@pnpm/logger": "^1001.0.1",
     "@pnpm/reviewing.dependencies-hierarchy": "^1001.3.2",
     "@primer/octicons": "^19.22.0",
-    "@swc/helpers": "0.5.19",
     "axios": "^1.13.6",
     "commander": "^14.0.3",
     "compare-versions": "^6.1.1",
@@ -72,10 +67,8 @@
   },
   "trustedDependencies": [
     "@parcel/watcher",
-    "@swc/core",
     "esbuild",
     "nice-napi",
-    "nx",
     "sharp",
     "unrs-resolver"
   ]

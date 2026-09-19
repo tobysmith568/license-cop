@@ -18,7 +18,7 @@ export default defineConfig({
     { name: "firefox", use: { ...devices["Desktop Firefox"] } }
   ],
   webServer: {
-    command: "bunx nx run website:serve",
+    command: "bunx turbo run serve --filter=website",
     url: "http://localhost:4321",
     reuseExistingServer: !process.env.CI
   }

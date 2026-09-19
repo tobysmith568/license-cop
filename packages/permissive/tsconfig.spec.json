@@ -5,5 +5,5 @@
     "module": "commonjs",
     "types": ["bun", "node"]
   },
-  "include": ["jest.config.ts", "tests/**/*.test.ts", "tests/**/*.spec.ts", "tests/**/*.d.ts"]
+  "include": ["tests/**/*.test.ts", "tests/**/*.spec.ts", "tests/**/*.d.ts"]
 }

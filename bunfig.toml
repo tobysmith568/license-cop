@@ -1,3 +1,3 @@
 [install]
 linker = "isolated"
-publicHoistPattern = ["*eslint*", "*prettier-plugin*"]
+publicHoistPattern = ["*prettier-plugin*"]

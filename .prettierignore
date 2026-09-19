@@ -1,8 +1,7 @@
 # Add files here to ignore them from prettier formatting
 
-/dist
-/coverage
+dist
+coverage
 **/.yarn/releases/**
 
-/.nx/cache
-/.nx/workspace-data
+.turbo

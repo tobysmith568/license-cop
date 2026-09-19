@@ -1,8 +1,16 @@
 {
   "name": "@license-cop/permissive",
-  "version": "*",
+  "version": "0.0.0",
   "type": "commonjs",
   "main": "./.licenses.jsonc",
+  "scripts": {
+    "typecheck": "tsc -b tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "test": "bun test --isolate --coverage --coverage-reporter=lcov --coverage-dir=coverage",
+    "version": "bun pm pkg set version=$VERSION",
+    "pack": "bun pm pack",
+    "publish": "npm publish *.tgz --access public --provenance --tag $NPM_TAG"
+  },
   "author": {
     "name": "Toby Smith",
     "email": "contact@tobythe.dev",

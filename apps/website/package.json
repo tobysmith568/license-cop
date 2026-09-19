@@ -1,0 +1,9 @@
+{
+  "name": "website",
+  "private": true,
+  "scripts": {
+    "dev": "bunx astro dev",
+    "build": "bunx astro build",
+    "serve": "bunx astro preview"
+  }
+}

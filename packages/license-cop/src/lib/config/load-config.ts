@@ -1,4 +1,4 @@
-import * as deepMerge from "deepmerge";
+import deepMerge from "deepmerge";
 import logger from "../logger";
 import { parseConfig } from "./config";
 import { findConfig } from "./find-config";

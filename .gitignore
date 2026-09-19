@@ -1,5 +1,5 @@
 tmp/
-.nx/
+.turbo/
 /apps/website-e2e/playwright-report/
 /apps/website-e2e/test-results/
 /apps/website-e2e/blob-report/

@@ -22,7 +22,6 @@ const webmanifestOptions: WebmanifestOptions = {
 };
 
 export default defineConfig({
-  outDir: "../../dist/apps/website",
   site: "https://license-cop.js.org",
 
   build: {

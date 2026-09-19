@@ -1,5 +1,4 @@
-import Arborist = require("@npmcli/arborist");
-import { Link, Node } from "@npmcli/arborist";
+import Arborist, { Link, Node } from "@npmcli/arborist";
 import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
 import { isAllowedPackage } from "../dependency/package-rules";

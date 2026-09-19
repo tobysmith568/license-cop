@@ -306,7 +306,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   `website.yml`'s "upload E2E artifacts on failure" step (which existed for Cypress) something
   equivalent to upload under Playwright.
 
-### 1.5 nx → turborepo
+### 1.5 nx → turborepo ✅ done
 
 Do this one **last** within Part 1, after 1.2–1.4. Nx is mostly just orchestrating shell commands
 already — `apps/website`'s targets and several of `license-cop`/`permissive`'s
@@ -321,31 +321,184 @@ existing CI, before this step. That turns nx removal into "every target is alrea
 around a standalone command — delete the wrapper and rewrite CI to call the same commands directly"
 instead of debugging new tools and a rewritten CI at the same time.
 
-- [ ] Bridge step, done first: swap `license-cop`'s `build` target from `@nx/js:swc` to
+- [x] Bridge step, done first: swap `license-cop`'s `build` target from `@nx/js:swc` to
       `nx:run-commands` running `tsdown` (replacing `.swcrc` + `@swc/cli` — turborepo isn't a
       bundler, so something has to be; `tsdown` is a bundler purpose-built for exactly this shape of
       package — a bun workspace, ESM, a CLI plus a library — so this is a straightforward
       `tsdown.config.ts` per package). Applies to `packages/license-cop` and, once it exists,
       `@license-cop/core` (see 2.1); `packages/permissive`'s `build` is already `nx:run-commands`
       and needs no bundler at all — it only ships a JSON file. Verify through the existing
-      `pnpm nx run-many --target build` before touching anything else in this section.
-- [ ] Add a `turbo.json` — `build` (`dependsOn: ["^build"]`), `typecheck`, `lint`, `test`, `e2e`
+      `pnpm nx run-many --target build` before touching anything else in this section. **Landed as a
+      direct `package.json` `build` script instead of an intermediate `nx:run-commands` bridge** —
+      by this point in the session nx was being removed in the same pass rather than staged commit by
+      commit, so the "verify via the old runner first" step became "verify via `tsdown` directly,
+      then remove nx" instead.
+- [x] Add a `turbo.json` — `build` (`dependsOn: ["^build"]`), `typecheck`, `lint`, `test`, `e2e`
       (`cache: false`, since it shells out to real package-manager installs), `check` (composite of
-      the above).
-- [ ] Nx currently does more than task orchestration here — `@nx/eslint:lint`,
+      the above). **`check` landed as a root `package.json` script (`turbo run build lint test
+      typecheck`) rather than its own `turbo.json` task** — `turbo run` already accepts multiple task
+      names in one invocation and runs each one's own dependency graph, so a dedicated aggregator
+      task/script per package would have been pure duplication.
+- [x] Nx currently does more than task orchestration here — `@nx/eslint:lint`,
       `@nx/jest:jest`, and `@nx/dependency-checks` (the reason `index.ts` has to import
       `commander` just to stop it being flagged as unused — see 2.2, this hack goes away once
       commander itself is removed). Turborepo has none of this; each package's `package.json`
       needs its own `lint`/`test`/`build`/`typecheck` scripts.
-- [ ] Remove `project.json` files (Nx-specific) once each package's `package.json` scripts and
+- [x] Remove `project.json` files (Nx-specific) once each package's `package.json` scripts and
       `turbo.json` cover the same ground.
-- [ ] Retire `.nx/` cache dir, `nx.json`, and the `@nx/*` devDependencies.
-- [ ] Delete `.github/workflows/nx.yml` (the automated Nx-migration workflow) — turborepo has no
+- [x] Retire `.nx/` cache dir, `nx.json`, and the `@nx/*` devDependencies.
+- [x] Delete `.github/workflows/nx.yml` (the automated Nx-migration workflow) — turborepo has no
       such migration mechanism and none is needed once nx is gone.
-- [ ] `apps/website` is an Astro app; confirm Astro's dev/build scripts run fine invoked directly
+- [x] `apps/website` is an Astro app; confirm Astro's dev/build scripts run fine invoked directly
       (`astro dev` / `astro build`) via turbo instead of through `@nx/js`'s wrapping — there's no
       existing precedent for this combination in the workspace, so it needs manual verification once
-      turbo is wired up.
+      turbo is wired up. Confirmed: `bunx astro build`/`bunx astro dev`/`bunx astro preview` wrapped
+      as plain `package.json` scripts work unchanged under turbo.
+
+**Explicit correction made mid-implementation:** nx's own convention is a centralized `dist/<layout>/<project>` output tree at the workspace root (mirrored by `coverage/<layout>/<project>` for test coverage) — the first pass of this milestone carried that layout forward unchanged (via `$TURBO_ROOT$`-anchored `outputs` in per-package `turbo.json` overrides) purely to minimize collateral changes to `helpers.ts`/`ci.yml`/`tools/scripts/*`. That's itself an nx-shaped convention, not a turborepo one, and out of place in a repo whose whole point is to stop looking like an nx workspace. **Corrected to local, per-package `dist`/`coverage` directories** (`packages/license-cop/dist`, `packages/permissive/dist`, `apps/website/dist`, and the matching `coverage/` siblings) — the default, idiomatic turborepo shape. This is simpler in every respect: `turbo.json`'s `outputs: ["dist/**"]`/`["coverage/**"]` need no root-anchoring trick and no per-package override files at all (only `license-cop-e2e` still needs its own `turbo.json`, purely to declare an explicit `license-cop#build` task dependency that no `package.json` dependency edge expresses, since it invokes the CLI as a subprocess rather than `import`/`require`ing it). Old root-level `dist/`/`coverage/` directories were deleted; `.gitignore`'s `dist`/`coverage` entries were already unanchored (no leading `/`) so they cover the new nested locations unchanged, but `.prettierignore`'s equivalent entries (`/dist`, `/coverage`) were root-anchored and had to be un-anchored to match. Downstream references that assumed the old centralized path were updated to match: `packages/license-cop-e2e/src/lib/helpers.ts`'s spawn target, and `tools/scripts/{version,pack,publish,copy-asset}.mjs`'s output-path computation (see below).
+
+**Found during implementation, not in the original plan:**
+
+- `.idea/nx-angular-config.xml` (an IDE-generated nx artifact) and `bunfig.toml`'s `"*eslint*"`
+  `publicHoistPattern` entry (flagged in 1.1's own note as removable "once 1.2 lands," but never
+  actually removed then) were both deleted here as small, low-risk cleanup found while auditing the
+  repo for anything nx-flavored.
+- `packages/license-cop/src/lib/config/load-config.ts` imported `deepmerge` as `import * as deepMerge
+  from "deepmerge"` and called it directly (`deepMerge(a, b)`) — this only ever worked because swc's
+  `noInterop: true` setting happened to bind a wildcard import straight to `module.exports` for a CJS
+  module with no `__esModule` flag. tsdown/rolldown's CJS output implements real namespace-import
+  semantics, under which `deepMerge` would resolve to an uncallable namespace object instead of the
+  function — rolldown's build even flagged this explicitly
+  (`[CANNOT_CALL_NAMESPACE] Cannot call a namespace`). Fixed to `import deepMerge = require("deepmerge")`,
+  matching the exact CJS-interop pattern this codebase already uses in
+  `lib/dependency-scanning/npm.ts` for the same `esModuleInterop: false` reason.
+- Removing `@nx/eslint-plugin`'s `flat/typescript`/`flat/javascript` blocks from `eslint.config.mjs`
+  (see 1.2's own note that these were only ever carried forward pending 1.5) turned out to be load-
+  bearing for more than `@nx/enforce-module-boundaries` and the already-dead `no-extra-semi` override:
+  it was also silently satisfying `@typescript-eslint/no-require-imports` for the `import X =
+  require(...)` pattern used in both `npm.ts` and (per the previous bullet) now `load-config.ts` too.
+  Without it, plain `typescript-eslint` recommended rules flag `import X = require(...)` the same as a
+  bare `require()` call. Added an explicit `{ allowAsImport: true }` rule option in `eslint.config.mjs`
+  instead of reintroducing any nx config, scoped to exactly the TS import-equals-require syntax this
+  codebase deliberately relies on.
+- The first pass at `packages/license-cop`'s `tsdown.config.ts` reached for `bundle: false` (re-emit
+  every source file 1:1, mirroring the whole `src/` tree into `dist/src/**`) purely to keep the
+  existing bin shim's hand-written `require("../lib/cli")` path working unchanged, and then needed
+  increasingly unnatural options to compensate (a custom `outExtensions` callback to stop tsdown
+  defaulting to `.cjs`, plus copying the raw bin file into `dist` as a separate asset). **Corrected**:
+  tsdown is meant to be used with explicit, bundled entry points, so the config now reads `entry: {
+  index: "src/index.ts", bin: "src/bin.ts" }`, producing exactly `dist/index.js` and `dist/bin.js`
+  with every internal import inlined — no tree-mirroring, no separate asset copy. This needed a real
+  (if small) source change: `src/bin/license-cop` (a plain, extension-less JS shim with a shebang,
+  doing `require("../lib/cli").main(process.argv)`) is gone, replaced by `src/bin.ts` — the exact same
+  call, just as real TypeScript tsdown can compile as its own entry:
+  ```ts
+  #!/usr/bin/env node
+
+  import { main } from "./lib/cli";
+
+  main(process.argv);
+  ```
+  This is packaging-layer only — `lib/cli/**`'s own internals (still commander, still the module-level
+  `logger` singleton) are completely untouched, so it doesn't reach into 2.2's job. Two more things
+  fell out of this for free: tsdown auto-detects the shebang in `bin.ts` and chmods the compiled
+  `dist/bin.js` executable on its own (`ℹ Granting execute permission to dist/bin.js`), so the
+  `git ls-files -s` mode-`100644`-on-the-source-shim problem an earlier pass here had to work around
+  doesn't exist any more — there's no checked-in shim file left to have the wrong mode; and
+  `fixedExtension: false` (tsdown's own switch for "the package's `type` field already disambiguates
+  the extension, don't force `.cjs`/`.mjs`") replaces the custom `outExtensions` callback outright.
+  What's still needed, unrelated to the above: the config file itself still needs a `.mts` extension
+  (Node's loader can't load a `.ts` ESM config from inside a `"type": "commonjs"` package without
+  hitting a known Node bug), and `tsconfig.json`'s composite `references` still aren't understood by
+  rolldown-plugin-dts's default mode, so both `tsdown`'s own `tsconfig` option and its `dts.tsconfig`
+  sub-option still point at the leaf `tsconfig.lib.json` rather than the referencing root.
+- The first pass at replacing `@nx/js:swc`'s dist-`package.json` generation copied the package's real
+  `package.json`/`README.md`/`LICENSE.md` into `dist/` at build time (via a small custom script) so
+  that `dist/` could stand in as a self-contained "fake" package root. That's solving a problem that
+  doesn't need solving: `package.json` never needs to move at all. `npm pack`/`bun pm pack`/`npm
+  publish` already assemble the published tarball from the *real*, in-place `package.json` plus
+  whatever its `"files"` field lists (`README.md`/`LICENSE.md`/`package.json` itself are included
+  automatically by convention, confirmed empirically — `bun pm pack` on `packages/permissive` picked
+  up `LICENSE.md` with no `"files"` entry naming it at all). **Corrected**: `package.json` stays where
+  it is; `"main"`/`"types"`/`"bin"` point straight at `./dist/...`; `"files": ["dist"]` is the only
+  addition needed. The custom dist-`package.json` script (and the `"scripts"`-stripping and
+  `"version": "*"`-placeholder-handling it existed for) is gone entirely — nothing needs to strip
+  `"scripts"` from a package.json that was never copied anywhere, and real npm packages routinely ship
+  their dev `"scripts"` block as-is, so that was never a real problem either. The whole `tools/scripts/`
+  directory (`version.mjs`, `pack.mjs`, `publish.mjs`, `copy-asset.mjs`, and the dist-`package.json`
+  script, all of which had already had their `@nx/devkit` project-graph lookups stripped out in an
+  earlier pass) is deleted outright, along with `tools/tsconfig.tools.json` — bun's own tooling already
+  covers everything they did: `"version": "bun pm pkg set version=$VERSION"`, `"pack": "bun pm pack"`,
+  `"publish": "npm publish *.tgz --access public --provenance --tag $NPM_TAG"`. The `"*"` version
+  placeholder became `"0.0.0"` (valid semver, reads as "unversioned") purely because an *unversioned*
+  build still needs to be a resolvable package for things like `license-cop-e2e`'s `npm exec` against
+  it — unrelated to the dist-root correction, and it stays `"0.0.0"` under the new approach too.
+  `packages/license-cop` and `packages/permissive` each gained their own `README.md`/`LICENSE.md`
+  (copied from the workspace root once, not generated at build time) so every publishable package
+  looks the same — `packages/permissive` already had a `README.md`; every `packages/e2e/*` fixture
+  already had one too (see below).
+- `packages/license-cop-e2e/src/lib/helpers.ts` needed two, unrelated fixes for the same reason (a
+  turborepo/bun-workspace script always runs with `cwd` set to its own package directory, unlike the
+  old `nx:run-commands` `e2e` target which ran with no `cwd` override, defaulting to the workspace
+  root): its `e2e/<pm>/<scenario>` fixture-directory lookup used to be `join("./e2e", packageManager,
+  directory)`, a path relative to `process.cwd()` that doesn't exist once `cwd` is the package
+  directory — anchored to the file's own location instead (`join(__dirname, "../../../..")` as
+  `workspaceRoot`), removing the `cwd`-dependence entirely. Separately, once the dist-root correction
+  above landed, its `npm exec` target needed to change from `packages/license-cop/dist` (a stand-in
+  "fake package root" under the old approach) to `packages/license-cop` itself (the real package root,
+  now that `package.json` lives there rather than being copied into `dist/`).
+- `apps/website-e2e`, `apps/website`, and `packages/license-cop-e2e` had no `package.json` at all
+  (by design, per 1.3's own note for the latter) — each needed one added purely to give turbo a
+  workspace member with scripts to run; `apps/website-e2e/playwright.config.ts`'s `webServer.command`
+  (`bunx nx run website:serve`) was repointed at `bunx turbo run serve --filter=website`.
+- `packages/e2e/{isc-legacy-package,isc-package,mit-package,no-license-package,unlicensed-package,
+  uses-isc-package}/**` each carried their own `project.json` (using `@nx/js:tsc` for `build`,
+  unrelated to license-cop's own `@nx/js:swc`) that the plan never mentions. These are the source for
+  a handful of tiny fixture packages (`@license-cop/mit-test-package` etc.), already published to the
+  real npm registry and consumed by the `e2e/npm/**`/`e2e/yarn-*/**` fixtures via ordinary version
+  ranges — nothing in this repo imports their TypeScript source directly except `uses-isc-package`
+  importing `isc-test-package`. They weren't bun/npm workspace members (`packages/e2e/*` sits two
+  levels below the `packages/*` glob), so that one cross-package import only worked at all via a
+  `tsconfig.base.json` path alias reaching directly into `isc-package/src/index.ts` — a raw-source
+  reference with no real package boundary. A first pass here deleted the dead `project.json` files and
+  replaced each with a `package.json` `build` script built from raw `tsc` CLI flags
+  (`--outDir`/`--rootDir` overrides fighting the `rootDir: "."` inherited from `tsconfig.base.json`),
+  which needed an increasingly bespoke scratch-directory dance for `uses-isc-package` specifically once
+  its cross-package import collided with a `--rootDir src` override (`error TS6059: ... is not under
+  'rootDir'`). **Corrected**, once it was clear the whole shape was fighting the grain of a normal
+  workspace rather than embracing it: added `packages/e2e/*` to the root `workspaces` array, making
+  these six real bun workspace members with real symlinked `node_modules`; dropped the now-redundant
+  `tsconfig.base.json` path aliases for all six (the two remaining aliases, for `@license-cop/permissive`
+  and `@license-cop/license-cop-e2e`, are for packages that are already real workspace members resolved
+  normally, untouched here as out of scope); and gave every one of the six the exact same `tsdown`
+  bundled-entry `build` script as `packages/license-cop` (`entry: ["src/index.ts"]`, `fixedExtension:
+  false`), replacing the raw `tsc` invocation entirely. `uses-isc-package` needed no special case at
+  all once this landed: bun auto-links a workspace member by package name whenever a `dependencies`
+  range is satisfiable locally — confirmed empirically, since its existing `"latest"` range (not
+  `"workspace:*"`, which would itself be invalid once actually published) was already enough for bun
+  to symlink the local `isc-package` workspace member — and tsdown's bundler resolves that import
+  through the symlink and inlines it, so the rootDir conflict a raw-`tsc`, path-alias-based compile
+  used to hit doesn't arise in the first place. Every one of the six now has the identical `build`
+  (`tsdown`) and `lint` (`eslint . --max-warnings 0`) scripts, `"files": ["dist"]`, and `"main"`/
+  `"types"` pointing at `./dist/index.js`/`./dist/index.d.ts` — none are wired into the root
+  `turbo.json` pipeline (turbo only orchestrates declared workspace tasks the same way it always did;
+  nothing currently invokes these six as part of `turbo run build` etc., matching the state before this
+  milestone), but each is buildable and lintable standalone (`cd packages/e2e/<name> && bun run
+  build`/`bun run lint`), restoring exactly the capability their `project.json` targets provided —
+  properly this time, as ordinary workspace members rather than raw-source path hacks.
+- Adding a `typecheck` script is new functionality for every package here (nx never had a `typecheck`
+  target for anything in this repo), not a preserved precedent — for `packages/license-cop`,
+  `packages/permissive`, `packages/license-cop-e2e`, and `apps/website-e2e` this was a straightforward
+  `tsc -b`/`tsc --noEmit`, but wiring it up for `apps/website` surfaced 16 genuine, pre-existing type
+  errors (`astro.config.ts`'s `moduleResolution` setting rejecting `astro`/`@astrojs/*`'s package
+  exports, `plugins/admonitions.ts`'s hast `ElementData` property access, a missing `shiki` type, and
+  a `third-party.astro` layout prop mismatch) once `astro check` actually looked at the app for the
+  first time. Fixing pre-existing Astro type debt is out of scope for an nx→turbo swap — same
+  reasoning 1.7 already applies to Astro *linting* being split out as new functionality rather than a
+  preserved precedent. Left `apps/website` without a `typecheck` script for now (dropped the
+  `@astrojs/check` devDependency that would have backed it) rather than either shipping a script that
+  fails or quietly fixing unrelated content bugs; a future milestone can pick this up the same way 1.7
+  will for linting.
 
 ### 1.6 GitHub workflows
 

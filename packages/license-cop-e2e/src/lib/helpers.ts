@@ -3,6 +3,8 @@ import * as childProcess from "child_process";
 import { join } from "path";
 import { PackageManager, TestOptions } from "./test-options";
 
+const workspaceRoot = join(__dirname, "../../../..");
+
 export const runTest = async (options: TestOptions) => {
   const { packageManager, directory, args, expectedExitCode } = options;
 
@@ -10,9 +12,9 @@ export const runTest = async (options: TestOptions) => {
 
   const testProcess = childProcess.spawn(
     "npm",
-    ["exec", '"../../../dist/packages/license-cop"', "--", "--verbose", ...args],
+    ["exec", '"../../../packages/license-cop"', "--", "--verbose", ...args],
     {
-      cwd: join("./e2e", packageManager, directory),
+      cwd: join(workspaceRoot, "e2e", packageManager, directory),
       shell: true
     }
   );
@@ -36,7 +38,7 @@ const installDependencies = async (packageManager: PackageManager, directory: st
   const installProgram = getInstallProgram(packageManager);
   const installArgs = getInstallArgs(packageManager);
 
-  const cwd = join("./e2e", packageManager, directory);
+  const cwd = join(workspaceRoot, "e2e", packageManager, directory);
 
   const installProcess = childProcess.spawn(installProgram, installArgs, {
     cwd,
