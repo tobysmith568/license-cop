@@ -1,0 +1,22 @@
+name: Test CLI
+description: Behavioural smoke tests for the license-cop CLI binary
+
+inputs:
+  bin:
+    description: How to invoke the license-cop binary, e.g. "node ./packages/license-cop/dist/bin.js" or "bunx license-cop"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: --version
+      run: ${{ inputs.bin }} --version
+      shell: bash
+
+    - name: --help
+      run: ${{ inputs.bin }} --help
+      shell: bash
+
+    - name: Check this repo's own licenses
+      run: ${{ inputs.bin }}
+      shell: bash

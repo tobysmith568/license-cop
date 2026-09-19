@@ -25,6 +25,21 @@
       "dependsOn": ["build"],
       "cache": false,
       "persistent": true
+    },
+    "version": {
+      "cache": false,
+      "passThroughEnv": ["VERSION"]
+    },
+    "pack": {
+      "cache": false
+    },
+    "publish": {
+      "cache": false,
+      "passThroughEnv": [
+        "NPM_TAG",
+        "ACTIONS_ID_TOKEN_REQUEST_URL",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+      ]
     }
   }
 }

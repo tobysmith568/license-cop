@@ -48,7 +48,7 @@ order" at the end for the concrete sequencing and dependencies between steps.
       `@tobysmith568/prettier-config` need to be hoisted there explicitly, or Prettier won't find
       them. **Landed broader than planned:** ESLint 8's legacy `.eslintrc` resolves plugins (e.g.
       `eslint-plugin-jest`, pulled in transitively by `@tobysmith568/eslint-config`) relative to the
-      *linted file's* directory rather than the shareable config's install location, so those need
+      _linted file's_ directory rather than the shareable config's install location, so those need
       hoisting too — the pattern is `["*eslint*", "*prettier-plugin*"]`, matching the old
       `.npmrc`'s `*eslint*` rule rather than the narrower guess above. **The `*eslint*` half is only
       needed while on ESLint 8/legacy config** — flat config (1.2) has plugins imported directly by
@@ -68,7 +68,7 @@ order" at the end for the concrete sequencing and dependencies between steps.
       since `pnpx` is the shorthand and doesn't contain the substring) — worth catching regardless
       of the rename, since `pnpx` re-resolves via `dlx` and was silently building the website
       against latest Astro instead of the pinned local version.
-- [x] `e2e/pnpm/**` fixtures stay (pnpm is a package manager license-cop *scans*, independent of
+- [x] `e2e/pnpm/**` fixtures stay (pnpm is a package manager license-cop _scans_, independent of
       what the workspace itself uses to install). Only the workspace's own package manager changes.
 
 **Found during implementation, not in the original plan:** nx 20.2.1's package-manager detection
@@ -106,13 +106,13 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
       is still on the legacy `.eslintrc.json` format (`.eslintrc.json` + `.eslintignore` +
       per-package `.eslintrc.json` overrides); this is also the point to migrate to flat config
       (`eslint.config.mjs`):
-      ```js
-      import tobysmith568 from "@tobysmith568/eslint-config";
-      export default [
-        { ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**"] },
-        ...tobysmith568.recommended
-      ];
-      ```
+      `js
+import tobysmith568 from "@tobysmith568/eslint-config";
+export default [
+{ ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**"] },
+...tobysmith568.recommended
+];
+`
 - [x] Bump `@tobysmith568/eslint-config` from `^1.1.2` to `^2.x` (breaking major — expect rule
       changes to shake out).
 - [x] Drop the Nx-specific pieces of the current config once 1.5 lands: `@nx/enforce-module-boundaries`
@@ -134,7 +134,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   `@tobysmith568/eslint-config/configs/node`, never either package by name.
 - The real `eslint.config.mjs` is bigger than the sample above: the Nx-specific pieces (previous
   bullet) needed porting forward too, since dropping them is explicitly deferred to 1.5. `@nx/eslint-
-  plugin@20.2.1` ships an official flat-config surface for this (`configs["flat/base"]`,
+plugin@20.2.1` ships an official flat-config surface for this (`configs["flat/base"]`,
   `["flat/typescript"]`, `["flat/javascript"]` — the same pattern Nx's own generators produce), plus
   an `@nx/enforce-module-boundaries` rule block carrying forward the exact same options
   (`enforceBuildableLibDependency`, `allow`, `depConstraints`) from the old root `.eslintrc.json`.
@@ -185,7 +185,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
       `packages/permissive`) moves to `bun test`, with no shared jest.config/preset at the
       root — bun:test's per-package config is simple enough that it doesn't need one. **The
       `"test": "bun test"` `package.json` script itself is deferred to 1.5**, not added here: while
-      nx is still orchestrating targets, the `nx:run-commands` command *is* the invocation (per the
+      nx is still orchestrating targets, the `nx:run-commands` command _is_ the invocation (per the
       bridge-step bullet above), so a package.json script would just be unused duplication until
       turborepo (which discovers tasks via package.json scripts, not `project.json`) actually needs
       it. This also means `packages/license-cop-e2e` — which currently has no `package.json` at
@@ -194,12 +194,12 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
 - [x] Remove `@swc/jest`, `ts-jest` (already dead — listed in root `package.json` but not actually
       referenced anywhere), `jest-environment-node`, `@nx/jest`, `@types/jest`, root
       `jest.config.ts` / `jest.preset.js`, and every per-package `jest.config.ts`. **`.swcrc` is
-      *not* uniformly safe to remove yet:** `packages/license-cop`'s `build` target is still
+      _not_ uniformly safe to remove yet:** `packages/license-cop`'s `build` target is still
       `@nx/js:swc` until 1.5's tsdown swap, and swc auto-discovers `.swcrc` from the package root
       with no explicit path configured in `project.json` — deleting it now would silently break
       that build. `packages/permissive`'s `build` is already plain `nx:run-commands` (no swc
       involved) and `packages/license-cop-e2e` has no `build` target at all, so those two `.swcrc`
-      files *are* safe to remove now; only `packages/license-cop/.swcrc` stays until 1.5.
+      files _are_ safe to remove now; only `packages/license-cop/.swcrc` stays until 1.5.
       Add `@types/bun` as a devDependency and swap `"types": ["jest", "node"]` for
       `"types": ["bun", "node"]` in each package's `tsconfig.spec.json`, so `describe`/`it`/`expect`
       keep resolving without needing explicit `bun:test` imports.
@@ -217,7 +217,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
       port first as a smoke test of the bun:test setup before tackling the bigger suites.
 - [x] Coverage reporting: current root `jest.preset.js` sets `coverageReporters: ["json", "html"]`
       for Codecov (see `ci.yml`'s `Codecov` step). Confirmed `bun test --coverage
-      --coverage-reporter=lcov` produces a standard `lcov.info`, which `codecov/codecov-action`
+--coverage-reporter=lcov` produces a standard `lcov.info`, which `codecov/codecov-action`
       ingests natively — use that reporter (wired into the `ci` configuration in the bridge-step
       bullet above) instead of `json`/`html`. (`packages/permissive` produces no `lcov.info` at all
       — expected, since it has no source code to instrument, true under Jest too.)
@@ -234,7 +234,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   `jest.config.ts` lived. Setting `cwd: "packages/license-cop-e2e"` on the new `nx:run-commands`
   target broke that path silently — `child_process.spawn`'s `cwd` pointed at a directory that
   doesn't exist, which surfaced as a confusing `ENOENT: no such file or directory, posix_spawn
-  '/bin/sh'` rather than a clear "directory not found". Fixed by dropping `cwd` (defaulting to the
+'/bin/sh'` rather than a clear "directory not found". Fixed by dropping `cwd` (defaulting to the
   workspace root, matching the old behavior) and instead scoping the command to this package via a
   `bun test` file-pattern argument: `bun test --isolate --timeout=60000 packages/license-cop-e2e/src`.
 - `packages/license-cop`'s and `packages/permissive`'s `.swcrc` files were listed for removal in the
@@ -261,7 +261,7 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
       unaffected by this item).
 - [x] Install Playwright per-app (`bunx playwright install --with-deps chromium firefox`, cached by
       `bun.lock`'s hash), and run tests via `bunx playwright test` / `turbo run e2e
-      --filter=website-e2e`.
+--filter=website-e2e`.
 - [x] license-cop's existing Cypress suite already uses the page-object pattern
       (`apps/website-e2e/src/support/page-objects/*.po.ts`) — that structure translates directly to
       Playwright's `Page`-based fixtures; this is a port of the page objects and specs, not a
@@ -286,10 +286,10 @@ branch actually merges (1.6 included), per this doc's own guiding principles abo
   `e2e` job with the same Cypress install/`start-server-and-test` invocation and Cypress-specific
   screenshot/video artifact upload steps — a second Cypress consumer this section's checklist didn't
   call out. Updated it the same way as `ci.yml`: `bunx playwright install --with-deps chromium
-  firefox` replaces `bunx cypress install`, `bunx nx run website-e2e:e2e` replaces the
+firefox` replaces `bunx cypress install`, `bunx nx run website-e2e:e2e` replaces the
   `start-server-and-test` wrapper (Playwright's own `webServer` config starts/reuses the server), and
   the screenshot/video artifact uploads became a single `playwright-report/` upload.
-- Playwright's default `outputDir` resolves relative to the *nearest `package.json`*, not the config
+- Playwright's default `outputDir` resolves relative to the _nearest `package.json`_, not the config
   file's own directory — `apps/website-e2e` has no `package.json` of its own (deliberately, per
   1.3's note about `packages/license-cop-e2e`), so artifacts were landing in a `test-results/` at the
   workspace root instead of scoped to the package. Fixed by setting `outputDir: "./test-results"`
@@ -312,11 +312,11 @@ Do this one **last** within Part 1, after 1.2–1.4. Nx is mostly just orchestra
 already — `apps/website`'s targets and several of `license-cop`/`permissive`'s
 (`run`/`version`/`pack`/`publish`, `permissive`'s `build`) are already plain `nx:run-commands`, and
 Prettier isn't wired through nx at all today (`ci.yml` runs `pnpm prettier --check .` directly). The
-only nx-specific *executors* left in the repo are `@nx/js:swc` (license-cop's `build`),
+only nx-specific _executors_ left in the repo are `@nx/js:swc` (license-cop's `build`),
 `@nx/eslint:lint` (every package's `lint`), `@nx/jest:jest` (every package's `test`/`e2e`), and
 `@nx/cypress:cypress` (`website-e2e`'s `e2e`) — each swap in 1.2–1.4 should land as a
 `nx:run-commands` executor pointing at the new tool (`tsdown`, `eslint .`, `bun test`,
-`bunx playwright test`) *first*, verified through the existing `pnpm nx run-many --target X` and
+`bunx playwright test`) _first_, verified through the existing `pnpm nx run-many --target X` and
 existing CI, before this step. That turns nx removal into "every target is already a thin wrapper
 around a standalone command — delete the wrapper and rewrite CI to call the same commands directly"
 instead of debugging new tools and a rewritten CI at the same time.
@@ -336,7 +336,7 @@ instead of debugging new tools and a rewritten CI at the same time.
 - [x] Add a `turbo.json` — `build` (`dependsOn: ["^build"]`), `typecheck`, `lint`, `test`, `e2e`
       (`cache: false`, since it shells out to real package-manager installs), `check` (composite of
       the above). **`check` landed as a root `package.json` script (`turbo run build lint test
-      typecheck`) rather than its own `turbo.json` task** — `turbo run` already accepts multiple task
+typecheck`) rather than its own `turbo.json` task** — `turbo run` already accepts multiple task
       names in one invocation and runs each one's own dependency graph, so a dedicated aggregator
       task/script per package would have been pure duplication.
 - [x] Nx currently does more than task orchestration here — `@nx/eslint:lint`,
@@ -364,7 +364,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   actually removed then) were both deleted here as small, low-risk cleanup found while auditing the
   repo for anything nx-flavored.
 - `packages/license-cop/src/lib/config/load-config.ts` imported `deepmerge` as `import * as deepMerge
-  from "deepmerge"` and called it directly (`deepMerge(a, b)`) — this only ever worked because swc's
+from "deepmerge"` and called it directly (`deepMerge(a, b)`) — this only ever worked because swc's
   `noInterop: true` setting happened to bind a wildcard import straight to `module.exports` for a CJS
   module with no `__esModule` flag. tsdown/rolldown's CJS output implements real namespace-import
   semantics, under which `deepMerge` would resolve to an uncallable namespace object instead of the
@@ -376,7 +376,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   (see 1.2's own note that these were only ever carried forward pending 1.5) turned out to be load-
   bearing for more than `@nx/enforce-module-boundaries` and the already-dead `no-extra-semi` override:
   it was also silently satisfying `@typescript-eslint/no-require-imports` for the `import X =
-  require(...)` pattern used in both `npm.ts` and (per the previous bullet) now `load-config.ts` too.
+require(...)` pattern used in both `npm.ts` and (per the previous bullet) now `load-config.ts` too.
   Without it, plain `typescript-eslint` recommended rules flag `import X = require(...)` the same as a
   bare `require()` call. Added an explicit `{ allowAsImport: true }` rule option in `eslint.config.mjs`
   instead of reintroducing any nx config, scoped to exactly the TS import-equals-require syntax this
@@ -387,7 +387,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   increasingly unnatural options to compensate (a custom `outExtensions` callback to stop tsdown
   defaulting to `.cjs`, plus copying the raw bin file into `dist` as a separate asset). **Corrected**:
   tsdown is meant to be used with explicit, bundled entry points, so the config now reads `entry: {
-  index: "src/index.ts", bin: "src/bin.ts" }`, producing exactly `dist/index.js` and `dist/bin.js`
+index: "src/index.ts", bin: "src/bin.ts" }`, producing exactly `dist/index.js` and `dist/bin.js`
   with every internal import inlined — no tree-mirroring, no separate asset copy. This needed a real
   (if small) source change: `src/bin/license-cop` (a plain, extension-less JS shim with a shebang,
   doing `require("../lib/cli").main(process.argv)`) is gone, replaced by `src/bin.ts` — the exact same
@@ -416,7 +416,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   `package.json`/`README.md`/`LICENSE.md` into `dist/` at build time (via a small custom script) so
   that `dist/` could stand in as a self-contained "fake" package root. That's solving a problem that
   doesn't need solving: `package.json` never needs to move at all. `npm pack`/`bun pm pack`/`npm
-  publish` already assemble the published tarball from the *real*, in-place `package.json` plus
+publish` already assemble the published tarball from the _real_, in-place `package.json` plus
   whatever its `"files"` field lists (`README.md`/`LICENSE.md`/`package.json` itself are included
   automatically by convention, confirmed empirically — `bun pm pack` on `packages/permissive` picked
   up `LICENSE.md` with no `"files"` entry naming it at all). **Corrected**: `package.json` stays where
@@ -430,7 +430,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   earlier pass) is deleted outright, along with `tools/tsconfig.tools.json` — bun's own tooling already
   covers everything they did: `"version": "bun pm pkg set version=$VERSION"`, `"pack": "bun pm pack"`,
   `"publish": "npm publish *.tgz --access public --provenance --tag $NPM_TAG"`. The `"*"` version
-  placeholder became `"0.0.0"` (valid semver, reads as "unversioned") purely because an *unversioned*
+  placeholder became `"0.0.0"` (valid semver, reads as "unversioned") purely because an _unversioned_
   build still needs to be a resolvable package for things like `license-cop-e2e`'s `npm exec` against
   it — unrelated to the dist-root correction, and it stays `"0.0.0"` under the new approach too.
   `packages/license-cop` and `packages/permissive` each gained their own `README.md`/`LICENSE.md`
@@ -441,7 +441,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   turborepo/bun-workspace script always runs with `cwd` set to its own package directory, unlike the
   old `nx:run-commands` `e2e` target which ran with no `cwd` override, defaulting to the workspace
   root): its `e2e/<pm>/<scenario>` fixture-directory lookup used to be `join("./e2e", packageManager,
-  directory)`, a path relative to `process.cwd()` that doesn't exist once `cwd` is the package
+directory)`, a path relative to `process.cwd()` that doesn't exist once `cwd` is the package
   directory — anchored to the file's own location instead (`join(__dirname, "../../../..")` as
   `workspaceRoot`), removing the `cwd`-dependence entirely. Separately, once the dist-root correction
   above landed, its `npm exec` target needed to change from `packages/license-cop/dist` (a stand-in
@@ -452,7 +452,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   workspace member with scripts to run; `apps/website-e2e/playwright.config.ts`'s `webServer.command`
   (`bunx nx run website:serve`) was repointed at `bunx turbo run serve --filter=website`.
 - `packages/e2e/{isc-legacy-package,isc-package,mit-package,no-license-package,unlicensed-package,
-  uses-isc-package}/**` each carried their own `project.json` (using `@nx/js:tsc` for `build`,
+uses-isc-package}/**` each carried their own `project.json` (using `@nx/js:tsc` for `build`,
   unrelated to license-cop's own `@nx/js:swc`) that the plan never mentions. These are the source for
   a handful of tiny fixture packages (`@license-cop/mit-test-package` etc.), already published to the
   real npm registry and consumed by the `e2e/npm/**`/`e2e/yarn-*/**` fixtures via ordinary version
@@ -465,14 +465,14 @@ instead of debugging new tools and a rewritten CI at the same time.
   (`--outDir`/`--rootDir` overrides fighting the `rootDir: "."` inherited from `tsconfig.base.json`),
   which needed an increasingly bespoke scratch-directory dance for `uses-isc-package` specifically once
   its cross-package import collided with a `--rootDir src` override (`error TS6059: ... is not under
-  'rootDir'`). **Corrected**, once it was clear the whole shape was fighting the grain of a normal
+'rootDir'`). **Corrected**, once it was clear the whole shape was fighting the grain of a normal
   workspace rather than embracing it: added `packages/e2e/*` to the root `workspaces` array, making
   these six real bun workspace members with real symlinked `node_modules`; dropped the now-redundant
   `tsconfig.base.json` path aliases for all six (the two remaining aliases, for `@license-cop/permissive`
   and `@license-cop/license-cop-e2e`, are for packages that are already real workspace members resolved
   normally, untouched here as out of scope); and gave every one of the six the exact same `tsdown`
   bundled-entry `build` script as `packages/license-cop` (`entry: ["src/index.ts"]`, `fixedExtension:
-  false`), replacing the raw `tsc` invocation entirely. `uses-isc-package` needed no special case at
+false`), replacing the raw `tsc` invocation entirely. `uses-isc-package` needed no special case at
   all once this landed: bun auto-links a workspace member by package name whenever a `dependencies`
   range is satisfiable locally — confirmed empirically, since its existing `"latest"` range (not
   `"workspace:*"`, which would itself be invalid once actually published) was already enough for bun
@@ -484,7 +484,7 @@ instead of debugging new tools and a rewritten CI at the same time.
   `turbo.json` pipeline (turbo only orchestrates declared workspace tasks the same way it always did;
   nothing currently invokes these six as part of `turbo run build` etc., matching the state before this
   milestone), but each is buildable and lintable standalone (`cd packages/e2e/<name> && bun run
-  build`/`bun run lint`), restoring exactly the capability their `project.json` targets provided —
+build`/`bun run lint`), restoring exactly the capability their `project.json` targets provided —
   properly this time, as ordinary workspace members rather than raw-source path hacks.
 - Adding a `typecheck` script is new functionality for every package here (nx never had a `typecheck`
   target for anything in this repo), not a preserved precedent — for `packages/license-cop`,
@@ -494,13 +494,13 @@ instead of debugging new tools and a rewritten CI at the same time.
   exports, `plugins/admonitions.ts`'s hast `ElementData` property access, a missing `shiki` type, and
   a `third-party.astro` layout prop mismatch) once `astro check` actually looked at the app for the
   first time. Fixing pre-existing Astro type debt is out of scope for an nx→turbo swap — same
-  reasoning 1.7 already applies to Astro *linting* being split out as new functionality rather than a
+  reasoning 1.7 already applies to Astro _linting_ being split out as new functionality rather than a
   preserved precedent. Left `apps/website` without a `typecheck` script for now (dropped the
   `@astrojs/check` devDependency that would have backed it) rather than either shipping a script that
   fails or quietly fixing unrelated content bugs; a future milestone can pick this up the same way 1.7
   will for linting.
 
-### 1.6 GitHub workflows
+### 1.6 GitHub workflows ✅ done
 
 Current workflows (`ci.yml`, `cd.yml`, `nx.yml`, `website.yml`, `codeql.yml`) route through the
 external `tobysmith568/actions` reusable workflows/composite actions. Move to self-contained local
@@ -508,35 +508,127 @@ composite actions instead (`.github/actions/setup` for the install/cache step, `
 test-cli` for the CLI's own behavioural smoke tests) plus `workflow_call` reusable workflows for
 CodeQL and Pages, so the workflow graph no longer depends on an external repo. Concretely:
 
-- [ ] Add `.github/actions/setup/action.yml`: install bun (`oven-sh/setup-bun`), cache
+- [x] Add `.github/actions/setup/action.yml`: install bun (`oven-sh/setup-bun`), cache
       `~/.bun/install/cache` keyed on `bun.lock`, `bun install --frozen-lockfile`. Replaces every
       `tobysmith568/actions/.github/actions/checkout-pnpm-project@main` step.
-- [ ] Fold `ci.yml` into one `integration.yml` triggered on `pull_request` + `push: main`, with
+- [x] Fold `ci.yml` into one `integration.yml` triggered on `pull_request` + `push: main`, with
       `format` / `lint` / `typecheck` / `build` / `test` as separate parallel jobs — each failing
       with a precise name instead of one monolithic `lint` job that also runs Prettier.
-- [ ] license-cop's own `e2e` job is more than an install-smoke-test would be: it's core product
+- [x] license-cop's own `e2e` job is more than an install-smoke-test would be: it's core product
       verification, matrixed over npm/yarn-classic/yarn-modern/pnpm × Node 20/22/24 ×
       Ubuntu/macOS/Windows, asserting the scanning logic against real installs of every supported
-      package manager. Keep that matrix's *intent* untouched; only modernize its mechanics
+      package manager. Keep that matrix's _intent_ untouched; only modernize its mechanics
       (bun-based setup, turbo-invoked). Add a `bun` leg once Part 3 (bun.lock support) lands.
-- [ ] `local-licenses` / `published-licenses` jobs (license-cop dogfooding itself against its own
+- [x] `local-licenses` / `published-licenses` jobs (license-cop dogfooding itself against its own
       dependencies) are worth keeping as-is — just re-point them at the turbo-built `dist/` output
       and `bunx license-cop`.
-- [ ] `cd.yml` → a `deployment.yml` on `workflow_dispatch`: bump version → run integration → publish
+- [x] `cd.yml` → a `deployment.yml` on `workflow_dispatch`: bump version → run integration → publish
       to npm (with `id-token: write` for provenance) → create the GitHub release → redeploy the docs
       site. The `purge-jsdelivr` step (for `@license-cop/permissive`) stays, slotted in after
       publish.
-- [ ] `website.yml` → `pages.yml`: build → `configure-pages` → upload → `deploy-pages` (mostly
-      already similar; mainly swap `pnpm nx run website:build` for `bunx turbo run build
-      --filter=website`).
-- [ ] `codeql.yml` → make it a `workflow_call`-able reusable workflow, called from both a `schedule`
+- [x] `website.yml` → `pages.yml`: build → `configure-pages` → upload → `deploy-pages` (mostly
+      already similar; mainly swap `pnpm nx run website:build` for `bunx turbo run build --filter=website`).
+- [x] `codeql.yml` → make it a `workflow_call`-able reusable workflow, called from both a `schedule`
       trigger and from `integration.yml`, instead of the current standalone scheduled+push+PR
       triggered copy — avoids running CodeQL twice on every PR.
-- [ ] Delete `nx.yml` entirely (see 1.5).
-- [ ] Pin action versions to their current latest majors (`actions/checkout@v7`,
+- [x] Delete `nx.yml` entirely (see 1.5).
+- [x] Pin action versions to their current latest majors (`actions/checkout@v7`,
       `actions/upload-artifact@v7`/`download-artifact@v8`, `github/codeql-action/*@v4`,
       `actions/configure-pages@v6`, `actions/deploy-pages@v5`) rather than license-cop's current
       older pins.
+
+**Found during implementation, not in the original plan:**
+
+- Post-1.5, `package.json` lives in the package directory rather than being copied into `dist/` (see
+  1.5's own dist-root correction), so `deployment.yml`'s `publish` and `create-release` jobs each
+  need their own `Set Version` step (re-running `bun run --filter=... version` against their own
+  fresh checkout) before packing/publishing — the version bump made in `integration.yml`'s `build`
+  job doesn't travel with the downloaded `build` artifact, which only contains `dist/` output, not
+  `package.json`. The old `cd.yml` never had this problem because nx's pre-1.5 dist-`package.json`
+  generation copied a version-stamped `package.json` into `dist/` at build time; that mechanism is
+  gone (correctly, per 1.5), so this step has to be added explicitly now rather than ported forward.
+- `cd.yml`'s checkout steps referenced `${{ inputs.branch_name }}`, but `cd.yml`'s own
+  `workflow_dispatch` never declared a `branch_name` input (only `version`) — a latent no-op left
+  over from `ci.yml`'s `workflow_call` input of the same name. Dropped entirely rather than ported;
+  every job now just checks out the ref that triggered the workflow, which was the only value
+  `branch_name` could ever actually have resolved to.
+- Old workflows set `defaults.run.shell: pwsh` repo-wide, load-bearing only for one step
+  (`purge-jsdelivr`'s `Invoke-WebRequest`) — everything else was a plain executable invocation that
+  runs identically under `pwsh` or each OS's native shell. Dropped the repo-wide `pwsh` default and
+  rewrote `purge-jsdelivr` as `curl -fsSL`, so Ubuntu/macOS jobs (including the whole `e2e` matrix)
+  use their native `bash` instead of an added, otherwise-unneeded `pwsh` dependency.
+- `.github/actions/setup` grew a `registry-url` input (unused by default, passed only by
+  `deployment.yml`'s `publish` job) to get `actions/setup-node` to write an `.npmrc` pointing at the
+  npm registry with `NODE_AUTH_TOKEN` — the old workflow's npm auth was presumably handled inside the
+  external `checkout-pnpm-project` composite action, which isn't visible from this repo, so this had
+  to be reconstructed rather than ported.
+- `.github/actions/test-cli` ended up doing more than a single license check: `--version` and
+  `--help` invocations were added ahead of the real license check, so "behavioural smoke tests"
+  (plural, per this section's own intro) actually exercises more than one code path rather than just
+  the default command.
+- `local-licenses`'s CLI invocation changed shape, not just path: `node ./dist/packages/license-cop/src/bin/license-cop` (nx's centralized dist root) becomes `node ./packages/license-cop/dist/bin.js` (tsdown's bundled entry point, per 1.5's dist-root correction).
+- `local-licenses` and `e2e` both need a real `bun install` (via `.github/actions/setup`), not just
+  the downloaded `dist/` artifact — `packages/license-cop`'s dependencies aren't bundled into
+  `dist/bin.js` by tsdown (only workspace-internal imports are inlined), so `node_modules` has to be
+  present at runtime the same way it was under the old nx/nvm setup.
+- Every workflow step now invokes `bunx turbo run <task>` directly instead of the root
+  `package.json`'s forwarding scripts (`bun run lint`/`build`/`test`/`typecheck`) — those root
+  scripts exist for a human typing at a terminal, and pipelines should say precisely which task
+  they're asking turbo for rather than going through that indirection. This meant giving `version`,
+  `pack`, and `publish` (release-only, previously invoked as `bun run --filter=... <script>`,
+  bypassing turbo entirely) their own entries in `turbo.json` — each `"cache": false` (like `e2e`,
+  they're side-effecting: a version bump, a registry publish) with an explicit `env` allowlist
+  (`VERSION` for `version`; `NODE_AUTH_TOKEN`/`NPM_TAG` for `publish`), since turbo strips
+  environment variables from a task's execution unless the task declares it needs them — confirmed
+  empirically: `bunx turbo run version` silently ran `bun pm pkg set version=` with `VERSION` missing
+  until the `env` entry was added. `version`/`pack`/`publish` are invoked with no `--filter` at all —
+  confirmed empirically that turbo scopes to every workspace package by default and just skips the
+  ones (`license-cop-e2e`, `website`, the `packages/e2e/*` fixtures, …) that don't declare the task
+  in their own `package.json`, so naming `license-cop`/`@license-cop/permissive` explicitly would
+  have been redundant. `e2e` keeps its `--filter` (`license-cop-e2e` or `website-e2e`) because, unlike
+  those three, _both_ packages that matter here declare an `e2e` script, and each CI job wants only
+  one of them.
+- Same reasoning applied to `integration.yml`'s `build` job's `Upload Build` step: its own `Build`
+  step runs unfiltered (`bunx turbo run build`), so hardcoding `packages/license-cop/dist` +
+  `apps/website/dist` as the upload path was the same kind of target-naming the rest of this section
+  argues against. Changed to `apps/**/dist` + `packages/**/dist`, scoped to the workspace's own glob
+  shape (mirroring root `package.json`'s `workspaces` entries) rather than a bare `**/dist` — plus a
+  `!**/node_modules/**` exclusion, which turned out to still be required even with that scoping: bun's
+  isolated linker (1.1) plants a real symlink one level inside each package's own `node_modules` for
+  every direct dependency (e.g. `packages/license-cop/node_modules/axios ->
+../../../node_modules/.bun/axios@1.20.0/node_modules/axios`), and `actions/upload-artifact` follows
+  symlinks by default — confirmed several of `packages/license-cop`'s direct dependencies
+  (`axios`, `cosmiconfig`, `json5`, `deepmerge`) ship their own `dist/`, so without the exclusion even
+  the narrower `packages/**/dist` glob would walk straight through those symlinks and pick up
+  dependency internals, not just this repo's own build output. Separately confirmed (via a clean
+  `rm -rf`-then-rebuild) that an unfiltered `turbo run build` currently produces eight `dist/`
+  directories, not two: `packages/license-cop/dist`, `apps/website/dist`, and one per `packages/e2e/*`
+  fixture (all six declare the same tsdown `build` script per 1.5's workspace-member correction) —
+  `packages/permissive` has no `build` script and produces none. The six fixture `dist/`s riding along
+  in the `build` artifact is a real, accepted side effect of not hardcoding paths, not an oversight —
+  none of them are large, and no downstream job (`local-licenses`, `e2e`, `e2e-website`) reads them,
+  so they're just unused bytes in the uploaded artifact rather than anything that changes behavior.
+- `deployment.yml`'s `publish` job originally carried a `NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}`
+  env var on the `Publish` step, an assumption ported from the old `cd.yml` without checking whether
+  it still matched how this account actually publishes. It doesn't: modeled the `publish` job on the
+  sibling `gramdown` repo's `deployment.yml`/`turbo.json` instead, which publishes via npm's newer
+  OIDC "trusted publishing" — no npm token at all. Two things had to line up for this to work:
+  1. `npm` itself needs upgrading before publish — OIDC trusted-publishing support only landed in a
+     recent `npm` CLI version, newer than what ships with Node 24 today — hence the
+     `npm install --global npm@latest` step added right before `Publish`, matching gramdown's own
+     "Upgrade npm for trusted publishing" step.
+  2. turbo strips env vars from a task's execution by default (see this section's earlier note on
+     `VERSION`), and OIDC's actual credential isn't a static secret at all — GitHub Actions injects a
+     short-lived `ACTIONS_ID_TOKEN_REQUEST_URL`/`ACTIONS_ID_TOKEN_REQUEST_TOKEN` pair into the job's
+     environment whenever `permissions.id-token: write` is set (already true for this job), and `npm
+publish` reads those itself to negotiate the registry token. `turbo.json`'s `publish` task needed
+     both names added, or `bunx turbo run publish` would strip them before `npm publish` ever saw
+     them, the same way it silently dropped `VERSION` earlier in this section. Also switched `publish`
+     and `version` from `env` to `passThroughEnv` (mirroring gramdown) — `env` bakes the variable's
+     value into the task's cache hash, which is the wrong semantics for a token that's different on
+     every single run by design; `passThroughEnv` passes the value through without hashing it. Both
+     tasks are already `cache: false`, so this is a correctness-of-intent fix rather than one with an
+     observable effect today.
 
 ### 1.7 Add Astro linting
 
@@ -578,7 +670,7 @@ engine package with no CLI concerns, and a thin CLI package that depends on it v
       options-in/data-out with no CLI dependency, so this is a move, not a rewrite.
   - `src/index.ts` becomes the entire public export surface: `checkLicenses`, `LicenseCopOptions`,
     and the result types — i.e. today's `packages/license-cop/src/index.ts`, relocated. Once it's
-    the *only* place these are exported from, the current hack (importing `Command` from
+    the _only_ place these are exported from, the current hack (importing `Command` from
     `commander` purely so `@nx/dependency-checks` doesn't prune the dependency) has nothing left to
     guard — it's already moot once nx is gone (1.5) and commander is dropped (2.2), so just delete
     it rather than port it.
@@ -586,7 +678,7 @@ engine package with no CLI concerns, and a thin CLI package that depends on it v
       `package.json` `"name"` stays `license-cop` (unscoped, matching the bin name — the package a
       user runs should be named after what they type to invoke it, not after a scoped library). It
       keeps only `src/bin.ts` and `src/lib/cli/**` (see 2.2) plus a `"@license-cop/core":
-      "workspace:*"` dependency; it has no `"main"`/`"exports"` of its own — it's bin-only.
+"workspace:*"` dependency; it has no `"main"`/`"exports"` of its own — it's bin-only.
 - [ ] Update every path that currently assumes `packages/license-cop`: the CI `local-licenses` job
       (`node ./dist/packages/license-cop/src/bin/license-cop`, see 1.6), `packages/license-cop-e2e`'s
       spawn target in `helpers.ts`, and any `tsconfig`/workspace references.
@@ -613,18 +705,18 @@ The fix is one seam: an `Io` interface threaded explicitly through every layer, 
 the one testable entry point, and `node:util.parseArgs` + `zod` doing what `commander` does today —
 no framework, no global state, just plain data in and plain data out. Proposed mapping:
 
-| Current | New | Notes |
-|---|---|---|
-| `src/bin/license-cop` (`require("../lib/cli").main(...)`) | `src/bin.ts` | Thin `process` glue only — parse, exit, top-level catch. ESM instead of a CJS shim. |
-| `lib/cli/index.ts` (`main(args)`, calls `logger.enableLogging()`, `program.parseAsync`) | `src/main.ts` (`run(argv, io): Promise<number>`) | Returns an exit code instead of mutating `process.exitCode`; takes `io` as a parameter (defaulting to `defaultIo`) instead of a singleton. |
-| `@commander-js/extra-typings` command tree (`create-command.ts`, `commands/main.ts`, `commands/init.ts`, `commands/version.ts`) | `src/args/schema.ts` + `src/args/parse.ts` | `parseArgs` (`node:util`) tokenizes; `zod` validates into a `CliInvocation` discriminated union. Drops the `commander`/`@commander-js/extra-typings` dependency entirely. What the invocation kinds actually are changes slightly here — see 2.3. |
-| *(new)* | `src/errors.ts`: a `UsageError` class | Thrown by `args/parse.ts` when the command line itself is wrong (an unknown flag, a missing value) — distinct from failures that happen *after* a valid command line (a missing config file, a `ConfigError`), which the relevant command handler reports itself since a usage reminder wouldn't help there. |
-| `commands/main.ts`'s inline `runLicenseCop` | `src/commands/check.ts` (`runCheck(options, io)`) | Takes validated options + `io`, returns an exit code, calls the existing `checkLicenses` from `@license-cop/core` unchanged. |
-| `commands/init.ts`'s `initCommandAction` | `src/commands/init.ts` (`runInit(options, io)`) | Same pattern — currently calls `logger.log`/`writeFile` directly; route both through `io`. |
-| `commands/version.ts` | folded into `src/help.ts` (`versionText()`) + a `"version"` `CliInvocation` case in `main.ts` | version/help are data, not commands with their own action bodies. |
-| `report-failure.ts` / `report-success.ts` | same files, signature becomes `(result, io)` | Currently import the `logger` singleton directly — the only change needed is threading `io` through instead. |
-| `lib/logger.ts` (singleton, `enableLogging`/`enableVerboseLogging` mutable state) | `src/io.ts` (`Io` interface: `stdout`, `stderr`, verbosity as an explicit field on the invocation/options rather than global state) | The behavioral piece worth keeping — verbose vs. normal output — moves from "a flag that mutates a singleton before anything runs" to "a value threaded through like every other option." |
-| `ConfigError` (from `@license-cop/core` post-2.1) | unchanged, but caught in `run()` alongside the new `UsageError` | Currently caught deep inside `commands/main.ts`'s `.action()`; moving the catch up to `run()` means every entry point (not just the default command) benefits, and both error kinds get the same "print message, set exit code" treatment. |
+| Current                                                                                                                         | New                                                                                                                                 | Notes                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/bin/license-cop` (`require("../lib/cli").main(...)`)                                                                       | `src/bin.ts`                                                                                                                        | Thin `process` glue only — parse, exit, top-level catch. ESM instead of a CJS shim.                                                                                                                                                                                                                          |
+| `lib/cli/index.ts` (`main(args)`, calls `logger.enableLogging()`, `program.parseAsync`)                                         | `src/main.ts` (`run(argv, io): Promise<number>`)                                                                                    | Returns an exit code instead of mutating `process.exitCode`; takes `io` as a parameter (defaulting to `defaultIo`) instead of a singleton.                                                                                                                                                                   |
+| `@commander-js/extra-typings` command tree (`create-command.ts`, `commands/main.ts`, `commands/init.ts`, `commands/version.ts`) | `src/args/schema.ts` + `src/args/parse.ts`                                                                                          | `parseArgs` (`node:util`) tokenizes; `zod` validates into a `CliInvocation` discriminated union. Drops the `commander`/`@commander-js/extra-typings` dependency entirely. What the invocation kinds actually are changes slightly here — see 2.3.                                                            |
+| _(new)_                                                                                                                         | `src/errors.ts`: a `UsageError` class                                                                                               | Thrown by `args/parse.ts` when the command line itself is wrong (an unknown flag, a missing value) — distinct from failures that happen _after_ a valid command line (a missing config file, a `ConfigError`), which the relevant command handler reports itself since a usage reminder wouldn't help there. |
+| `commands/main.ts`'s inline `runLicenseCop`                                                                                     | `src/commands/check.ts` (`runCheck(options, io)`)                                                                                   | Takes validated options + `io`, returns an exit code, calls the existing `checkLicenses` from `@license-cop/core` unchanged.                                                                                                                                                                                 |
+| `commands/init.ts`'s `initCommandAction`                                                                                        | `src/commands/init.ts` (`runInit(options, io)`)                                                                                     | Same pattern — currently calls `logger.log`/`writeFile` directly; route both through `io`.                                                                                                                                                                                                                   |
+| `commands/version.ts`                                                                                                           | folded into `src/help.ts` (`versionText()`) + a `"version"` `CliInvocation` case in `main.ts`                                       | version/help are data, not commands with their own action bodies.                                                                                                                                                                                                                                            |
+| `report-failure.ts` / `report-success.ts`                                                                                       | same files, signature becomes `(result, io)`                                                                                        | Currently import the `logger` singleton directly — the only change needed is threading `io` through instead.                                                                                                                                                                                                 |
+| `lib/logger.ts` (singleton, `enableLogging`/`enableVerboseLogging` mutable state)                                               | `src/io.ts` (`Io` interface: `stdout`, `stderr`, verbosity as an explicit field on the invocation/options rather than global state) | The behavioral piece worth keeping — verbose vs. normal output — moves from "a flag that mutates a singleton before anything runs" to "a value threaded through like every other option."                                                                                                                    |
+| `ConfigError` (from `@license-cop/core` post-2.1)                                                                               | unchanged, but caught in `run()` alongside the new `UsageError`                                                                     | Currently caught deep inside `commands/main.ts`'s `.action()`; moving the catch up to `run()` means every entry point (not just the default command) benefits, and both error kinds get the same "print message, set exit code" treatment.                                                                   |
 
 ### 2.3 Neaten the CLI flags (breaking changes allowed)
 
@@ -636,7 +728,7 @@ rather than deliberate design. Worth deciding on explicitly rather than porting 
       commander idiom for faking a global flag as a command. Under `parseArgs` + `zod` this is just
       a normal `CliInvocation` case; the workaround disappears on its own, but it's worth
       re-checking the flag names read well outside of that constraint.
-- [ ] `--init` exists twice: as its own `init` subcommand *and* as a top-level `--init` boolean flag
+- [ ] `--init` exists twice: as its own `init` subcommand _and_ as a top-level `--init` boolean flag
       on the main command that's a pure alias for the same action
       (`if (options.init) { await initCommandAction(...); return; }`). Decide whether the alias
       pulls its weight or whether one form should go.
@@ -668,7 +760,7 @@ itself:
 // If you change this, you probably want to change that one too
 ```
 
-This is *why* the e2e fixture matrix is the only place that classification logic gets tested today
+This is _why_ the e2e fixture matrix is the only place that classification logic gets tested today
 — there's no single place to unit-test "does license X get classified correctly" independent of an
 engine, because that logic doesn't currently exist independent of an engine. Fixing this is a
 prerequisite for 2.5, not just a nice-to-have refactor:
@@ -681,8 +773,8 @@ prerequisite for 2.5, not just a nice-to-have refactor:
 - [ ] **Watch for one real behavioral difference while merging these:** `npm.ts` filters
       dev-dependencies per-node inside `parseNode` (checking `node.dev`), while `pnpm.ts` filters
       them upstream via `buildDependenciesTree`'s `include: { dependencies, devDependencies,
-      optionalDependencies }` option. Both need to keep working the same way from the caller's
-      perspective, so pin this down with a test *before* extracting, not after.
+optionalDependencies }` option. Both need to keep working the same way from the caller's
+      perspective, so pin this down with a test _before_ extracting, not after.
 - [ ] Once extracted, this is exactly what unlocks 2.5's bottom tier: the classifier can be unit
       tested directly against hand-built normalized nodes, with zero package manager and zero
       install involved.
@@ -694,8 +786,8 @@ per (scenario × package manager) pair — roughly 10 scenarios × 4 package man
 `package.json` + lockfile (+, for both yarn variants, a `.yarnrc.yml` and a committed
 `.yarn/releases/*.cjs` binary). Adding bun as a 5th package manager the same way (Part 3) would push
 that past 50 near-identical directories. Two axes are being conflated here that don't need to be:
-*which scenario* (package-manager-agnostic — this is what 2.4's classifier decides) and *which
-package manager* (how you get from disk to a normalized tree at all). Worse, `npm` and both `yarn`
+_which scenario_ (package-manager-agnostic — this is what 2.4's classifier decides) and _which
+package manager_ (how you get from disk to a normalized tree at all). Worse, `npm` and both `yarn`
 variants already run through the identical `npmDependencyScanning` path today (`lib/license-cop.ts`
 only special-cases `pnpm`; everything else falls through to the npm engine) — so yarn's ~20
 directories are currently just re-confirming a code path npm's fixtures already exercise.
@@ -712,7 +804,7 @@ Restructure into three tiers instead:
       keep a minimal real install — "simple deps" and "nested/transitive deps" is likely enough —
       asserting the engine correctly walks its package manager's native tree into normalized nodes
       (names, versions, license fields, dev/prod flags) and correctly applies dev-dependency
-      filtering per the caveat in 2.4. This is *not* re-testing classification, just "does this
+      filtering per the caveat in 2.4. This is _not_ re-testing classification, just "does this
       engine read this package manager's on-disk state correctly."
 - [ ] **Collapse `e2e/yarn-classic/**` and `e2e/yarn-modern-with-node-modules/**`** from ~10
       scenario directories each down to one or two confirming fixtures, since they exercise the
@@ -753,7 +845,7 @@ agnostically.
       question:** confirm whether a `bun install`-produced `node_modules` tree is arborist-readable
       the same way npm/yarn's is, or whether it needs its own `lib/dependency-scanning/bun.ts` —
       bun's default linker layout is npm-compatible, but this needs an actual test fixture to
-      confirm rather than assuming. If it *is* arborist-readable, bun may not need a new engine at
+      confirm rather than assuming. If it _is_ arborist-readable, bun may not need a new engine at
       all — just the detection change above, verified by one contract fixture (per 2.5's per-engine
       tier), the same way yarn needs none today.
 - [ ] Add one or two contract fixtures under `e2e/bun/**` (per 2.5's per-engine tier — "simple
@@ -772,7 +864,7 @@ agnostically.
    path anyway.
 2. **1.2, 1.3, 1.4** (ESLint upgrade, Jest → bun:test, Cypress → Playwright) — each lands as its
    new tool wired up via an `nx:run-commands` bridge (see each section's first checklist item),
-   verified independently through the *existing* `pnpm nx run-many --target X` and existing CI.
+   verified independently through the _existing_ `pnpm nx run-many --target X` and existing CI.
    Order among these three doesn't matter; they touch disjoint parts of the tree.
 3. **1.5** (nx → turborepo, incl. the `tsdown` bridge for `build`) — last among the infra items on
    purpose (see 1.5's intro): by this point every target is already a thin `nx:run-commands`

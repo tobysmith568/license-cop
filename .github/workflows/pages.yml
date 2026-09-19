@@ -1,17 +1,10 @@
-name: Website CD
+name: Pages
 
 on:
   push:
     branches:
       - main
   workflow_call:
-
-env:
-  NODE_VERSION: 24
-
-defaults:
-  run:
-    shell: pwsh
 
 permissions:
   contents: read
@@ -29,22 +22,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      - uses: ./.github/actions/setup
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build Website
-        run: bunx nx run website:build
+        run: bunx turbo run build --filter=website
 
       - name: Upload Build
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist/apps/website
+          path: ./apps/website/dist
 
   e2e:
     name: E2E Test Website
@@ -55,16 +45,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      - uses: ./.github/actions/setup
 
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps chromium firefox
 
       - name: Run E2E Tests
-        run: bunx nx run website-e2e:e2e
+        run: bunx turbo run e2e --filter=website-e2e
 
       - name: Upload E2E report
         if: always()
@@ -90,4 +77,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

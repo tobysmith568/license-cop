@@ -1,4 +1,4 @@
-name: CD
+name: Deployment
 
 on:
   workflow_dispatch:
@@ -9,20 +9,12 @@ on:
         required: true
         type: string
 
-defaults:
-  run:
-    shell: pwsh
-
-env:
-  NODE_VERSION: 24
-
 jobs:
-  ci:
-    name: Run CI
-    uses: ./.github/workflows/ci.yml
+  integration:
+    name: Run Integration
+    uses: ./.github/workflows/integration.yml
     with:
       version: ${{ inputs.version }}
-      branch_name: main
       is_release: true
     secrets: inherit
 
@@ -30,7 +22,7 @@ jobs:
     name: Publish to npm
 
     needs:
-      - ci
+      - integration
 
     runs-on: ubuntu-latest
 
@@ -38,20 +30,30 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout
-        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
+      - uses: ./.github/actions/setup
         with:
-          ref: ${{ inputs.branch_name }}
-          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
 
       - name: Download Build
         uses: actions/download-artifact@v8
         with:
           name: build
-          path: ./dist
+
+      - name: Set Version
+        run: bunx turbo run version
+        env:
+          VERSION: ${{ inputs.version }}
+
+      - name: Pack
+        run: bunx turbo run pack
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
 
       - name: Publish
-        run: bunx nx run-many --target publish
+        run: bunx turbo run publish
+        env:
+          NPM_TAG: latest
 
   purge-jsdelivr:
     name: Purge JsDelivr
@@ -62,11 +64,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: Invoke-WebRequest -Uri "https://purge.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc"
+      - name: Purge JsDelivr cache
+        run: curl -fsSL "https://purge.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc"
 
   deploy-website:
     name: Deploy Website
-    uses: ./.github/workflows/website.yml
+    uses: ./.github/workflows/pages.yml
     needs:
       - purge-jsdelivr
     permissions:
@@ -86,27 +89,27 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
-        with:
-          ref: ${{ inputs.branch_name }}
-          node-version: ${{ env.NODE_VERSION }}
+      - uses: ./.github/actions/setup
 
       - name: Download Build
         uses: actions/download-artifact@v8
         with:
           name: build
-          path: ./dist
+
+      - name: Set Version
+        run: bunx turbo run version
+        env:
+          VERSION: ${{ inputs.version }}
 
       - name: Pack assets
-        run: bunx nx run-many --target pack
+        run: bunx turbo run pack
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ inputs.version }}
           generate_release_notes: true
-          files: dist/**.tgz
+          files: packages/**/*.tgz
           body: |
             # Release v${{ inputs.version }}
 
