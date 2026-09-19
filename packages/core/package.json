@@ -1,12 +1,9 @@
 {
-  "name": "license-cop",
+  "name": "@license-cop/core",
   "version": "0.0.0",
   "type": "commonjs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "license-cop": "./dist/bin.js"
-  },
   "files": [
     "dist"
   ],
@@ -25,18 +22,17 @@
     "url": "https://tobysmith.uk"
   },
   "license": "ISC",
-  "description": "Yet another license checker tool for your dependencies; focused on simplicity.",
+  "description": "The license-checking engine behind license-cop.",
   "homepage": "https://license-cop.js.org",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tobysmith568/license-cop.git",
-    "directory": "packages/license-cop"
+    "directory": "packages/core"
   },
   "bugs": {
     "url": "https://github.com/tobysmith568/license-cop/issues"
   },
   "keywords": [
-    "cli",
     "license",
     "licenses",
     "license-cop",
@@ -45,11 +41,10 @@
     "oss"
   ],
   "dependencies": {
-    "@commander-js/extra-typings": "^14.0.0",
     "@npmcli/arborist": "^9.0.0",
+    "@pnpm/logger": "^1001.0.1",
     "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
     "axios": "^1.6.0",
-    "commander": "^14.0.0",
     "compare-versions": "^6.0.0-rc.1",
     "cosmiconfig": "^9.0.0",
     "deepmerge": "^4.3.1",

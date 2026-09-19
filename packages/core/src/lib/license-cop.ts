@@ -3,6 +3,7 @@ import { npmDependencyScanning } from "./dependency-scanning/npm";
 import type { DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
 import { getPackageManager } from "./dependency/get-package-manager";
+import { noopOnVerbose, type OnVerbose } from "./on-verbose";
 import type { CheckLicensesResult } from "./result";
 
 export type LicenseCopOptions = {
@@ -11,21 +12,24 @@ export type LicenseCopOptions = {
   workingDirectory?: string;
   includeDevDependencies?: boolean;
   devDependenciesOnly?: boolean;
+  onVerbose?: OnVerbose;
 };
 
 export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLicensesResult> => {
   const fullProjectPath = resolvePath(options.workingDirectory);
   const includeDevDependencies = options.includeDevDependencies ?? false;
   const devDependenciesOnly = options.devDependenciesOnly ?? false;
+  const onVerbose = options.onVerbose ?? noopOnVerbose;
 
   const dependencyScanningOptions: DependencyScanningOptions = {
     ...options,
     workingDirectory: fullProjectPath,
     includeDevDependencies,
-    devDependenciesOnly
+    devDependenciesOnly,
+    onVerbose
   };
 
-  const packageManager = await getPackageManager(fullProjectPath);
+  const packageManager = await getPackageManager(fullProjectPath, onVerbose);
 
   switch (packageManager) {
     case "pnpm":

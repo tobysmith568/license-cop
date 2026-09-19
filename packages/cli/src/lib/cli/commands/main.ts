@@ -1,8 +1,11 @@
+import {
+  ConfigError,
+  checkLicenses,
+  loadConfig,
+  readPackageJson,
+  type LicenseCopOptions
+} from "@license-cop/core";
 import { join } from "path";
-import { ConfigError } from "../../config/config-error";
-import { loadConfig } from "../../config/load-config";
-import { readPackageJson } from "../../dependency/package-json";
-import { checkLicenses, type LicenseCopOptions } from "../../license-cop";
 import logger from "../../logger";
 import { createCommandWithGlobalOptions } from "../create-command";
 import { reportFailure } from "../report-failure";
@@ -45,7 +48,7 @@ const runLicenseCop = async (
   const productName = await getProductName(directory);
   logger.log(`Scanning dependencies of: ${productName}`);
 
-  const config = await loadConfig(directory);
+  const config = await loadConfig(directory, logger.verbose);
 
   const options: LicenseCopOptions = {
     allowedLicenses: config.licenses,
@@ -53,7 +56,8 @@ const runLicenseCop = async (
 
     workingDirectory: directory,
     includeDevDependencies: includeDevDependencies || config.includeDevDependencies,
-    devDependenciesOnly: devDependenciesOnly || config.devDependenciesOnly
+    devDependenciesOnly: devDependenciesOnly || config.devDependenciesOnly,
+    onVerbose: logger.verbose
   };
 
   const result = await checkLicenses(options);
@@ -68,6 +72,6 @@ const runLicenseCop = async (
 
 const getProductName = async (directory: string): Promise<string> => {
   const packageJsonPath = join(directory, "package.json");
-  const packageJson = await readPackageJson(packageJsonPath);
+  const packageJson = await readPackageJson(packageJsonPath, logger.verbose);
   return packageJson.name;
 };

@@ -2,7 +2,7 @@ import { Stats } from "fs";
 import { readFile, stat } from "fs/promises";
 import { z } from "zod";
 import { json5Parse } from "../config/parsers/json5";
-import logger from "../logger";
+import { noopOnVerbose, type OnVerbose } from "../on-verbose";
 
 const licenseSectionValidator = z.object({
   type: z.string(),
@@ -19,10 +19,13 @@ const packageJsonValidator = z.object({
 
 type PackageJson = z.infer<typeof packageJsonValidator>;
 
-export const readPackageJson = async (pathToPackageJson: string): Promise<PackageJson> => {
+export const readPackageJson = async (
+  pathToPackageJson: string,
+  onVerbose: OnVerbose = noopOnVerbose
+): Promise<PackageJson> => {
   const doesPackageJsonExist = await doesFileExist(pathToPackageJson);
   if (!doesPackageJsonExist) {
-    logger.verbose(`Cannot find the package.json: '${pathToPackageJson}'`);
+    onVerbose(`Cannot find the package.json: '${pathToPackageJson}'`);
     throw new Error(`Cannot find the file: '${pathToPackageJson}'`);
   }
 

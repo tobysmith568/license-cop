@@ -3,7 +3,7 @@ description: Behavioural smoke tests for the license-cop CLI binary
 
 inputs:
   bin:
-    description: How to invoke the license-cop binary, e.g. "node ./packages/license-cop/dist/bin.js" or "bunx license-cop"
+    description: How to invoke the license-cop binary, e.g. "node ./packages/cli/dist/bin.js" or "bunx license-cop"
     required: true
 
 runs:

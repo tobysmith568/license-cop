@@ -1,5 +1,5 @@
+import { readPackageJson } from "@license-cop/core";
 import { join } from "path";
-import { readPackageJson } from "../../dependency/package-json";
 import logger from "../../logger";
 import { createCommandWithGlobalOptions } from "../create-command";
 
@@ -12,7 +12,7 @@ export const versionCommand = createCommandWithGlobalOptions()
   });
 
 const printPackageVersion = async (): Promise<void> => {
-  const packageJsonLocation = join(__dirname, "../../../../package.json");
+  const packageJsonLocation = join(__dirname, "../package.json");
   const { version } = await readPackageJson(packageJsonLocation);
   logger.log(`v${version}`);
 };

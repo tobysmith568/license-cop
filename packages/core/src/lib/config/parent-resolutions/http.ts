@@ -1,9 +1,9 @@
 import axios from "axios";
-import logger from "../../logger";
+import { noopOnVerbose, type OnVerbose } from "../../on-verbose";
 import { json5Parse } from "../parsers/json5";
 
-export const httpResolution = async (url: string) => {
-  logger.verbose(`Resolving http config: ${url}`);
+export const httpResolution = async (url: string, onVerbose: OnVerbose = noopOnVerbose) => {
+  onVerbose(`Resolving http config: ${url}`);
 
   const response = await axios.get(url);
 

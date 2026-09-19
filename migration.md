@@ -658,7 +658,7 @@ Breaking changes are in scope here — this is a major version bump, not a patch
 at the same time, which is why this is one big-bang branch rather than several: doing them
 separately would mean moving `lib/cli/**` twice.
 
-### 2.1 Split out `@license-cop/core`
+### 2.1 Split out `@license-cop/core` ✅ done
 
 Today `packages/license-cop` is both the library (`src/index.ts` exports `checkLicenses`,
 `LicenseCopOptions`, and the `result.ts` types — consumable by other code, e.g. anything scripting
@@ -666,7 +666,7 @@ against license-cop programmatically) and the CLI (`src/bin/license-cop`, `src/l
 package. Split it the way a library-plus-CLI npm package generally benefits from splitting: a pure
 engine package with no CLI concerns, and a thin CLI package that depends on it via `workspace:*`.
 
-- [ ] New `packages/core`, npm name `@license-cop/core` (matches the existing `@license-cop/permissive`
+- [x] New `packages/core`, npm name `@license-cop/core` (matches the existing `@license-cop/permissive`
       scoping). Move `lib/license-cop.ts`, `lib/result.ts`, `lib/config/**`, `lib/dependency/**`,
       `lib/dependency-scanning/**`, and `lib/spdx/**` into it wholesale — these modules are already
       options-in/data-out with no CLI dependency, so this is a move, not a rewrite.
@@ -676,22 +676,33 @@ engine package with no CLI concerns, and a thin CLI package that depends on it v
     `commander` purely so `@nx/dependency-checks` doesn't prune the dependency) has nothing left to
     guard — it's already moot once nx is gone (1.5) and commander is dropped (2.2), so just delete
     it rather than port it.
-- [ ] Rename `packages/license-cop` → `packages/cli` to make the split visually obvious; its
+- [x] Rename `packages/license-cop` → `packages/cli` to make the split visually obvious; its
       `package.json` `"name"` stays `license-cop` (unscoped, matching the bin name — the package a
       user runs should be named after what they type to invoke it, not after a scoped library). It
       keeps only `src/bin.ts` and `src/lib/cli/**` (see 2.2) plus a `"@license-cop/core":
 "workspace:*"` dependency; it has no `"main"`/`"exports"` of its own — it's bin-only.
-- [ ] Update every path that currently assumes `packages/license-cop`: the CI `local-licenses` job
+- [x] Update every path that currently assumes `packages/license-cop`: the CI `local-licenses` job
       (`node ./dist/packages/license-cop/src/bin/license-cop`, see 1.6), `packages/license-cop-e2e`'s
       spawn target in `helpers.ts`, and any `tsconfig`/workspace references.
-- [ ] `packages/license-cop`'s current `dependencies` split roughly in two: `@npmcli/arborist`,
+- [x] `packages/license-cop`'s current `dependencies` split roughly in two: `@npmcli/arborist`,
       `@pnpm/reviewing.dependencies-hierarchy`, `axios`, `compare-versions`, `cosmiconfig`,
       `deepmerge`, `git-filesystem`, `json5`, and the domain-validation half of `zod`'s usage move to
       `@license-cop/core`'s `package.json`; the CLI package's own dependencies shrink to `zod` (for
       arg-schema validation, see 2.2) plus `@license-cop/core` — `commander` and
       `@commander-js/extra-typings` are dropped outright, not moved (see 2.2).
-- [ ] Consider whether `packages/license-cop-e2e` should be renamed alongside (`cli-e2e`?) for
+- [ ] _(Skipped — deliberately left for 2.5, which reshapes that package anyway.)_ Consider whether `packages/license-cop-e2e` should be renamed alongside (`cli-e2e`?) for
       consistency — cosmetic, not required.
+
+**Found during implementation, not in the original plan:** (see [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md) for the shared 2.1–2.3 plan this was executed from)
+
+- `lib/logger.ts` couldn't simply move with the engine: engine code calls `logger.verbose(...)` in ~10 places, and the CLI needs the same singleton for its own output. Instead of exporting the singleton from core, core's `LicenseCopOptions` gained an optional `onVerbose?: (message: string) => void` (default no-op, so library use stays silent, exactly as before) threaded through the scanners, `loadConfig`/`loadParentConfig`/`parent-resolutions/*`, `readPackageJson` and `getPackageManager`. The CLI keeps its own `lib/logger.ts` for `log`/`error` and passes `logger.verbose` as `onVerbose`. This is the only place 2.1 wasn't a pure move; 2.2 deletes the CLI's copy along with the singleton.
+- Core's public surface is `checkLicenses`, `LicenseCopOptions`, the result types, plus `loadConfig`, `ConfigError`, `readPackageJson` and the `OnVerbose` type — the CLI genuinely needs the config/package.json helpers, so these are deliberate exports rather than the temporary ones the plan first assumed.
+- `npm exec` can't resolve the CLI's `workspace:*` dependency on core, so `license-cop-e2e/helpers.ts` now spawns `node packages/cli/dist/bin.js` directly (bun's workspace `node_modules` links core by symlink) instead of `npm exec ../../../packages/license-cop`.
+- `packages/cli` has no spec files once the engine specs move (all existing specs are engine code), and `bun test` exits 1 on "No tests found", which failed `turbo run test`. Dropped the CLI's `test` script for now; 2.2 re-adds it alongside the first CLI specs.
+- Root `package.json`'s stale nx-era `dependencies` block was trimmed to what `apps/website` actually imports (`@primer/octicons`, `hastscript`, plus `tslib`, which nothing imports but which was left alone as out of scope). `@pnpm/logger`, an unmet peer of `@pnpm/reviewing.dependencies-hierarchy` that only the root used to provide, is now an explicit dependency of core.
+- `turbo.json`'s `publish` task gained `dependsOn: ["^publish"]` so `@license-cop/core` reaches the registry before the CLI that pins it. Confirmed with `bun pm pack` that `workspace:*` is rewritten to a real version in the CLI tarball.
+- **Still to do outside the repo:** configure an npm trusted publisher for `@license-cop/core` (workflow `deployment.yml`) before the first release.
+- **Pre-existing, found while baselining and not fixed here:** `license-cop -v`, `--version` and `version` all fail today (`unknown option`/`too many arguments`) — the fake `-v` subcommand never worked — and `.github/actions/test-cli` runs `--version`, so it would fail in CI. Running the CLI against this repo's own workspace also crashes on bun's `node_modules/.bun` directory. Both are out of scope for 2.1; the version command is rebuilt in 2.2/2.3. The stale `../../../dist/packages/license-cop` entries in `e2e/npm/**/package-lock.json` are likewise leftovers from before 1.5.
 
 ### 2.2 CLI architecture: an `Io` seam instead of a singleton
 

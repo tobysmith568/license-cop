@@ -1,11 +1,7 @@
-import {
-  buildDependenciesTree,
-  type DependencyNode
-} from "@pnpm/reviewing.dependencies-hierarchy";
+import Arborist, { Link, Node } from "@npmcli/arborist";
 import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
 import { isAllowedPackage } from "../dependency/package-rules";
-import logger from "../logger";
 import type {
   AllowedPackage,
   CheckLicensesResult,
@@ -18,7 +14,7 @@ import { parseLicenseExpression } from "../spdx/parse-license-expression";
 import { joinStringArray } from "../utils/join-string-array";
 import type { DependencyScanningOptions } from "./options";
 
-export const pnpmDependencyScanning = async (
+export const npmDependencyScanning = async (
   options: DependencyScanningOptions
 ): Promise<CheckLicensesResult> => {
   const {
@@ -26,7 +22,8 @@ export const pnpmDependencyScanning = async (
     allowedLicenses,
     allowedPackages,
     includeDevDependencies,
-    devDependenciesOnly
+    devDependenciesOnly,
+    onVerbose
   } = options;
 
   const foundAllowedPackages = new Map<string, AllowedPackage>();
@@ -34,34 +31,38 @@ export const pnpmDependencyScanning = async (
   const packagesWithNoLicenses = new Map<string, NoLicenseResult>();
   const packagesWithForbiddenLicenses = new Map<string, ForbiddenLicenseResult>();
 
-  const dependencyHierarchies = await buildDependenciesTree([workingDirectory], {
-    depth: Infinity,
-    include: {
-      dependencies: !devDependenciesOnly,
-      devDependencies: includeDevDependencies,
-      optionalDependencies: false
-    },
-    lockfileDir: workingDirectory,
-    virtualStoreDirMaxLength: Infinity
-  });
+  const arborist = new Arborist({ path: workingDirectory });
 
-  // This function is very similar to the one in npm.ts
+  const topNode = await arborist.loadActual();
+
+  // This function is very similar to the one in pnpm.ts
   // If you change this, you probably want to change that one too
-  const parseNode = async (node: DependencyNode) => {
-    logger.verbose(`Parsing node: ${node.name}`);
+  const parseNode = async (node: Node | Link) => {
+    onVerbose(`Parsing node: ${node.name}`);
 
-    const pkgId = `${node.alias}@${node.version}`;
-    const packageJsonPath = join(node.path, "package.json");
-    const packageJson = await readPackageJson(packageJsonPath);
+    const isDevDependency = node.dev;
 
-    if (isAllowedPackage(packageJson.name, packageJson.version, allowedPackages)) {
-      logger.verbose(`Package ${packageJson.name} is an allowed package`);
-      foundAllowedPackages.set(pkgId, {
+    if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
+      return;
+    }
+
+    if (devDependenciesOnly && !isDevDependency) {
+      return;
+    }
+
+    const packageJsonPath = join(node.realpath, "package.json");
+    const packageJson = await readPackageJson(packageJsonPath, onVerbose);
+
+    if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
+      onVerbose(`Package ${packageJson.name} is an allowed package`);
+      foundAllowedPackages.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version
       });
 
-      await parseNodes(node.dependencies);
+      if (node.children.size > 0) {
+        await parseNodes(node.children.values());
+      }
       return;
     }
 
@@ -69,13 +70,15 @@ export const pnpmDependencyScanning = async (
     const licenseExpression = parseLicenseExpression(rawLicenseExpression);
 
     if (licenseExpression.type === "unlicensed") {
-      logger.verbose(`Package ${packageJson.name} is unlicensed`);
-      packagesWithNoLicenses.set(pkgId, {
+      onVerbose(`Package ${packageJson.name} is unlicensed`);
+      packagesWithNoLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version
       });
 
-      await parseNodes(node.dependencies);
+      if (node.children.size > 0) {
+        await parseNodes(node.children.values());
+      }
       return;
     }
 
@@ -83,18 +86,16 @@ export const pnpmDependencyScanning = async (
     const joinedIssues = joinStringArray(licenseIssues);
 
     if (licenseIssues.length > 0) {
-      logger.verbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
-      packagesWithForbiddenLicenses.set(pkgId, {
+      onVerbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
+      packagesWithForbiddenLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version,
         licenseIdentifiers: joinedIssues,
         spdxExpression: rawLicenseExpression
       });
     } else {
-      logger.verbose(
-        `Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`
-      );
-      packagesWithAllowedLicenses.set(pkgId, {
+      onVerbose(`Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`);
+      packagesWithAllowedLicenses.set(node.pkgid, {
         name: packageJson.name,
         version: packageJson.version,
         spdxExpression: rawLicenseExpression,
@@ -102,24 +103,18 @@ export const pnpmDependencyScanning = async (
       });
     }
 
-    await parseNodes(node.dependencies);
+    if (node.children.size > 0) {
+      parseNodes(node.children.values());
+    }
   };
 
-  const parseNodes = async (nodes: DependencyNode[] | undefined) => {
-    if (!nodes) {
-      return;
-    }
-
+  const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
     for (const node of nodes) {
       await parseNode(node);
     }
   };
 
-  for (const hierarchies of Object.values(dependencyHierarchies)) {
-    await parseNodes(hierarchies.dependencies);
-    await parseNodes(hierarchies.devDependencies);
-    await parseNodes(hierarchies.optionalDependencies);
-  }
+  await parseNodes(topNode.children.values());
 
   return {
     allowedPackages: new Set(foundAllowedPackages.values()),

@@ -1,5 +1,9 @@
+import type {
+  CheckLicensesResult,
+  ForbiddenLicenseResult,
+  NoLicenseResult
+} from "@license-cop/core";
 import logger from "../logger";
-import type { CheckLicensesResult, ForbiddenLicenseResult, NoLicenseResult } from "../result";
 
 export const reportFailure = (result: CheckLicensesResult): void => {
   const { noLicenses, forbiddenLicenses } = result;

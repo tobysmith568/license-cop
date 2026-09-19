@@ -5,19 +5,19 @@ import type { PackageManager, TestOptions } from "./test-options";
 
 const workspaceRoot = join(__dirname, "../../../..");
 
+// Invoked directly rather than via `npm exec`: npm can't resolve the CLI's `workspace:*`
+// dependency on @license-cop/core, but bun's workspace node_modules already links it.
+const cliBinPath = join(workspaceRoot, "packages/cli/dist/bin.js");
+
 export const runTest = async (options: TestOptions) => {
   const { packageManager, directory, args, expectedExitCode } = options;
 
   await installDependencies(packageManager, directory);
 
-  const testProcess = childProcess.spawn(
-    "npm",
-    ["exec", '"../../../packages/license-cop"', "--", "--verbose", ...args],
-    {
-      cwd: join(workspaceRoot, "e2e", packageManager, directory),
-      shell: true
-    }
-  );
+  const testProcess = childProcess.spawn("node", [`"${cliBinPath}"`, "--verbose", ...args], {
+    cwd: join(workspaceRoot, "e2e", packageManager, directory),
+    shell: true
+  });
 
   process.stdout.write("\nStart of test output\n");
 

@@ -125,7 +125,7 @@ jobs:
 
       - uses: ./.github/actions/test-cli
         with:
-          bin: node ./packages/license-cop/dist/bin.js
+          bin: node ./packages/cli/dist/bin.js
 
   published-licenses:
     name: Check Licenses using the Published Version

@@ -1,10 +1,14 @@
 import { stat } from "fs/promises";
 import { join } from "path";
-import logger from "../../logger";
+import { noopOnVerbose, type OnVerbose } from "../../on-verbose";
 import { findConfig } from "../find-config";
 
-export const npmResolution = async (packageName: string, rootDir: string) => {
-  logger.verbose(`Resolving npm package: ${packageName}`);
+export const npmResolution = async (
+  packageName: string,
+  rootDir: string,
+  onVerbose: OnVerbose = noopOnVerbose
+) => {
+  onVerbose(`Resolving npm package: ${packageName}`);
 
   const packagePath = getPackagePath(rootDir, packageName);
   return await findConfig(packagePath);

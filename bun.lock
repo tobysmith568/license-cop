@@ -5,21 +5,9 @@
     "": {
       "name": "license-cop-monorepo",
       "dependencies": {
-        "@commander-js/extra-typings": "^14.0.0",
-        "@npmcli/arborist": "^9.4.0",
-        "@pnpm/logger": "^1001.0.1",
-        "@pnpm/reviewing.dependencies-hierarchy": "^1001.3.2",
         "@primer/octicons": "^19.22.0",
-        "axios": "^1.13.6",
-        "commander": "^14.0.3",
-        "compare-versions": "^6.1.1",
-        "cosmiconfig": "^9.0.0",
-        "deepmerge": "^4.3.1",
-        "git-filesystem": "^0.0.6",
         "hastscript": "^9.0.1",
-        "json5": "^2.2.3",
         "tslib": "^2.8.1",
-        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@astrojs/mdx": "^4.3.13",
@@ -61,6 +49,34 @@
     "apps/website-e2e": {
       "name": "website-e2e",
     },
+    "packages/cli": {
+      "name": "license-cop",
+      "version": "0.0.0",
+      "bin": {
+        "license-cop": "./dist/bin.js",
+      },
+      "dependencies": {
+        "@commander-js/extra-typings": "^14.0.0",
+        "@license-cop/core": "workspace:*",
+        "commander": "^14.0.0",
+      },
+    },
+    "packages/core": {
+      "name": "@license-cop/core",
+      "version": "0.0.0",
+      "dependencies": {
+        "@npmcli/arborist": "^9.0.0",
+        "@pnpm/logger": "^1001.0.1",
+        "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
+        "axios": "^1.6.0",
+        "compare-versions": "^6.0.0-rc.1",
+        "cosmiconfig": "^9.0.0",
+        "deepmerge": "^4.3.1",
+        "git-filesystem": "^0.0.6",
+        "json5": "^2.2.3",
+        "zod": "^4.0.0",
+      },
+    },
     "packages/e2e/isc-legacy-package": {
       "name": "@license-cop/isc-legacy-test-package",
       "version": "0.0.1",
@@ -86,26 +102,6 @@
       "version": "0.0.1",
       "dependencies": {
         "@license-cop/isc-test-package": "latest",
-      },
-    },
-    "packages/license-cop": {
-      "name": "license-cop",
-      "version": "0.0.0",
-      "bin": {
-        "license-cop": "./src/bin/license-cop",
-      },
-      "dependencies": {
-        "@commander-js/extra-typings": "^14.0.0",
-        "@npmcli/arborist": "^9.0.0",
-        "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
-        "axios": "^1.6.0",
-        "commander": "^14.0.0",
-        "compare-versions": "^6.0.0-rc.1",
-        "cosmiconfig": "^9.0.0",
-        "deepmerge": "^4.3.1",
-        "git-filesystem": "^0.0.6",
-        "json5": "^2.2.3",
-        "zod": "^4.0.0",
       },
     },
     "packages/license-cop-e2e": {
@@ -504,6 +500,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
+
+    "@license-cop/core": ["@license-cop/core@workspace:packages/core"],
 
     "@license-cop/isc-legacy-test-package": ["@license-cop/isc-legacy-test-package@workspace:packages/e2e/isc-legacy-package"],
 
@@ -1803,7 +1801,7 @@
 
     "levn": ["levn@0.4.1", "", { "dependencies": { "prelude-ls": "^1.2.1", "type-check": "~0.4.0" } }, "sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ=="],
 
-    "license-cop": ["license-cop@workspace:packages/license-cop"],
+    "license-cop": ["license-cop@workspace:packages/cli"],
 
     "license-cop-e2e": ["license-cop-e2e@workspace:packages/license-cop-e2e"],
 
@@ -2844,6 +2842,8 @@
     "wrap-ansi/ansi-styles": ["ansi-styles@6.2.3", "", {}, "sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg=="],
 
     "wrap-ansi/strip-ansi": ["strip-ansi@7.2.0", "", { "dependencies": { "ansi-regex": "^6.2.2" } }, "sha512-yDPMNjp4WyfYBkHnjIRLfca1i6KMyGCtsVgoKe/z1+6vukgaENdgGBZt+ZmKPc4gavvEZ5OgHfHdrazhgNyG7w=="],
+
+    "zod-to-ts/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "@babel/helper-compilation-targets/lru-cache/yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
 

@@ -1,10 +1,10 @@
 import { GitHubClient } from "git-filesystem";
-import logger from "../../logger";
+import { noopOnVerbose, type OnVerbose } from "../../on-verbose";
 import { ConfigError } from "../config-error";
 import { json5Parse } from "../parsers/json5";
 
-export const githubResolution = async (repoId: string) => {
-  logger.verbose(`Resolving config from GitHub repo: ${repoId}`);
+export const githubResolution = async (repoId: string, onVerbose: OnVerbose = noopOnVerbose) => {
+  onVerbose(`Resolving config from GitHub repo: ${repoId}`);
 
   const parts = repoId.split("/");
   const [owner, repoName] = parts;
