@@ -23,11 +23,15 @@ const writeJson = async (path: string, value: unknown) => {
   await writeFile(path, JSON.stringify(value));
 };
 
-const createProject = async (root: string, dependencyLicense: string) => {
+const createProject = async (
+  root: string,
+  dependencyLicense: string,
+  dependencyKind: "dependencies" | "devDependencies" = "dependencies"
+) => {
   await writeJson(join(root, "package.json"), {
     name: "test-project",
     version: "1.0.0",
-    dependencies: { "some-dependency": "2.0.0" }
+    [dependencyKind]: { "some-dependency": "2.0.0" }
   });
   await writeJson(join(root, ".licenses.json"), { licenses: ["MIT"], packages: [] });
 
@@ -115,6 +119,34 @@ describe("run", () => {
     expect(exitCode).toBe(1);
     expect(io.stderrLines).toContain("Packages with forbidden licenses:");
     expect(io.stderrLines).toContain("some-dependency@2.0.0 - GPL-3.0");
+  });
+
+  it("should ignore a forbidden dev dependency by default", async () => {
+    await createProject(directory, "GPL-3.0", "devDependencies");
+
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(0);
+  });
+
+  it.each(["include", "only"])(
+    "should fail on a forbidden dev dependency with --dev-dependencies %s",
+    async mode => {
+      await createProject(directory, "GPL-3.0", "devDependencies");
+
+      const exitCode = await run(["--dev-dependencies", mode], io, directory);
+
+      expect(exitCode).toBe(1);
+      expect(io.stderrLines).toContain("some-dependency@2.0.0 - GPL-3.0");
+    }
+  );
+
+  it("should ignore a forbidden production dependency with --dev-dependencies only", async () => {
+    await createProject(directory, "GPL-3.0");
+
+    const exitCode = await run(["--dev-dependencies", "only"], io, directory);
+
+    expect(exitCode).toBe(0);
   });
 
   it("should exit 1 and print the message when the config file is missing", async () => {

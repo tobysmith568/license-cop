@@ -742,35 +742,49 @@ no framework, no global state, just plain data in and plain data out. Proposed m
 - Node's `parseArgs` error messages are more verbose than commander's ("...To specify a positional argument starting with a '-'..."). They're passed through as-is inside a `UsageError`; worth trimming if it looks noisy in the release notes.
 - New specs: `args/parse.spec.ts` (every flag and every usage-error case) and `main.spec.ts` (`run` with a fake `Io`: help, version, usage error, `init`, verbose on/off, and real check runs against a temp project for the success, forbidden-license and missing-config exit codes). This is a slice of 2.5's untested-CLI item and gives the CLI its `test` script back. One trap while writing them: arborist only reports `node_modules` entries the project's `package.json` actually declares, so an undeclared fixture dependency makes every check trivially "pass".
 
-### 2.3 Neaten the CLI flags (breaking changes allowed)
+### 2.3 Neaten the CLI flags (breaking changes allowed) ✅ done
 
 With commander gone and the invocation shape being rebuilt from scratch anyway (2.2), this is the
 window to fix flag oddities that exist today mostly as artifacts of how commander was being used
 rather than deliberate design. Worth deciding on explicitly rather than porting as-is:
 
-- [ ] `-v`/`--version` is currently a fake "subcommand" (`versionCommand`, `.name("-v")`) — a
+- [x] `-v`/`--version` is currently a fake "subcommand" (`versionCommand`, `.name("-v")`) — a
       commander idiom for faking a global flag as a command. Under `parseArgs` + `zod` this is just
       a normal `CliInvocation` case; the workaround disappears on its own, but it's worth
       re-checking the flag names read well outside of that constraint.
-- [ ] `--init` exists twice: as its own `init` subcommand _and_ as a top-level `--init` boolean flag
+- [x] `--init` exists twice: as its own `init` subcommand _and_ as a top-level `--init` boolean flag
       on the main command that's a pure alias for the same action
       (`if (options.init) { await initCommandAction(...); return; }`). Decide whether the alias
       pulls its weight or whether one form should go.
-- [ ] `-D, --include-dev` and `--dev-only` are two independent booleans covering overlapping
+- [x] `-D, --include-dev` and `--dev-only` are two independent booleans covering overlapping
       ground (dev-in-addition-to-prod vs. dev-instead-of-prod). A single flag with a mode — e.g.
       `--dev-dependencies <include|only>`, defaulting to prod-only — would make the illegal
       "both true" combination unrepresentable instead of needing to be reasoned about at the call
       site.
-- [ ] `--verbose` and `-d/--directory` are bolted onto every subcommand today via
+- [x] `--verbose` and `-d/--directory` are bolted onto every subcommand today via
       `create-command.ts`'s shared builder. Confirm both are actually meaningful on `init` (a
       directory, clearly yes; verbose logging for a single `writeFile`, less obviously) rather than
       just inherited because the builder was shared.
-- [ ] Whatever the final flag set, update `lib/cli/commands/init.ts`'s generated `.licenses.json`
+- [x] Whatever the final flag set, update `lib/cli/commands/init.ts`'s generated `.licenses.json`
       template and the `--help` text together, and make sure `packages/license-cop-e2e`'s fixtures
       (`e2e/**/package.json` + `.licenses.json` pairs) still reflect real invocations of the CLI —
       several of those directories are named after the exact flag behaviour being asserted (e.g.
       `should-fail-when-a-package-is-specified-with-a-caret`), so a flag rename needs a pass over
       those too.
+
+**Done** (Phase C of [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md)). Decisions, made one flag at a time:
+
+- `-v`/`--version` keep their names; nothing to change once it's an ordinary invocation (it now actually works — see 2.2's notes).
+- **`--init` flag removed**, `init` subcommand kept. Breaking for anyone scripting `license-cop --init`.
+- **`-D, --include-dev` and `--dev-only` replaced by `--dev-dependencies <include|only>`** (default: production dependencies only). `LicenseCopOptions` (two booleans) and the `.licenses.json` keys `includeDevDependencies`/`devDependenciesOnly` are unchanged; the CLI flag is mapped onto them in `commands/check.ts`, and the config keys still apply when the flag is absent, exactly as before.
+- **`--verbose` stays accepted on `init`** — harmless, and every command keeps taking the same global flags.
+
+**Found during implementation, not in the original plan:**
+
+- The three removed flags don't fall through to Node's generic "Unknown option" error: `parse.ts` checks for them first and says what to use instead (`error: the --init flag has been removed, use 'license-cop init' instead`), since a bare "unknown option" is a poor migration experience for a scripted CI step.
+- `--dev-dependencies` is validated by hand (`include`/`only`) before the zod schema, whose internal value set also includes `exclude` (the default). Otherwise a bad value produced a zod-flavoured message listing `exclude` and an internal field name.
+- The README, the copy in `packages/cli`, `apps/website/src/pages/docs.md` and the landing page's "get started" line all told people to use "the `--init` flag"; they now say the `init` command. None of the docs ever mentioned `-D`/`--dev-only` (only the config keys), so no other doc changes were needed and the new flag is still undocumented on the site — worth a docs pass separately.
+- No `packages/license-cop-e2e` fixtures needed changing: the suite only ever passes `--verbose`, so it can't detect a flag rename. The new flag behaviour is covered by `args/parse.spec.ts` and `main.spec.ts` (real check runs against a temp project with a forbidden dev dependency, for default/`include`/`only`).
 
 ### 2.4 Extract a shared classifier out of the per-engine duplication
 

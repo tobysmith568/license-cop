@@ -38,7 +38,7 @@ The `license-cop` command will use an exit code of 0 if all your dependencies co
 
 ## Config File
 
-By default the `--init` flag will make a `.licenses.json` file, however you can use many different variations of file name and file type including:
+By default the `init` command will make a `.licenses.json` file, however you can use many different variations of file name and file type including:
 
 <!--- cspell:disable-next-line --->
 

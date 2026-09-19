@@ -6,6 +6,7 @@ import {
   type OnVerbose
 } from "@license-cop/core";
 import { join } from "node:path";
+import type { DevDependenciesMode } from "../args/schema";
 import { createVerboseLogger, type Io } from "../io";
 import { reportFailure } from "../report-failure";
 import { reportSuccess } from "../report-success";
@@ -13,12 +14,11 @@ import { reportSuccess } from "../report-success";
 export type CheckOptions = {
   directory: string;
   verbose: boolean;
-  includeDev: boolean;
-  devOnly: boolean;
+  devDependencies: DevDependenciesMode;
 };
 
 export const runCheck = async (options: CheckOptions, io: Io): Promise<number> => {
-  const { directory, verbose: verboseEnabled, includeDev, devOnly } = options;
+  const { directory, verbose: verboseEnabled, devDependencies } = options;
   const verbose = createVerboseLogger(io, verboseEnabled);
 
   verbose(`Using directory: ${directory}`);
@@ -33,8 +33,8 @@ export const runCheck = async (options: CheckOptions, io: Io): Promise<number> =
     allowedPackages: config.packages,
 
     workingDirectory: directory,
-    includeDevDependencies: includeDev || config.includeDevDependencies,
-    devDependenciesOnly: devOnly || config.devDependenciesOnly,
+    includeDevDependencies: devDependencies === "include" || config.includeDevDependencies,
+    devDependenciesOnly: devDependencies === "only" || config.devDependenciesOnly,
     onVerbose: verbose
   };
 

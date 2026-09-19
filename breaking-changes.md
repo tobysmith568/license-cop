@@ -4,8 +4,6 @@ Source material for the release notes of the next major version. This file only 
 
 The baseline for "what users have today" is the published `license-cop@1.9.0`. Each entry says what changed, who is affected, and how to migrate.
 
-Status is **landed** (in the working branch) or **pending** (raised in [migration.md](migration.md) but not yet decided or implemented, so it may not happen at all).
-
 ## Landed
 
 ### The programmatic API moved to `@license-cop/core` (2.1)
@@ -22,11 +20,16 @@ The CLI entry point moved from `src/bin/license-cop` to `dist/bin.js`, and the r
 - **Affected:** anyone who invokes the file by its path (for example `node node_modules/license-cop/src/bin/license-cop` in a script or CI step), or who deep-imports from `license-cop/src/...`.
 - **Migrate:** run the command by name instead: `npx license-cop`, an npm script, or `node_modules/.bin/license-cop`. None of those change. Replace deep imports with the public exports of `@license-cop/core`.
 
-## Pending
+### `--init` flag removed (2.3)
 
-### Command-line flags (2.3)
+`license-cop --init` no longer works; it now fails with a message pointing at the `init` command.
 
-Not yet decided; each of these is a breaking change if it goes ahead, and would move to **Landed** with a migration note.
+- **Affected:** scripts, docs or CI steps that run `license-cop --init`. The README and website used to describe this flag as the way to create a config file.
+- **Migrate:** run `license-cop init` instead. It does exactly the same thing.
 
-- **`--init` flag removed** (recommended): use `license-cop init` instead. Affects scripts that run `license-cop --init`.
-- **`-D, --include-dev` and `--dev-only` replaced by one flag** (recommended: `--dev-dependencies <include|only>`). Affects scripts and CI steps that pass either flag.
+### `-D`, `--include-dev` and `--dev-only` replaced by `--dev-dependencies` (2.3)
+
+The three flags are gone and now fail with a message naming the replacement. The new flag takes a mode: `--dev-dependencies include` also checks dev dependencies, and `--dev-dependencies only` checks only dev dependencies. Without the flag, only production dependencies are checked, as before.
+
+- **Affected:** scripts and CI steps that pass `-D`, `--include-dev` or `--dev-only`. The flags were never documented on the website or in the README, but they were accepted and worked.
+- **Migrate:** `-D` and `--include-dev` become `--dev-dependencies include`; `--dev-only` becomes `--dev-dependencies only`. The `includeDevDependencies` and `devDependenciesOnly` keys in the config file are unchanged and still work.

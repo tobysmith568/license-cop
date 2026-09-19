@@ -7,9 +7,9 @@ export const helpText = (): string =>
 Yet another license checker tool for your dependencies; focused on simplicity
 
 Options:
-  -D, --include-dev         Include dev dependencies
-  --dev-only                Only check dev dependencies
-  --init                    An alias for 'license-cop init'
+  --dev-dependencies <mode> Which dev dependencies to check: 'include' checks them as well as
+                            production dependencies, 'only' checks only them. Defaults to production
+                            dependencies only.
   --verbose                 Enable verbose logging
   -d, --directory <dir>     The directory of the project. Defaults to the current working directory.
   -v, --version             Print the installed version of license-cop

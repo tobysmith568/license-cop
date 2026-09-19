@@ -1,12 +1,15 @@
 import { z } from "zod";
 
+export const devDependenciesModeSchema = z.enum(["exclude", "include", "only"]);
+
+export type DevDependenciesMode = z.infer<typeof devDependenciesModeSchema>;
+
 export const cliInvocationSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("check"),
     directory: z.string(),
     verbose: z.boolean(),
-    includeDev: z.boolean(),
-    devOnly: z.boolean()
+    devDependencies: devDependenciesModeSchema
   }),
   z.object({
     kind: z.literal("init"),
