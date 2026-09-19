@@ -1,0 +1,57 @@
+import {
+  checkLicenses,
+  loadConfig,
+  readPackageJson,
+  type LicenseCopOptions,
+  type OnVerbose
+} from "@license-cop/core";
+import { join } from "node:path";
+import { createVerboseLogger, type Io } from "../io";
+import { reportFailure } from "../report-failure";
+import { reportSuccess } from "../report-success";
+
+export type CheckOptions = {
+  directory: string;
+  verbose: boolean;
+  includeDev: boolean;
+  devOnly: boolean;
+};
+
+export const runCheck = async (options: CheckOptions, io: Io): Promise<number> => {
+  const { directory, verbose: verboseEnabled, includeDev, devOnly } = options;
+  const verbose = createVerboseLogger(io, verboseEnabled);
+
+  verbose(`Using directory: ${directory}`);
+
+  const productName = await getProductName(directory, verbose);
+  io.stdout(`Scanning dependencies of: ${productName}`);
+
+  const config = await loadConfig(directory, verbose);
+
+  const checkOptions: LicenseCopOptions = {
+    allowedLicenses: config.licenses,
+    allowedPackages: config.packages,
+
+    workingDirectory: directory,
+    includeDevDependencies: includeDev || config.includeDevDependencies,
+    devDependenciesOnly: devOnly || config.devDependenciesOnly,
+    onVerbose: verbose
+  };
+
+  const result = await checkLicenses(checkOptions);
+
+  if (result.noLicenses.size > 0 || result.forbiddenLicenses.size > 0) {
+    reportFailure(result, io);
+    return 1;
+  }
+
+  reportSuccess(result, io);
+  verbose("\nExiting with error code 0");
+  return 0;
+};
+
+const getProductName = async (directory: string, verbose: OnVerbose): Promise<string> => {
+  const packageJsonPath = join(directory, "package.json");
+  const packageJson = await readPackageJson(packageJsonPath, verbose);
+  return packageJson.name;
+};
