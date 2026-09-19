@@ -1,6 +1,6 @@
 import { getTokens } from "./get-tokens";
 import { parseTokens } from "./parse-tokens";
-import { SpdxExpression, Unlicensed } from "./types/spdx-expression";
+import type { SpdxExpression, Unlicensed } from "./types/spdx-expression";
 
 export const parseLicenseExpression = (input: string): SpdxExpression | Unlicensed => {
   if (input === "UNLICENSED") {

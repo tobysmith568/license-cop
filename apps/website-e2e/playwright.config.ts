@@ -6,8 +6,8 @@ export default defineConfig({
   // "test-results" — since this package has none, that would land at the workspace root instead.
   outputDir: "./test-results",
   fullyParallel: false,
-  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
-  retries: process.env.CI ? 2 : 0,
+  reporter: process.env["CI"] ? [["list"], ["html", { open: "never" }]] : "list",
+  retries: process.env["CI"] ? 2 : 0,
   use: {
     baseURL: "http://localhost:4321",
     screenshot: "only-on-failure",
@@ -20,6 +20,6 @@ export default defineConfig({
   webServer: {
     command: "bunx turbo run serve --filter=website",
     url: "http://localhost:4321",
-    reuseExistingServer: !process.env.CI
+    reuseExistingServer: !process.env["CI"]
   }
 });

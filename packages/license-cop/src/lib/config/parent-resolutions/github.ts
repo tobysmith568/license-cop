@@ -7,12 +7,17 @@ export const githubResolution = async (repoId: string) => {
   logger.verbose(`Resolving config from GitHub repo: ${repoId}`);
 
   const parts = repoId.split("/");
+  const [owner, repoName] = parts;
 
-  if (parts.length !== 2 || parts[0].length === 0 || parts[1].length === 0) {
+  if (
+    parts.length !== 2 ||
+    owner === undefined ||
+    repoName === undefined ||
+    owner.length === 0 ||
+    repoName.length === 0
+  ) {
     throw new ConfigError(`Invalid GitHub repo ID: ${repoId}`);
   }
-
-  const [owner, repoName] = parts;
 
   try {
     const repo = new GitHubClient(owner, "", "license-cop").getReadonlyRepository(repoName);

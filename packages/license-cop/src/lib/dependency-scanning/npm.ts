@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
 import { isAllowedPackage } from "../dependency/package-rules";
 import logger from "../logger";
-import {
+import type {
   AllowedPackage,
   CheckLicensesResult,
   ForbiddenLicenseResult,
@@ -13,7 +13,7 @@ import {
 import { calculateIssues } from "../spdx/calculate-issues";
 import { parseLicenseExpression } from "../spdx/parse-license-expression";
 import { joinStringArray } from "../utils/join-string-array";
-import { DependencyScanningOptions } from "./options";
+import type { DependencyScanningOptions } from "./options";
 
 export const npmDependencyScanning = async (
   options: DependencyScanningOptions

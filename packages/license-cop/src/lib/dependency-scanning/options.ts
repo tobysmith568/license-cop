@@ -1,3 +1,3 @@
-import { LicenseCopOptions } from "../license-cop";
+import type { LicenseCopOptions } from "../license-cop";
 
 export type DependencyScanningOptions = Required<LicenseCopOptions>;

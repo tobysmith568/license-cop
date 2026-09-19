@@ -54,7 +54,7 @@ export const getLicenseExpression = (packageJson: PackageJson): string => {
     const licenses = packageJson.licenses.map<string>(license => license.type);
 
     if (licenses.length === 1) {
-      return licenses[0];
+      return licenses[0]!;
     }
 
     return `(${licenses.join(" AND ")})`;

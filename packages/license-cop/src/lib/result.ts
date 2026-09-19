@@ -1,4 +1,4 @@
-import { SpdxExpression } from "./spdx/types/spdx-expression";
+import type { SpdxExpression } from "./spdx/types/spdx-expression";
 
 export interface CheckLicensesResult {
   allowedPackages: Set<AllowedPackage>;

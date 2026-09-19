@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { getTokens } from "./get-tokens";
 import { parseTokens } from "./parse-tokens";
-import { SpdxExpression } from "./types/spdx-expression";
+import type { SpdxExpression } from "./types/spdx-expression";
 
 const happyPathTestCases: [string, SpdxExpression][] = [
   ["MIT", { type: "identifier", value: "MIT" }],

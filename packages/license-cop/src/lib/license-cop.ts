@@ -1,9 +1,9 @@
 import { isAbsolute, join } from "path";
 import { npmDependencyScanning } from "./dependency-scanning/npm";
-import { DependencyScanningOptions } from "./dependency-scanning/options";
+import type { DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
 import { getPackageManager } from "./dependency/get-package-manager";
-import { CheckLicensesResult } from "./result";
+import type { CheckLicensesResult } from "./result";
 
 export type LicenseCopOptions = {
   allowedLicenses: string[];

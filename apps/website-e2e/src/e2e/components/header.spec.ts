@@ -1,4 +1,4 @@
-import { Page, test } from "@playwright/test";
+import { type Page, test } from "@playwright/test";
 import { HeaderComponent } from "../../support/page-objects/components/header";
 import { CookiesPageObject } from "../../support/page-objects/cookies.po";
 import { DocsPageObject } from "../../support/page-objects/docs.po";

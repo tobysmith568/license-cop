@@ -1,4 +1,4 @@
-import { isOperator, isParenthesis, Token } from "./types/token";
+import { isOperator, isParenthesis, type Token } from "./types/token";
 
 export const getTokens = (input: string): Token[] => {
   const tokens: Token[] = [];
@@ -30,7 +30,7 @@ export const getTokens = (input: string): Token[] => {
   };
 
   for (let i = 0; i < input.length; i++) {
-    const currentChar = input[i];
+    const currentChar = input[i]!;
 
     if (isParenthesis(currentChar)) {
       pushToken();

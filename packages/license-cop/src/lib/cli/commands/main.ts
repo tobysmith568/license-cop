@@ -2,7 +2,7 @@ import { join } from "path";
 import { ConfigError } from "../../config/config-error";
 import { loadConfig } from "../../config/load-config";
 import { readPackageJson } from "../../dependency/package-json";
-import { checkLicenses, LicenseCopOptions } from "../../license-cop";
+import { checkLicenses, type LicenseCopOptions } from "../../license-cop";
 import logger from "../../logger";
 import { createCommandWithGlobalOptions } from "../create-command";
 import { reportFailure } from "../report-failure";

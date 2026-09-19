@@ -1,5 +1,5 @@
-import { Identifier, SpdxExpression } from "./types/spdx-expression";
-import { Operator, Parenthesis, Token } from "./types/token";
+import type { Identifier, SpdxExpression } from "./types/spdx-expression";
+import type { Operator, Parenthesis, Token } from "./types/token";
 
 export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpression => {
   let index = 0;
@@ -11,7 +11,7 @@ export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpress
 
   const hasMore = (): boolean => index < tokens.length;
 
-  const getCurrentToken = (): Token | null => (hasMore() ? tokens[index] : null);
+  const getCurrentToken = (): Token | null => (hasMore() ? tokens[index]! : null);
 
   const moveToNextToken = () => {
     // istanbul ignore next

@@ -1,4 +1,4 @@
-import { cosmiconfig, Options as CosmiconfigOptions, Loader } from "cosmiconfig";
+import { cosmiconfig, type Options as CosmiconfigOptions, type Loader } from "cosmiconfig";
 import { ConfigError } from "./config-error";
 import { json5Parse } from "./parsers/json5";
 

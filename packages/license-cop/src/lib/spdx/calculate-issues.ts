@@ -1,4 +1,4 @@
-import { SpdxExpression } from "./types/spdx-expression";
+import type { SpdxExpression } from "./types/spdx-expression";
 
 export const calculateIssues = (license: SpdxExpression, allowedLicenses: string[]): string[] => {
   const issues: string[] = [];

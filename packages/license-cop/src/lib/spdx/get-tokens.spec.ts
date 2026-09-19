@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { getTokens } from "./get-tokens";
-import { Token } from "./types/token";
+import type { Token } from "./types/token";
 
 const testCases: [string, Token[]][] = [
   ["MIT", [{ type: "identifier", value: "MIT" }]],

@@ -4,7 +4,7 @@
   "type": "commonjs",
   "main": "./.licenses.jsonc",
   "scripts": {
-    "typecheck": "tsc -b tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . --max-warnings 0",
     "test": "bun test --isolate --coverage --coverage-reporter=lcov --coverage-dir=coverage",
     "version": "bun pm pkg set version=$VERSION",

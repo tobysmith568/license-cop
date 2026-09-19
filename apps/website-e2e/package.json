@@ -2,7 +2,7 @@
   "name": "website-e2e",
   "private": true,
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . --max-warnings 0",
     "e2e": "bunx playwright test"
   }
