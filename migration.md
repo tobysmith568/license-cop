@@ -500,6 +500,16 @@ build`/`bun run lint`), restoring exactly the capability their `project.json` ta
   fails or quietly fixing unrelated content bugs; a future milestone can pick this up the same way 1.7
   will for linting.
 
+- `website-e2e` had no ordering against the website build, so a top-level `turbo run build e2e` ran
+  `website#build` and the Playwright suite at the same time. Playwright's `webServer` also runs its own
+  nested `turbo run serve --filter=website` (which builds and then runs `astro preview`), and
+  `astro build` empties `dist/` before rewriting it while `astro preview` serves straight from disk — so
+  any rebuild that overlaps a test run turns pages into 404s. Seen once in a full forced run under load
+  (5 of 330 chromium tests, "404: Not Found / Path: /docs"), then reproduced on demand by rebuilding
+  the site partway through a run (4 failures, same signature). Fixed the same way `license-cop-e2e`
+  handles the CLI build: `apps/website-e2e/turbo.json` declares `"e2e": { "dependsOn": ["website#build"] }`,
+  which turbo honours even under `--filter=website-e2e` (the nested build is then a cache hit).
+
 ### 1.6 GitHub workflows ✅ done
 
 Current workflows (`ci.yml`, `cd.yml`, `nx.yml`, `website.yml`, `codeql.yml`) route through the
