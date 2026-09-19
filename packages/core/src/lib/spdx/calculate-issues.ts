@@ -1,22 +1,28 @@
 import type { SpdxExpression } from "./types/spdx-expression";
 
 export const calculateIssues = (license: SpdxExpression, allowedLicenses: string[]): string[] => {
-  const issues: string[] = [];
-
-  const parseNode = (node: SpdxExpression): void => {
+  const issuesOf = (node: SpdxExpression): string[] => {
     switch (node.type) {
       case "identifier": {
-        if (!allowedLicenses.includes(node.value)) {
-          issues.push(node.value);
-        }
-        return;
+        return allowedLicenses.includes(node.value) ? [] : [node.value];
       }
 
-      case "AND":
+      case "AND": {
+        const leftIssues = issuesOf(node.expressions[0]);
+        const rightIssues = issuesOf(node.expressions[1]);
+        return [...leftIssues, ...rightIssues];
+      }
+
       case "OR": {
-        parseNode(node.expressions[0]);
-        parseNode(node.expressions[1]);
-        return;
+        // The licensee may choose either side, so one fully-allowed side is enough
+        const leftIssues = issuesOf(node.expressions[0]);
+        const rightIssues = issuesOf(node.expressions[1]);
+
+        if (leftIssues.length === 0 || rightIssues.length === 0) {
+          return [];
+        }
+
+        return [...leftIssues, ...rightIssues];
       }
 
       case "WITH": {
@@ -25,9 +31,10 @@ export const calculateIssues = (license: SpdxExpression, allowedLicenses: string
           !allowedLicenses.includes(node.expressions[0]) ||
           !allowedLicenses.includes(`${node.expressions[0]} WITH ${node.expressions[1]}`)
         ) {
-          issues.push(`${node.expressions[0]} WITH ${node.expressions[1]}`);
+          return [`${node.expressions[0]} WITH ${node.expressions[1]}`];
         }
-        return;
+
+        return [];
       }
 
       default: {
@@ -37,7 +44,5 @@ export const calculateIssues = (license: SpdxExpression, allowedLicenses: string
     }
   };
 
-  parseNode(license);
-
-  return issues;
+  return issuesOf(license);
 };

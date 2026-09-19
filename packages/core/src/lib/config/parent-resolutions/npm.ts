@@ -17,8 +17,12 @@ export const npmResolution = async (
 export const nodeModuleExists = async (packageName: string, rootDir: string) => {
   const packagePath = getPackagePath(rootDir, packageName);
 
-  const statResult = await stat(packagePath);
-  return statResult.isDirectory();
+  try {
+    const statResult = await stat(packagePath);
+    return statResult.isDirectory();
+  } catch {
+    return false;
+  }
 };
 
 const getPackagePath = (rootDir: string, packageName: string) =>

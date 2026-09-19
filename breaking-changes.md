@@ -33,3 +33,27 @@ The three flags are gone and now fail with a message naming the replacement. The
 
 - **Affected:** scripts and CI steps that pass `-D`, `--include-dev` or `--dev-only`. The flags were never documented on the website or in the README, but they were accepted and worked.
 - **Migrate:** `-D` and `--include-dev` become `--dev-dependencies include`; `--dev-only` becomes `--dev-dependencies only`. The `includeDevDependencies` and `devDependenciesOnly` keys in the config file are unchanged and still work.
+
+### `OR` license expressions are now satisfied by either side (2.4)
+
+A package licensed `(MIT OR GPL-3.0)` used to be reported as forbidden unless _both_ licenses were allowed, because `OR` was evaluated exactly like `AND`. It now passes when either side is fully allowed, and is only reported when neither is. `AND` is unchanged.
+
+- **Why:** an SPDX `OR` lets the licensee choose which license to use the package under, so allowing MIT is enough to use it. The old behaviour flagged packages that were legitimately usable and forced people to allow-list licenses they didn't want to accept.
+- **Affected:** projects that have an `OR`-licensed dependency and rely on it failing the check, or that added a license to `licenses` (or the package to `packages`) only to work around it. Runs that used to fail may now pass.
+- **Migrate:** nothing is required. If you allow-listed a license or package only to get past this, you can now remove it. If you want the old stricter behaviour for a package, don't allow-list the side you don't accept, and the other side still has to be allowed.
+
+### A child config now inherits the parent's dev-dependency settings when it doesn't set them (2.4)
+
+When a config used `extends`, defaults were applied to the child before merging, so a child that didn't mention `includeDevDependencies` or `devDependenciesOnly` silently reset the parent's `true` back to `false`. Values are now merged as written and defaults are applied once at the end, so an omitted setting inherits from the parent. A child that sets a value explicitly still overrides the parent.
+
+- **Why:** this is what `extends` is documented to do, and the old result depended on an implementation detail (that defaults were applied early), which made a shared config's dev-dependency settings impossible to rely on.
+- **Affected:** anyone extending a config that sets `includeDevDependencies` or `devDependenciesOnly` to `true`, from a child config that doesn't set them. Dev dependencies that used to be skipped are now scanned, so the check can newly fail.
+- **Migrate:** if you don't want the inherited setting, set it to `false` explicitly in the child config.
+
+### `--dev-dependencies only` now works on pnpm projects (2.4)
+
+On pnpm projects, `devDependenciesOnly` (set by `--dev-dependencies only`, formerly `--dev-only`) scanned nothing and so always passed, because dev dependencies were only enabled when `includeDevDependencies` was also set. npm projects were not affected. It now scans the dev dependencies, as the option says.
+
+- **Why:** the option was silently a no-op on pnpm, so the check gave a false pass.
+- **Affected:** pnpm projects that use `devDependenciesOnly` or `--dev-dependencies only`. Runs that used to pass vacuously can now fail if a dev dependency has a forbidden or missing license.
+- **Migrate:** fix or allow-list whatever the check now reports.

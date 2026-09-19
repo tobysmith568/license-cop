@@ -25,8 +25,7 @@ export const githubResolution = async (repoId: string, onVerbose: OnVerbose = no
 
     return json5Parse(fileContent);
   } catch (e) {
-    throw new ConfigError(
-      `Could not resolve config from GitHub repo: ${repoId}, error: ${JSON.stringify(e)}`
-    );
+    const reason = e instanceof Error ? e.message : String(e);
+    throw new ConfigError(`Could not resolve config from GitHub repo: ${repoId}, error: ${reason}`);
   }
 };

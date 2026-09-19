@@ -796,7 +796,7 @@ rather than deliberate design. Worth deciding on explicitly rather than porting 
 - The README, the copy in `packages/cli`, `apps/website/src/pages/docs.md` and the landing page's "get started" line all told people to use "the `--init` flag"; they now say the `init` command. None of the docs ever mentioned `-D`/`--dev-only` (only the config keys), so no other doc changes were needed and the new flag is still undocumented on the site — worth a docs pass separately.
 - No `packages/license-cop-e2e` fixtures needed changing: the suite only ever passes `--verbose`, so it can't detect a flag rename. The new flag behaviour is covered by `args/parse.spec.ts` and `main.spec.ts` (real check runs against a temp project with a forbidden dev dependency, for default/`include`/`only`).
 
-### 2.4 Extract a shared classifier out of the per-engine duplication
+### 2.4 Extract a shared classifier out of the per-engine duplication ✅ done
 
 `lib/dependency-scanning/npm.ts` and `pnpm.ts` don't just duplicate structure — they duplicate the
 actual license-classification logic (allow-list check → license-expression parsing →
@@ -813,17 +813,17 @@ This is _why_ the e2e fixture matrix is the only place that classification logic
 engine, because that logic doesn't currently exist independent of an engine. Fixing this is a
 prerequisite for 2.5, not just a nice-to-have refactor:
 
-- [ ] Extract the shared part — given a normalized `{ name, version, packageJson, children }` node
+- [x] Extract the shared part — given a normalized `{ name, version, packageJson, children }` node
       plus the resolved config (allowed licenses/packages, dev-dependency filtering), decide which
       bucket it falls into and recurse — into one function both engines call. Each engine's own
       code shrinks to just "walk my package manager's native tree shape and hand normalized nodes
       to the shared classifier."
-- [ ] **Watch for one real behavioral difference while merging these:** `npm.ts` filters
+- [x] **Watch for one real behavioral difference while merging these:** `npm.ts` filters
       dev-dependencies per-node inside `parseNode` (checking `node.dev`), while `pnpm.ts` filters
       them upstream via `buildDependenciesTree`'s `include: { dependencies, devDependencies,
 optionalDependencies }` option. Both need to keep working the same way from the caller's
       perspective, so pin this down with a test _before_ extracting, not after.
-- [ ] Once extracted, this is exactly what unlocks 2.5's bottom tier: the classifier can be unit
+- [x] Once extracted, this is exactly what unlocks 2.5's bottom tier: the classifier can be unit
       tested directly against hand-built normalized nodes, with zero package manager and zero
       install involved.
 

@@ -1,17 +1,8 @@
 import Arborist, { Link, Node } from "@npmcli/arborist";
 import { join } from "node:path";
-import { getLicenseExpression, readPackageJson } from "../dependency/package-json";
-import { isAllowedPackage } from "../dependency/package-rules";
-import type {
-  AllowedPackage,
-  CheckLicensesResult,
-  ForbiddenLicenseResult,
-  LicensedPackage,
-  NoLicenseResult
-} from "../result";
-import { calculateIssues } from "../spdx/calculate-issues";
-import { parseLicenseExpression } from "../spdx/parse-license-expression";
-import { joinStringArray } from "../utils/join-string-array";
+import { readPackageJson } from "../dependency/package-json";
+import type { CheckLicensesResult } from "../result";
+import { classifyDependencies, type NormalizedNode } from "./classify-dependencies";
 import type { DependencyScanningOptions } from "./options";
 
 export const npmDependencyScanning = async (
@@ -26,100 +17,47 @@ export const npmDependencyScanning = async (
     onVerbose
   } = options;
 
-  const foundAllowedPackages = new Map<string, AllowedPackage>();
-  const packagesWithAllowedLicenses = new Map<string, LicensedPackage>();
-  const packagesWithNoLicenses = new Map<string, NoLicenseResult>();
-  const packagesWithForbiddenLicenses = new Map<string, ForbiddenLicenseResult>();
-
   const arborist = new Arborist({ path: workingDirectory });
 
   const topNode = await arborist.loadActual();
 
-  // This function is very similar to the one in pnpm.ts
-  // If you change this, you probably want to change that one too
-  const parseNode = async (node: Node | Link) => {
+  // Dev-dependencies are filtered per node here, while walking arborist's tree
+  // pnpm.ts filters them upstream instead, via the options it gives pnpm
+  const normalizeNode = async (node: Node | Link): Promise<NormalizedNode | undefined> => {
     onVerbose(`Parsing node: ${node.name}`);
 
     const isDevDependency = node.dev;
 
     if (!includeDevDependencies && !devDependenciesOnly && isDevDependency) {
-      return;
+      return undefined;
     }
 
     if (devDependenciesOnly && !isDevDependency) {
-      return;
+      return undefined;
     }
 
     const packageJsonPath = join(node.realpath, "package.json");
     const packageJson = await readPackageJson(packageJsonPath, onVerbose);
+    const children = await normalizeNodes(node.children.values());
 
-    if (isAllowedPackage(node.name, packageJson.version, allowedPackages)) {
-      onVerbose(`Package ${packageJson.name} is an allowed package`);
-      foundAllowedPackages.set(node.pkgid, {
-        name: packageJson.name,
-        version: packageJson.version
-      });
-
-      if (node.children.size > 0) {
-        await parseNodes(node.children.values());
-      }
-      return;
-    }
-
-    const rawLicenseExpression = getLicenseExpression(packageJson);
-    const licenseExpression = parseLicenseExpression(rawLicenseExpression);
-
-    if (licenseExpression.type === "unlicensed") {
-      onVerbose(`Package ${packageJson.name} is unlicensed`);
-      packagesWithNoLicenses.set(node.pkgid, {
-        name: packageJson.name,
-        version: packageJson.version
-      });
-
-      if (node.children.size > 0) {
-        await parseNodes(node.children.values());
-      }
-      return;
-    }
-
-    const licenseIssues = calculateIssues(licenseExpression, allowedLicenses);
-    const joinedIssues = joinStringArray(licenseIssues);
-
-    if (licenseIssues.length > 0) {
-      onVerbose(`Package ${packageJson.name} has the forbidden license: ${joinedIssues}`);
-      packagesWithForbiddenLicenses.set(node.pkgid, {
-        name: packageJson.name,
-        version: packageJson.version,
-        licenseIdentifiers: joinedIssues,
-        spdxExpression: rawLicenseExpression
-      });
-    } else {
-      onVerbose(`Package ${packageJson.name} has the allowed license: ${rawLicenseExpression}`);
-      packagesWithAllowedLicenses.set(node.pkgid, {
-        name: packageJson.name,
-        version: packageJson.version,
-        spdxExpression: rawLicenseExpression,
-        licenses: licenseExpression
-      });
-    }
-
-    if (node.children.size > 0) {
-      parseNodes(node.children.values());
-    }
+    return { id: node.pkgid, name: node.name, packageJson, children };
   };
 
-  const parseNodes = async (nodes: IterableIterator<Node | Link>) => {
+  const normalizeNodes = async (nodes: IterableIterator<Node | Link>) => {
+    const normalized: NormalizedNode[] = [];
+
     for (const node of nodes) {
-      await parseNode(node);
+      const normalizedNode = await normalizeNode(node);
+
+      if (normalizedNode) {
+        normalized.push(normalizedNode);
+      }
     }
+
+    return normalized;
   };
 
-  await parseNodes(topNode.children.values());
+  const normalizedNodes = await normalizeNodes(topNode.children.values());
 
-  return {
-    allowedPackages: new Set(foundAllowedPackages.values()),
-    allowedLicenses: new Set(packagesWithAllowedLicenses.values()),
-    noLicenses: new Set(packagesWithNoLicenses.values()),
-    forbiddenLicenses: new Set(packagesWithForbiddenLicenses.values())
-  };
+  return classifyDependencies(normalizedNodes, { allowedLicenses, allowedPackages, onVerbose });
 };

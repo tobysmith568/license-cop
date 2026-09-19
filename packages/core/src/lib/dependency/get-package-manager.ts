@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { noopOnVerbose, type OnVerbose } from "../on-verbose";
-import { readPackageJson } from "./package-json";
+import { readPackageManagerField } from "./package-json";
 
 export type PackageManager = "npm" | "yarn" | "pnpm";
 
@@ -10,10 +10,10 @@ export const getPackageManager = async (
   onVerbose: OnVerbose = noopOnVerbose
 ): Promise<PackageManager> => {
   const packageJsonPath = join(workingDirectory, "package.json");
-  const packageJson = await readPackageJson(packageJsonPath, onVerbose);
+  const packageManagerField = await readPackageManagerField(packageJsonPath, onVerbose);
 
-  if (packageJson.packageManager) {
-    const result = tryResolveFromPackageManager(packageJson.packageManager);
+  if (packageManagerField) {
+    const result = tryResolveFromPackageManager(packageManagerField);
     if (result) {
       return result;
     }
