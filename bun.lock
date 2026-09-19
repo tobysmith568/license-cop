@@ -60,6 +60,15 @@
         "zod": "^4.0.0",
       },
     },
+    "packages/cli-e2e": {
+      "name": "cli-e2e",
+      "devDependencies": {
+        "@license-cop/core": "workspace:*",
+        "@license-cop/isc-test-package": "workspace:*",
+        "@license-cop/mit-test-package": "workspace:*",
+        "@license-cop/uses-isc-test-package": "workspace:*",
+      },
+    },
     "packages/core": {
       "name": "@license-cop/core",
       "version": "0.0.0",
@@ -76,10 +85,6 @@
         "zod": "^4.0.0",
       },
     },
-    "packages/e2e/isc-legacy-package": {
-      "name": "@license-cop/isc-legacy-test-package",
-      "version": "0.0.1",
-    },
     "packages/e2e/isc-package": {
       "name": "@license-cop/isc-test-package",
       "version": "1.2.3",
@@ -88,23 +93,12 @@
       "name": "@license-cop/mit-test-package",
       "version": "4.5.6",
     },
-    "packages/e2e/no-license-package": {
-      "name": "@license-cop/no-license-test-package",
-      "version": "0.0.1",
-    },
-    "packages/e2e/unlicensed-package": {
-      "name": "@license-cop/unlicensed-test-package",
-      "version": "0.0.1",
-    },
     "packages/e2e/uses-isc-package": {
       "name": "@license-cop/uses-isc-test-package",
       "version": "0.0.1",
       "dependencies": {
         "@license-cop/isc-test-package": "latest",
       },
-    },
-    "packages/license-cop-e2e": {
-      "name": "license-cop-e2e",
     },
     "packages/permissive": {
       "name": "@license-cop/permissive",
@@ -502,17 +496,11 @@
 
     "@license-cop/core": ["@license-cop/core@workspace:packages/core"],
 
-    "@license-cop/isc-legacy-test-package": ["@license-cop/isc-legacy-test-package@workspace:packages/e2e/isc-legacy-package"],
-
     "@license-cop/isc-test-package": ["@license-cop/isc-test-package@workspace:packages/e2e/isc-package"],
 
     "@license-cop/mit-test-package": ["@license-cop/mit-test-package@workspace:packages/e2e/mit-package"],
 
-    "@license-cop/no-license-test-package": ["@license-cop/no-license-test-package@workspace:packages/e2e/no-license-package"],
-
     "@license-cop/permissive": ["@license-cop/permissive@workspace:packages/permissive"],
-
-    "@license-cop/unlicensed-test-package": ["@license-cop/unlicensed-test-package@workspace:packages/e2e/unlicensed-package"],
 
     "@license-cop/uses-isc-test-package": ["@license-cop/uses-isc-test-package@workspace:packages/e2e/uses-isc-package"],
 
@@ -1200,6 +1188,8 @@
 
     "cli-cursor": ["cli-cursor@3.1.0", "", { "dependencies": { "restore-cursor": "^3.1.0" } }, "sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw=="],
 
+    "cli-e2e": ["cli-e2e@workspace:packages/cli-e2e"],
+
     "cli-spinners": ["cli-spinners@3.4.0", "", {}, "sha512-bXfOC4QcT1tKXGorxL3wbJm6XJPDqEnij2gQ2m7ESQuE+/z9YFIWnl/5RpTiKWbMq3EVKR4fRLJGn6DVfu0mpw=="],
 
     "clone": ["clone@1.0.4", "", {}, "sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg=="],
@@ -1801,8 +1791,6 @@
     "levn": ["levn@0.4.1", "", { "dependencies": { "prelude-ls": "^1.2.1", "type-check": "~0.4.0" } }, "sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ=="],
 
     "license-cop": ["license-cop@workspace:packages/cli"],
-
-    "license-cop-e2e": ["license-cop-e2e@workspace:packages/license-cop-e2e"],
 
     "lines-and-columns": ["lines-and-columns@1.2.4", "", {}, "sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg=="],
 

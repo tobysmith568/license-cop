@@ -183,7 +183,7 @@ jobs:
           name: build
 
       - name: Run E2E Tests
-        run: bunx turbo run e2e --filter=license-cop-e2e
+        run: bunx turbo run e2e --filter=cli-e2e
 
   e2e-website:
     name: E2E Test Website

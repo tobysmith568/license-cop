@@ -30,6 +30,10 @@
       "cache": false,
       "passThroughEnv": ["VERSION"]
     },
+    "pack-fixture": {
+      "dependsOn": ["build"],
+      "outputs": ["tarballs/**"]
+    },
     "pack": {
       "cache": false
     },

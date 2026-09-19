@@ -1,8 +1,0 @@
-[settings]
-lockfile = true
-
-[tools]
-# The e2e suite installs its fixtures with the real package managers license-cop scans. Every yarn
-# fixture commits its own release and points `yarnPath` at it (1.22.19 for classic, 3.8.7 for
-# modern), and any yarn 1.22.x delegates to that file. So this is only the launcher on PATH.
-yarn = "1.22.22"

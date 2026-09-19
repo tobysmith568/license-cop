@@ -1,0 +1,15 @@
+{
+  "name": "cli-e2e",
+  "private": true,
+  "devDependencies": {
+    "@license-cop/core": "workspace:*",
+    "@license-cop/isc-test-package": "workspace:*",
+    "@license-cop/mit-test-package": "workspace:*",
+    "@license-cop/uses-isc-test-package": "workspace:*"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "e2e": "bun test --isolate --coverage --coverage-reporter=lcov --coverage-dir=coverage src"
+  }
+}

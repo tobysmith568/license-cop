@@ -1,8 +1,0 @@
-{
-  "extends": ["//"],
-  "tasks": {
-    "e2e": {
-      "dependsOn": ["license-cop#build"]
-    }
-  }
-}

@@ -700,7 +700,7 @@ engine package with no CLI concerns, and a thin CLI package that depends on it v
       `@license-cop/core`'s `package.json`; the CLI package's own dependencies shrink to `zod` (for
       arg-schema validation, see 2.2) plus `@license-cop/core` — `commander` and
       `@commander-js/extra-typings` are dropped outright, not moved (see 2.2).
-- [ ] _(Skipped — deliberately left for 2.5, which reshapes that package anyway.)_ Consider whether `packages/license-cop-e2e` should be renamed alongside (`cli-e2e`?) for
+- [x] _(Done in 2.5, which reshaped that package anyway.)_ Consider whether `packages/license-cop-e2e` should be renamed alongside (`cli-e2e`?) for
       consistency — cosmetic, not required.
 
 **Found during implementation, not in the original plan:** (see [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md) for the shared 2.1–2.3 plan this was executed from)
@@ -827,7 +827,7 @@ optionalDependencies }` option. Both need to keep working the same way from the 
       tested directly against hand-built normalized nodes, with zero package manager and zero
       install involved.
 
-### 2.5 Restructure the e2e suite around a test pyramid
+### 2.5 Restructure the e2e suite around a test pyramid ✅ done
 
 Today's `e2e/{npm,pnpm,yarn-classic,yarn-modern-with-node-modules}/**` fixture set is one directory
 per (scenario × package manager) pair — roughly 10 scenarios × 4 package managers, each a full
@@ -842,27 +842,27 @@ directories are currently just re-confirming a code path npm's fixtures already 
 
 Restructure into three tiers instead:
 
-- [ ] **Unit: the classifier (2.4), tested once, package-manager-agnostic.** Every scenario
+- [x] **Unit: the classifier (2.4), tested once, package-manager-agnostic.** Every scenario
       currently expressed as an `e2e/<pm>/should-*` directory — missing license, forbidden license,
       semver ranges, the legacy `licenses` field, allowed packages, dev-dependency filtering — moves
       to a spec file that builds a small in-memory node tree and asserts the resulting
       `CheckLicensesResult` bucket. No install, no filesystem fixtures, no package manager.
-- [ ] **Contract tests per engine, one or two real fixtures each.** For each engine that's
+- [x] **Contract tests per engine, one or two real fixtures each.** For each engine that's
       genuinely distinct (npm, pnpm, and whatever bun turns out to need per Part 3's open question),
       keep a minimal real install — "simple deps" and "nested/transitive deps" is likely enough —
       asserting the engine correctly walks its package manager's native tree into normalized nodes
       (names, versions, license fields, dev/prod flags) and correctly applies dev-dependency
       filtering per the caveat in 2.4. This is _not_ re-testing classification, just "does this
       engine read this package manager's on-disk state correctly."
-- [ ] **Collapse `e2e/yarn-classic/**` and `e2e/yarn-modern-with-node-modules/**`** from ~10
+- [x] **Collapse `e2e/yarn-classic/**` and `e2e/yarn-modern-with-node-modules/**`** from ~10
       scenario directories each down to one or two confirming fixtures, since they exercise the
       same `npmDependencyScanning` path as `e2e/npm/**` and gain nothing from the full scenario
       matrix once 2.4/2.5's unit tier covers scenarios directly.
-- [ ] **A handful of true smoke tests: the built CLI binary, one real install, seams only.** Args
+- [x] **A handful of true smoke tests: the built CLI binary, one real install, seams only.** Args
       parsed → engine invoked → report printed → exit code — confirming the pieces wire together,
       not re-verifying every classification edge case again. `packages/license-cop-e2e` shrinks to
       this tier.
-- [ ] Everything else currently untested stays on the list regardless of the above: `lib/cli/**`
+- [x] Everything else currently untested stays on the list regardless of the above: `lib/cli/**`
       (zero spec files — the direct payoff of 2.2: once handlers take `io` as a parameter, testing
       them is a fake-io-and-assert-on-output affair, a few lines per test), `lib/license-cop.ts`'s
       package-manager dispatch switch and `resolvePath`, `lib/config/*` (`config.ts`'s zod parsing,
@@ -874,13 +874,24 @@ Restructure into three tiers instead:
       any of this: `lib/dependency/package-rules.ts`, `lib/spdx/get-tokens.ts`,
       `lib/spdx/parse-tokens.ts`, `lib/utils/join-string-array.ts`.)
 
+**Found during implementation, not in the original plan:**
+
+- The yarn fixtures aren't just redundant coverage of the npm engine — they're what justifies _not_ special-casing yarn, so they stay (as real installs), but not with the full scenario matrix. Most "scenarios" turned out to be pure logic that never touches a package manager: caret/tilde/semver range is `isAllowedPackage`, the legacy `licenses` field is `getLicenseExpression`, and missing/no/unlicensed license and missing package are classifier buckets. Those all live in the unit tier (`package-rules.spec.ts` gained the failing-range/caret/tilde cases). What only a package manager can decide is how it lays out `node_modules`/its lockfile: names, versions, the transitive walk, and the dev/prod split.
+- The per-scenario fixture directories are replaced by `packages/cli-e2e/src/lib/contract.spec.ts` — one project (`uses-isc` → `isc` transitively, plus `mit` as a dev dependency) installed fresh with each of npm, pnpm, yarn 1, yarn 3 and yarn 4, asserting `checkLicenses`' result for the default / include / only dev-dependency modes — and `cli.spec.ts`, now a couple of smoke tests of the built CLI (npm and pnpm, the two distinct engines).
+- Projects are written into a temp dir by `PackageJsonBuilder`/`LicenseFileBuilder` (`createProject` in `project.ts`) and installed by the real package manager; `KEEP_TEMP=1` leaves the directory behind. No lockfiles or `node_modules` are committed any more, and no test hits the registry: `packages/e2e/{isc,mit,uses-isc}-package` each have a turbo-cached `pack-fixture` task (`bun pm pack --destination tarballs`) that `cli-e2e#e2e` depends on, and the projects depend on those tarballs via `file:`. A committed lockfile pointing at a tarball would record its integrity hash and break on any rebuild, hence no lockfiles. `uses-isc`'s own dependency on `isc` is redirected to the local tarball with each package manager's override spelling (`overrides` / `pnpm.overrides` / `resolutions`), spiked and confirmed working for npm, pnpm, yarn 1 and yarn 3, and then yarn 4. The yarn releases (1.22.22, 3.8.7 and 4.18.0 — yarn 1 and 4 added here alongside the existing 3.8.7) live once in `packages/cli-e2e/yarn-releases` instead of once per fixture, and each is run straight with `node <release> install`, so no yarn needs to be installed or on PATH and the version under test is pinned in the repo. The `PackageManager` keys are now `yarn-1`, `yarn-3-with-node-modules` and `yarn-4-with-node-modules` (the berry ones write a `nodeLinker: node-modules` `.yarnrc.yml`).
+- `no-license-package`, `unlicensed-package` and `isc-legacy-package` only fed scenarios that moved to the unit tier, so they're no longer needed. The old `e2e/` fixture tree is likewise gone. All of these are deleted, and `packages/license-cop-e2e` is renamed `packages/cli-e2e` (package name `cli-e2e`, matching `packages/cli`); the historical notes above still say `license-cop-e2e`.
+- Not verified on Windows: the `file:` specifiers use forward-slash absolute paths, which should work on the Windows CI leg but hasn't been run there.
+- The network-fetching `parent-resolutions/{github,http,npm}.ts` modules didn't need a DI seam after all: their specs replace `axios` with `mock.module`, which is enough for fast unit tests, so the "consider injecting the fetcher" suggestion in the last bullet above was not taken.
+- The "collapse yarn" bullet above ended up going further than "one or two confirming fixtures": yarn's fixtures were replaced outright by the shared contract test, which runs against yarn 1, 3 and 4, so the yarn coverage that guards the "no yarn-specific code" decision is now a real install per major rather than a copy of the npm scenarios. See `docs/updating-yarn-releases.md` for how the committed releases are bumped.
+- `mise.toml`/`mise.lock` (added only to put a yarn launcher on PATH for the old fixtures) are deleted: the suite runs each yarn straight from its committed release.
+
 ## Part 3 — bun.lock support
 
 A separate big-bang branch from Part 2: it depends on Part 2 having already relocated
 `get-package-manager.ts` and the dependency-scanning modules into `@license-cop/core`, and — more
 importantly now — on 2.4/2.5's test pyramid already being in place. Under the old fixture-matrix
 shape, adding bun meant a full ~10-directory `e2e/bun/**` scenario set; under the pyramid, it means
-one or two contract fixtures, because 2.4's classifier already covers scenarios package-manager-
+one more entry in the contract test's package-manager list, because 2.4's classifier already covers scenarios package-manager-
 agnostically.
 
 - [ ] `@license-cop/core`'s `lib/dependency/get-package-manager.ts`: add `"bun"` to the
@@ -896,12 +907,8 @@ agnostically.
       confirm rather than assuming. If it _is_ arborist-readable, bun may not need a new engine at
       all — just the detection change above, verified by one contract fixture (per 2.5's per-engine
       tier), the same way yarn needs none today.
-- [ ] Add one or two contract fixtures under `e2e/bun/**` (per 2.5's per-engine tier — "simple
-      deps" and "nested/transitive deps" is likely enough), each with a `bun.lock` instead of
-      `package-lock.json`. Not a full scenario-matrix duplicate of `e2e/npm/**` — the classifier
-      already covers scenarios.
-- [ ] Extend `packages/license-cop-e2e`'s `PackageManager` type and `getInstallProgram`/
-      `getInstallArgs` (in `helpers.ts`) with a `"bun"` case (`bun install --frozen-lockfile`).
+- [ ] Add bun to the contract test: with the `"bun"` key added to `packages/cli-e2e` (next item), `contract.spec.ts` covers it automatically — the same project (`uses-isc` → `isc` transitively, plus `mit` as a dev dependency) installed fresh by bun. Check that bun's `overrides`/`resolutions` accept a `file:` tarball for the transitive `isc` redirect the way npm, pnpm and yarn do (spike it first, as was done for the others); if it doesn't, `PackageJsonBuilder`'s `overriding` needs a bun case.
+- [ ] Extend `packages/cli-e2e`'s `PackageManager` type/`packageManagers` list (`package-managers.ts`) and `getInstallCommand` (`project.ts`) with a `"bun"` case (`bun install`, no frozen lockfile — projects are installed fresh from local tarballs).
 - [ ] Add a `bun` leg to the CI `e2e` matrix (1.6).
 
 ## Suggested order
@@ -936,7 +943,7 @@ agnostically.
    makes the e2e restructuring possible, not the other way round.
 10. **2.5** (restructure the e2e suite) — follows directly from 2.4; land the three tiers
     incrementally within the branch (classifier unit tests, then per-engine contract fixtures, then
-    trimming `packages/license-cop-e2e` down to seam-level smoke tests) rather than as one giant
+    trimming `packages/cli-e2e` (formerly `license-cop-e2e`) down to seam-level smoke tests) rather than as one giant
     commit.
 
 **Part 3 (a third branch, after Part 2 merges):**

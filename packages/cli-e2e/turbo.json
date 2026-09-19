@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "e2e": {
+      "dependsOn": ["$TURBO_EXTENDS$", "license-cop#build", "^pack-fixture"]
+    }
+  }
+}
