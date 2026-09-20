@@ -1,8 +1,8 @@
 import { isAbsolute, join } from "path";
 import { npmDependencyScanning } from "./dependency-scanning/npm";
-import type { DependencyScanningOptions } from "./dependency-scanning/options";
+import type { DependencyScanner, DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
-import { getPackageManager } from "./dependency/get-package-manager";
+import { getPackageManager, type PackageManager } from "./dependency/get-package-manager";
 import { assertNotPlugAndPlay } from "./dependency/plug-and-play";
 import { noopOnVerbose, type OnVerbose } from "./on-verbose";
 import type { CheckLicensesResult } from "./result";
@@ -14,6 +14,14 @@ export type LicenseCopOptions = {
   includeDevDependencies?: boolean;
   devDependenciesOnly?: boolean;
   onVerbose?: OnVerbose;
+};
+
+// Yarn shares npm's `node_modules` layout, so it's read by the same engine. A `Record` rather than a
+// `switch` with a default, so that a new package manager can't silently fall through to npm's.
+const scanners: Record<PackageManager, DependencyScanner> = {
+  npm: npmDependencyScanning,
+  yarn: npmDependencyScanning,
+  pnpm: pnpmDependencyScanning
 };
 
 export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLicensesResult> => {
@@ -36,12 +44,9 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLi
     await assertNotPlugAndPlay(fullProjectPath);
   }
 
-  switch (packageManager) {
-    case "pnpm":
-      return pnpmDependencyScanning(dependencyScanningOptions);
-    default:
-      return npmDependencyScanning(dependencyScanningOptions);
-  }
+  const scan = scanners[packageManager];
+
+  return scan(dependencyScanningOptions);
 };
 
 const resolvePath = (path?: string): string => {

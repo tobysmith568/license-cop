@@ -29,13 +29,13 @@ There are four error classes with no common ancestor: `ConfigError` (which doesn
 - [x] `main.ts` catches `LicenseCopError` instead of the list. `UsageError` stays CLI-local and separate: it is the only one that prints the "Run 'license-cop --help'" hint.
 - [x] Specs: each subclass is an `instanceof LicenseCopError` and has the right `name`; `run` returns 1 with the message for a fresh subclass that `main.ts` has never heard of.
 
-### F3 Explicit engine dispatch
+### F3 Explicit engine dispatch ✅ done
 
 [license-cop.ts](packages/core/src/lib/license-cop.ts) is a `switch` whose `default` sends everything that isn't pnpm to the npm engine. That is correct today (yarn shares npm's layout) but implicit, and a new `PackageManager` member (bun, and later yarn-with-PnP) would fall through to the npm engine silently.
 
-- [ ] `const engines: Record<PackageManager, DependencyScanner>` in `license-cop.ts`, with `npm` and `yarn` both mapped to `npmDependencyScanning` and a comment saying why. A new package manager is then a compile error until it's given an engine.
-- [ ] Give the engines a shared type (`DependencyScanner = (options: DependencyScanningOptions) => Promise<CheckLicensesResult>`) in `dependency-scanning/options.ts`; `dev-dependencies.spec.ts` already declares its own `Scan` type for this.
-- [ ] The existing "choosing an engine" specs in `license-cop.spec.ts` should pass unchanged.
+- [x] `const engines: Record<PackageManager, DependencyScanner>` in `license-cop.ts`, with `npm` and `yarn` both mapped to `npmDependencyScanning` and a comment saying why. A new package manager is then a compile error until it's given an engine.
+- [x] Give the engines a shared type (`DependencyScanner = (options: DependencyScanningOptions) => Promise<CheckLicensesResult>`) in `dependency-scanning/options.ts`; `dev-dependencies.spec.ts` already declares its own `Scan` type for this.
+- [x] The existing "choosing an engine" specs in `license-cop.spec.ts` should pass unchanged.
 
 ## Correctness
 

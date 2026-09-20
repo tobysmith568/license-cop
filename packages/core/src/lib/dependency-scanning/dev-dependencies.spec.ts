@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { mkdir, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { npmDependencyScanning } from "./npm";
-import type { DependencyScanningOptions } from "./options";
+import type { DependencyScanner } from "./options";
 import { pnpmDependencyScanning } from "./pnpm";
 
 // Pins down how each engine treats dev-dependencies from the caller's perspective, so that the
@@ -12,9 +12,7 @@ import { pnpmDependencyScanning } from "./pnpm";
 // The fixture project has two prod packages (`prod` -> `prod-child`) and two dev packages
 // (`dev` -> `dev-child`), all MIT licensed.
 
-type Scan = (options: DependencyScanningOptions) => ReturnType<typeof npmDependencyScanning>;
-
-const engines: [string, () => string, Scan][] = [
+const engines: [string, () => string, DependencyScanner][] = [
   ["npm", () => npmDir, npmDependencyScanning],
   ["pnpm", () => pnpmDir, pnpmDependencyScanning]
 ];
