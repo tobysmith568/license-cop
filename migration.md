@@ -1,8 +1,8 @@
 # license-cop migration plan
 
-This plan modernizes license-cop's tooling and CLI architecture in three phases: infrastructure
+This plan modernizes license-cop's tooling and CLI architecture in four phases: infrastructure
 (package manager, task runner, linter, test runner, browser-test runner, CI), the CLI's internal
-architecture and public package boundary, and dependency-scanning support for bun. See "Suggested
+architecture and public package boundary, dependency-scanning support for bun, and dependency-scanning support for Yarn Plug'n'Play. See "Suggested
 order" at the end for the concrete sequencing and dependencies between steps.
 
 ## Guiding principles
@@ -911,6 +911,22 @@ agnostically.
 - [ ] Extend `packages/cli-e2e`'s `PackageManager` type/`packageManagers` list (`package-managers.ts`) and `getInstallCommand` (`project.ts`) with a `"bun"` case (`bun install`, no frozen lockfile — projects are installed fresh from local tarballs).
 - [ ] Add a `bun` leg to the CI `e2e` matrix (1.6).
 
+## Part 4 — Yarn Plug'n'Play support
+
+A fourth branch, after Part 3: it builds on the test pyramid from 2.5 and on Part 3 having already settled how a new package manager is added to `@license-cop/core` and `packages/cli-e2e` (bun was the first addition under the pyramid; this is the second, and the first one that isn't arborist-readable).
+
+**Where things stand today (added during the final pass on 2.x).** Yarn 2+ defaults to Plug'n'Play, which installs no `node_modules` at all — just a `.pnp.cjs` resolution map and zipped packages in `.yarn/cache`. license-cop's npm engine reads `node_modules` through arborist, so before the final pass a PnP project scanned as an empty tree and printed "Done! No issues found" with exit code 0, even with a forbidden license in the dependency graph (confirmed with a real yarn 4 install). That silent false negative is fixed for now by detect-and-refuse: `assertNotPlugAndPlay` in `@license-cop/core` throws an `UnsupportedProjectError` when the project resolves to yarn and has a `.pnp.cjs`/`.pnp.js`, telling the user to set `nodeLinker: node-modules`. `packages/cli-e2e/src/lib/plug-and-play.spec.ts` covers it with real yarn 3 and yarn 4 PnP installs (via `createProject`'s `linker: "pnp"` option). This part replaces the refusal with real support.
+
+- [ ] **Decide how to read a PnP install.** This needs a spike before anything is built, because PnP has no `node_modules` for arborist to load. Candidates: load the project's own `.pnp.cjs` (it exports a runtime API — `getAllLocators`, `getPackageInformation`, `resolveToUnqualified` — that gives every package's location and its dependency map) and walk it; or shell out to the project's own yarn (`yarn info --all --recursive --json`) and normalize its output. The former needs no yarn on the machine but has to read `package.json` out of `.yarn/cache/*.zip` (`@yarnpkg/fslib` + `@yarnpkg/libzip`, or unzipping ourselves) and out of `.yarn/unplugged`; the latter depends on a working yarn and on its JSON format staying stable across majors. Pick one against the real fixtures, the same way 3's open question about bun is settled by a real install rather than an assumption.
+- [ ] `lib/dependency-scanning/yarn-pnp.ts` (or whatever the spike settles on): walk the PnP data into `NormalizedNode`s and hand them to `classifyDependencies` (2.4), so it stays a "read my package manager's native shape" module with no classification logic of its own. PnP data doesn't flag dev vs prod the way arborist's `node.dev` does, so the dev/prod split has to be derived by walking from the workspace root's own `dependencies` and `devDependencies`, the same shape of caveat 2.4 called out between the npm and pnpm engines — pin the behaviour with a test first.
+- [ ] `lib/dependency/get-package-manager.ts` / `lib/license-cop.ts`: distinguish yarn-with-PnP from yarn-with-`node-modules` (today both are `"yarn"` and take the npm engine), and dispatch the former to the new engine. Then delete `assertNotPlugAndPlay` and `UnsupportedProjectError` if nothing else uses them by then — the error is the interim behaviour, not part of the design.
+- [ ] Flip `packages/cli-e2e/src/lib/plug-and-play.spec.ts` from "is refused" to the same contract assertions `contract.spec.ts` makes (names, versions, licenses, dev/prod split for the default / include / only modes), for yarn 3 and yarn 4. The `linker: "pnp"` option on `createProject` and the yarn 3/4 aliases are already in place, so this is a test change rather than new harness work. Fold it into `contract.spec.ts`'s package-manager list if a PnP key reads more naturally there than a second spec file (decide alongside the `yarn-3`/`yarn-4` naming, which is deliberately linker-free today).
+- [ ] Cover the PnP-specific shapes the contract fixture doesn't reach: workspaces, `npm:` aliases, `patch:` and `portal:`/`link:` protocols, packages in `.yarn/unplugged`, and zero-install repos (`.yarn/cache` committed, no install step). Decide which of these are in scope for a first version and say so in the docs.
+- [ ] Docs: remove the "set `nodeLinker: node-modules`" guidance from the README, the copy in `packages/cli`, and `apps/website/src/pages/docs.md`, and document Plug'n'Play as supported.
+- [ ] Add a Yarn PnP leg to the CI `e2e` matrix only if the contract-test approach above doesn't already cover it (it should — the matrix legs vary OS and Node, not package manager).
+
+**Related, separate gap (not part of this part).** A project that hasn't been installed yet — no `node_modules` and no `.pnp.cjs` — also scans as an empty tree and passes, whichever package manager it uses. The PnP refusal above doesn't catch it. Worth its own small item (fail with "run your install first") whenever convenient.
+
 ## Suggested order
 
 **Part 1 (one branch):**
@@ -950,3 +966,7 @@ agnostically.
 
 11. **Part 3** (bun.lock support) — on its own, once `@license-cop/core`'s package-manager
     detection, scanning modules, and the 2.4/2.5 test pyramid have already settled from Part 2.
+
+**Part 4 (a fourth branch, after Part 3 merges):**
+
+12. **Part 4** (Yarn Plug'n'Play support) — after bun, because bun settles how a new package manager is added under the 2.4/2.5 pyramid, and because PnP is the first package manager that needs its own way of reading an install rather than reusing arborist or the pnpm hierarchy library.
