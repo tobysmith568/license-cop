@@ -157,4 +157,22 @@ describe("run", () => {
     expect(exitCode).toBe(1);
     expect(io.stderrLines).toHaveLength(1);
   });
+
+  it("should exit 1 and print the message when there is no package.json", async () => {
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toHaveLength(1);
+    expect(io.stderrLines[0]).toContain("Cannot find the file");
+    expect(io.stderrLines[0]).not.toContain("    at ");
+  });
+
+  it("should exit 1 and print the message when the package.json is invalid", async () => {
+    await writeFile(join(directory, "package.json"), "not json");
+
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines[0]).toContain("Unable to parse package.json");
+  });
 });

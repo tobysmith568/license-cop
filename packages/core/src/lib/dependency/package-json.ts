@@ -3,6 +3,7 @@ import { readFile, stat } from "fs/promises";
 import { z } from "zod";
 import { json5Parse } from "../config/parsers/json5";
 import { noopOnVerbose, type OnVerbose } from "../on-verbose";
+import { PackageJsonError } from "./package-json-error";
 
 const licenseSectionValidator = z.object({
   type: z.string(),
@@ -32,7 +33,7 @@ export const readPackageJson = async (
   const packageJson = packageJsonValidator.safeParse(parsedFile);
 
   if (!packageJson.success) {
-    throw new Error(
+    throw new PackageJsonError(
       `Unable to parse package.json: ${pathToPackageJson}: ${packageJson.error.message}`
     );
   }
@@ -53,7 +54,7 @@ export const readPackageManagerField = async (
   const packageJson = packageManagerValidator.safeParse(parsedFile);
 
   if (!packageJson.success) {
-    throw new Error(
+    throw new PackageJsonError(
       `Unable to parse package.json: ${pathToPackageJson}: ${packageJson.error.message}`
     );
   }
@@ -87,12 +88,17 @@ const readJsonFile = async (path: string, onVerbose: OnVerbose): Promise<unknown
   const doesPackageJsonExist = await doesFileExist(path);
   if (!doesPackageJsonExist) {
     onVerbose(`Cannot find the package.json: '${path}'`);
-    throw new Error(`Cannot find the file: '${path}'`);
+    throw new PackageJsonError(`Cannot find the file: '${path}'`);
   }
 
   const contents: string = await readFile(path, { encoding: "utf8" });
 
-  return json5Parse<unknown>(contents);
+  try {
+    return json5Parse<unknown>(contents);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new PackageJsonError(`Unable to parse package.json: ${path}: ${reason}`);
+  }
 };
 
 const doesFileExist = async (path: string): Promise<boolean> => {

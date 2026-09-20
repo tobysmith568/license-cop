@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { createTempDir, type TempDir } from "../test-utils/temp-dir";
 import { getLicenseExpression, readPackageJson, type PackageJson } from "./package-json";
+import { PackageJsonError } from "./package-json-error";
 
 describe("PackageJson", () => {
   describe("getLicenseExpression", () => {
@@ -101,6 +102,7 @@ describe("PackageJson", () => {
 
       const act = readPackageJson(`${dir.path}/package.json`, message => messages.push(message));
 
+      await expect(act).rejects.toThrow(PackageJsonError);
       await expect(act).rejects.toThrow("Cannot find the file");
       expect(messages).toHaveLength(1);
     });
@@ -110,6 +112,7 @@ describe("PackageJson", () => {
 
       const act = readPackageJson(`${dir.path}/package.json`);
 
+      await expect(act).rejects.toThrow(PackageJsonError);
       await expect(act).rejects.toThrow("Cannot find the file");
     });
 
@@ -118,7 +121,8 @@ describe("PackageJson", () => {
 
       const act = readPackageJson(`${dir.path}/package.json`);
 
-      await expect(act).rejects.toThrow();
+      await expect(act).rejects.toThrow(PackageJsonError);
+      await expect(act).rejects.toThrow("Unable to parse package.json");
     });
 
     it("should throw a helpful error when the package.json doesn't match the schema", async () => {
@@ -126,6 +130,7 @@ describe("PackageJson", () => {
 
       const act = readPackageJson(`${dir.path}/package.json`);
 
+      await expect(act).rejects.toThrow(PackageJsonError);
       await expect(act).rejects.toThrow("Unable to parse package.json");
     });
   });
