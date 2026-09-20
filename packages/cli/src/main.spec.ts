@@ -1,6 +1,6 @@
+import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Io } from "./io";
 import { run } from "./main";
@@ -17,10 +17,6 @@ const createFakeIo = (): FakeIo => {
     stdout: line => stdoutLines.push(line),
     stderr: line => stderrLines.push(line)
   };
-};
-
-const writeJson = async (path: string, value: unknown) => {
-  await writeFile(path, JSON.stringify(value));
 };
 
 const createProject = async (
@@ -46,16 +42,18 @@ const createProject = async (
 };
 
 describe("run", () => {
+  let tempDir: TempDir;
   let directory: string;
   let io: FakeIo;
 
   beforeEach(async () => {
-    directory = await mkdtemp(join(tmpdir(), "license-cop-cli-"));
+    tempDir = await createTempDir({ prefix: "license-cop-cli-" });
+    directory = tempDir.path;
     io = createFakeIo();
   });
 
   afterEach(async () => {
-    await rm(directory, { recursive: true, force: true });
+    await tempDir.remove();
   });
 
   it("should print the help text and exit 0", async () => {
@@ -185,7 +183,7 @@ describe("run", () => {
   });
 
   it("should exit 1 and print the message when the package.json is invalid", async () => {
-    await writeFile(join(directory, "package.json"), "not json");
+    await tempDir.write({ "package.json": "not json" });
 
     const exitCode = await run([], io, directory);
 

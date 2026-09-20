@@ -45,5 +45,8 @@
   "dependencies": {
     "@license-cop/core": "workspace:*",
     "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@license-cop/test-utils": "workspace:*"
   }
 }

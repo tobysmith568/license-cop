@@ -1,5 +1,5 @@
+import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { createTempDir, type TempDir } from "../test-utils/temp-dir";
 import { getPackageManager, type PackageManager } from "./get-package-manager";
 
 describe("getPackageManager", () => {

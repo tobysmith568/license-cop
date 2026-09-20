@@ -1,5 +1,5 @@
+import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { createTempDir, type TempDir } from "../test-utils/temp-dir";
 import { ConfigError } from "./config-error";
 import { findConfig } from "./find-config";
 

@@ -1,6 +1,6 @@
+import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdtemp, readFile, realpath, rm } from "fs/promises";
-import { tmpdir } from "os";
+import { readFile } from "fs/promises";
 import { join } from "path";
 import { cliBinPath } from "./fixtures";
 import { LicenseFileBuilder } from "./license-file-builder";
@@ -45,14 +45,16 @@ describe.each<PackageManager>(["npm", "pnpm"])("cli with %s", packageManager => 
 // Commands that need no install: they only prove the built binary starts, finds its own
 // package.json (for the version) and writes to the filesystem.
 describe("cli", () => {
+  let tempDir: TempDir;
   let directory: string;
 
   beforeAll(async () => {
-    directory = await realpath(await mkdtemp(join(tmpdir(), "cli-e2e-bin-")));
+    tempDir = await createTempDir({ prefix: "cli-e2e-bin-" });
+    directory = tempDir.path;
   });
 
   afterAll(async () => {
-    await rm(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+    await tempDir.remove();
   });
 
   const runCli = (args: string[]) => runProcess("node", [cliBinPath, ...args], { cwd: directory });

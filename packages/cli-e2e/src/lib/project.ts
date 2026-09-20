@@ -1,5 +1,5 @@
-import { mkdtemp, realpath, rm, writeFile } from "fs/promises";
-import { tmpdir } from "os";
+import { createTempDir, writeJson } from "@license-cop/test-utils";
+import { writeFile } from "fs/promises";
 import { join } from "path";
 import { cliBinPath, getYarnReleasePath } from "./fixtures";
 import type { LicenseFileBuilder } from "./license-file-builder";
@@ -29,9 +29,8 @@ export interface Project {
 export const createProject = async (options: ProjectOptions): Promise<Project> => {
   const { packageManager, packageJson, licenseFile } = options;
 
-  // realpath: on macOS the temp dir sits behind a /var -> /private/var symlink
-  const tempDirectory = await mkdtemp(join(tmpdir(), "cli-e2e-"));
-  const path = await realpath(tempDirectory);
+  const tempDir = await createTempDir({ prefix: "cli-e2e-" });
+  const path = tempDir.path;
 
   const builtPackageJson = await packageJson.build(packageManager);
   await writeJson(join(path, "package.json"), builtPackageJson);
@@ -54,21 +53,9 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
 
   const runCli = (args: string[] = []) => runProcess("node", [cliBinPath, ...args], { cwd: path });
 
-  const remove = async () => {
-    if (process.env["KEEP_TEMP"]) {
-      process.stdout.write(`Keeping e2e project at ${path}\n`);
-      return;
-    }
-
-    // Retries because on Windows a just-exited child process can still hold a handle briefly
-    await rm(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
-  };
+  const remove = () => tempDir.remove();
 
   return { path, runCli, writeLicenseFile, remove };
-};
-
-const writeJson = async (path: string, contents: object) => {
-  await writeFile(path, JSON.stringify(contents, null, 2));
 };
 
 const install = async (packageManager: PackageManager, cwd: string) => {

@@ -1,6 +1,6 @@
+import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { npmDependencyScanning } from "./npm";
 import type { DependencyScanningOptions } from "./options";
@@ -19,21 +19,21 @@ const engines: [string, () => string, Scan][] = [
   ["pnpm", () => pnpmDir, pnpmDependencyScanning]
 ];
 
-let rootDir: string;
+let tempDir: TempDir;
 let npmDir: string;
 let pnpmDir: string;
 
 beforeAll(async () => {
-  rootDir = await mkdtemp(join(tmpdir(), "license-cop-dev-deps-"));
-  npmDir = join(rootDir, "npm");
-  pnpmDir = join(rootDir, "pnpm");
+  tempDir = await createTempDir({ prefix: "license-cop-dev-deps-" });
+  npmDir = join(tempDir.path, "npm");
+  pnpmDir = join(tempDir.path, "pnpm");
 
   await createNpmFixture(npmDir);
   await createPnpmFixture(pnpmDir);
 });
 
 afterAll(async () => {
-  await rm(rootDir, { recursive: true, force: true });
+  await tempDir.remove();
 });
 
 describe.each(engines)("%s dev-dependency handling", (_name, getDir, scan) => {
@@ -195,11 +195,6 @@ const writePackage = async (dir: string, name: string, dependencies?: Record<str
     license: "MIT",
     ...(dependencies ? { dependencies } : {})
   });
-};
-
-const writeJson = async (path: string, contents: unknown) => {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, JSON.stringify(contents, null, 2));
 };
 
 const link = async (linkPath: string, target: string) => {

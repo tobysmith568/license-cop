@@ -59,6 +59,9 @@
         "@license-cop/core": "workspace:*",
         "zod": "^4.0.0",
       },
+      "devDependencies": {
+        "@license-cop/test-utils": "workspace:*",
+      },
     },
     "packages/cli-e2e": {
       "name": "cli-e2e",
@@ -66,6 +69,7 @@
         "@license-cop/core": "workspace:*",
         "@license-cop/isc-test-package": "workspace:*",
         "@license-cop/mit-test-package": "workspace:*",
+        "@license-cop/test-utils": "workspace:*",
         "@license-cop/uses-isc-test-package": "workspace:*",
       },
     },
@@ -83,6 +87,9 @@
         "git-filesystem": "^0.0.6",
         "json5": "^2.2.3",
         "zod": "^4.0.0",
+      },
+      "devDependencies": {
+        "@license-cop/test-utils": "workspace:*",
       },
     },
     "packages/e2e/isc-package": {
@@ -102,6 +109,10 @@
     },
     "packages/permissive": {
       "name": "@license-cop/permissive",
+      "version": "0.0.0",
+    },
+    "packages/test-utils": {
+      "name": "@license-cop/test-utils",
       "version": "0.0.0",
     },
   },
@@ -501,6 +512,8 @@
     "@license-cop/mit-test-package": ["@license-cop/mit-test-package@workspace:packages/e2e/mit-package"],
 
     "@license-cop/permissive": ["@license-cop/permissive@workspace:packages/permissive"],
+
+    "@license-cop/test-utils": ["@license-cop/test-utils@workspace:packages/test-utils"],
 
     "@license-cop/uses-isc-test-package": ["@license-cop/uses-isc-test-package@workspace:packages/e2e/uses-isc-package"],
 

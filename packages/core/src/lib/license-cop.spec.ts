@@ -1,8 +1,8 @@
+import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { join, relative } from "node:path";
 import type { DependencyScanningOptions } from "./dependency-scanning/options";
 import type { CheckLicensesResult } from "./result";
-import { createTempDir, type TempDir } from "./test-utils/temp-dir";
 
 const emptyResult = (label: string) =>
   ({ label, allowedPackages: new Set() }) as unknown as CheckLicensesResult;

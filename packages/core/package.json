@@ -51,5 +51,8 @@
     "git-filesystem": "^0.0.6",
     "json5": "^2.2.3",
     "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@license-cop/test-utils": "workspace:*"
   }
 }

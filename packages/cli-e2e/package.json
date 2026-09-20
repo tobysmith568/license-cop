@@ -5,6 +5,7 @@
     "@license-cop/core": "workspace:*",
     "@license-cop/isc-test-package": "workspace:*",
     "@license-cop/mit-test-package": "workspace:*",
+    "@license-cop/test-utils": "workspace:*",
     "@license-cop/uses-isc-test-package": "workspace:*"
   },
   "scripts": {
