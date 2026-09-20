@@ -3,6 +3,7 @@ import { npmDependencyScanning } from "./dependency-scanning/npm";
 import type { DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
 import { getPackageManager } from "./dependency/get-package-manager";
+import { assertNotPlugAndPlay } from "./dependency/plug-and-play";
 import { noopOnVerbose, type OnVerbose } from "./on-verbose";
 import type { CheckLicensesResult } from "./result";
 
@@ -30,6 +31,10 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLi
   };
 
   const packageManager = await getPackageManager(fullProjectPath, onVerbose);
+
+  if (packageManager === "yarn") {
+    await assertNotPlugAndPlay(fullProjectPath);
+  }
 
   switch (packageManager) {
     case "pnpm":

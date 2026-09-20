@@ -12,3 +12,4 @@ export type {
   LicensedPackage,
   NoLicenseResult
 } from "./lib/result";
+export { UnsupportedProjectError } from "./lib/unsupported-project-error";

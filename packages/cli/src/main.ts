@@ -1,4 +1,4 @@
-import { ConfigError, PackageJsonError } from "@license-cop/core";
+import { ConfigError, PackageJsonError, UnsupportedProjectError } from "@license-cop/core";
 import { parseCliArgs } from "./args/parse";
 import type { CliInvocation } from "./args/schema";
 import { runCheck } from "./commands/check";
@@ -22,7 +22,11 @@ export const run = async (
       return 1;
     }
 
-    if (error instanceof ConfigError || error instanceof PackageJsonError) {
+    if (
+      error instanceof ConfigError ||
+      error instanceof PackageJsonError ||
+      error instanceof UnsupportedProjectError
+    ) {
       io.stderr(error.message);
       return 1;
     }

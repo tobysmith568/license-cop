@@ -190,4 +190,16 @@ describe("run", () => {
     expect(exitCode).toBe(1);
     expect(io.stderrLines[0]).toContain("Unable to parse package.json");
   });
+
+  it("should exit 1 and explain when the project uses Yarn Plug'n'Play", async () => {
+    await createProject(directory, "MIT");
+    await tempDir.write({ "yarn.lock": "", ".pnp.cjs": "" });
+
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toHaveLength(1);
+    expect(io.stderrLines[0]).toContain("Plug'n'Play");
+    expect(io.stderrLines[0]).toContain("nodeLinker: node-modules");
+  });
 });

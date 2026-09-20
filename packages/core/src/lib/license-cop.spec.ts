@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { join, relative } from "node:path";
 import type { DependencyScanningOptions } from "./dependency-scanning/options";
 import type { CheckLicensesResult } from "./result";
+import { UnsupportedProjectError } from "./unsupported-project-error";
 
 const emptyResult = (label: string) =>
   ({ label, allowedPackages: new Set() }) as unknown as CheckLicensesResult;
@@ -57,6 +58,36 @@ describe("checkLicenses", () => {
 
     it("should use the npm engine for yarn, which shares npm's node_modules layout", async () => {
       await dir.write({ "package.json": packageJson(), "yarn.lock": "" });
+
+      const result = await checkLicenses(baseOptions());
+
+      expect(result).toEqual(emptyResult("npm"));
+    });
+  });
+
+  describe("Plug'n'Play", () => {
+    it("should refuse a yarn project that uses Plug'n'Play without scanning it", async () => {
+      await dir.write({ "package.json": packageJson(), "yarn.lock": "", ".pnp.cjs": "" });
+
+      const act = checkLicenses(baseOptions());
+
+      await expect(act).rejects.toThrow(UnsupportedProjectError);
+      expect(npmDependencyScanning).not.toHaveBeenCalled();
+    });
+
+    it("should refuse when yarn is only named in the packageManager field", async () => {
+      await dir.write({
+        "package.json": packageJson({ packageManager: "yarn@4.0.0" }),
+        ".pnp.cjs": ""
+      });
+
+      const act = checkLicenses(baseOptions());
+
+      await expect(act).rejects.toThrow(UnsupportedProjectError);
+    });
+
+    it("should not look for Plug'n'Play files in projects of other package managers", async () => {
+      await dir.write({ "package.json": packageJson(), ".pnp.cjs": "" });
 
       const result = await checkLicenses(baseOptions());
 

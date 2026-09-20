@@ -12,6 +12,11 @@ export interface ProjectOptions {
   packageManager: PackageManager;
   packageJson: PackageJsonBuilder;
   licenseFile?: LicenseFileBuilder;
+  /**
+   * Which linker yarn 2+ installs with. License-cop reads `node_modules`, so that's the default;
+   * `pnp` is only for testing that it's refused.
+   */
+  linker?: "node-modules" | "pnp";
 }
 
 export interface Project {
@@ -27,7 +32,7 @@ export interface Project {
  * to leave the directory behind (its path is logged) for inspecting after a failure.
  */
 export const createProject = async (options: ProjectOptions): Promise<Project> => {
-  const { packageManager, packageJson, licenseFile } = options;
+  const { packageManager, packageJson, licenseFile, linker = "node-modules" } = options;
 
   const tempDir = await createTempDir({ prefix: "cli-e2e-" });
   const path = tempDir.path;
@@ -42,8 +47,8 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
     await writeLicenseFile(licenseFile);
   }
 
-  // license-cop reads node_modules, so yarn 2+ has to be told not to use Plug'n'Play
-  if (packageManager === "yarn-3" || packageManager === "yarn-4") {
+  // Yarn 2+ defaults to Plug'n'Play, which license-cop doesn't support, so it has to be told not to
+  if ((packageManager === "yarn-3" || packageManager === "yarn-4") && linker === "node-modules") {
     await writeFile(join(path, ".yarnrc.yml"), "nodeLinker: node-modules\n");
   }
 
