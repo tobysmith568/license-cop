@@ -17,14 +17,24 @@ export interface ProjectOptions {
    * `pnp` is only for testing that it's refused.
    */
   linker?: "node-modules" | "pnp";
+  /**
+   * Makes the project a workspace root, with one member per entry (keyed by its directory name,
+   * under `packages/`). The members are named after their directory and, like most real ones,
+   * have no license of their own.
+   */
+  members?: Record<string, PackageJsonBuilder>;
 }
 
 export interface Project {
   path: string;
+  /** The directory of a member, as given in `ProjectOptions.members`. */
+  memberPath: (name: string) => string;
   runCli: (args?: string[]) => Promise<ProcessResult>;
   writeLicenseFile: (builder: LicenseFileBuilder) => Promise<void>;
   remove: () => Promise<void>;
 }
+
+const membersDirectory = "packages";
 
 /**
  * Writes a project into a fresh temp dir and installs it with the real package manager, so the
@@ -32,13 +42,32 @@ export interface Project {
  * to leave the directory behind (its path is logged) for inspecting after a failure.
  */
 export const createProject = async (options: ProjectOptions): Promise<Project> => {
-  const { packageManager, packageJson, licenseFile, linker = "node-modules" } = options;
+  const { packageManager, packageJson, licenseFile, linker = "node-modules", members } = options;
 
   const tempDir = await createTempDir({ prefix: "cli-e2e-" });
   const path = tempDir.path;
 
   const builtPackageJson = await packageJson.build(packageManager);
-  await writeJson(join(path, "package.json"), builtPackageJson);
+  const isWorkspace = members !== undefined;
+
+  // pnpm keeps its workspace globs in its own file; npm and yarn keep them in the package.json
+  const usesWorkspacesField = isWorkspace && !packageManager.startsWith("pnpm");
+  const rootPackageJson = usesWorkspacesField
+    ? { ...builtPackageJson, workspaces: [`${membersDirectory}/*`] }
+    : builtPackageJson;
+  await writeJson(join(path, "package.json"), rootPackageJson);
+
+  if (isWorkspace && packageManager.startsWith("pnpm")) {
+    await writeFile(join(path, "pnpm-workspace.yaml"), `packages:\n  - "${membersDirectory}/*"\n`);
+  }
+
+  for (const [name, memberPackageJson] of Object.entries(members ?? {})) {
+    const builtMember = await memberPackageJson.build(packageManager);
+    await writeJson(join(path, membersDirectory, name, "package.json"), {
+      ...builtMember,
+      name: `member-${name}`
+    });
+  }
 
   const writeLicenseFile = (builder: LicenseFileBuilder) =>
     writeJson(join(path, ".licenses.json"), builder.build());
@@ -58,7 +87,9 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
 
   const remove = () => tempDir.remove();
 
-  return { path, runCli, writeLicenseFile, remove };
+  const memberPath = (name: string) => join(path, membersDirectory, name);
+
+  return { path, memberPath, runCli, writeLicenseFile, remove };
 };
 
 const install = async (packageManager: PackageManager, cwd: string) => {

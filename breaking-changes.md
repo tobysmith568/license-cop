@@ -65,3 +65,14 @@ On pnpm projects, `optionalDependencies` were never scanned, even when installed
 - **Why:** an optional dependency that got installed is shipped like any other, so skipping it was a silent false pass.
 - **Affected:** pnpm projects with an installed optional dependency that has a forbidden or missing license. Runs that used to pass can now fail.
 - **Migrate:** fix or allow-list whatever the check now reports.
+
+### Workspace members are no longer checked, and pnpm workspace roots scan every member (final touches)
+
+Two changes to how monorepos are scanned:
+
+- **Members aren't dependencies.** On npm and yarn workspaces, each workspace member appeared in the scan as a package, so a member without a `license` field was reported as having no license and failed the check. On pnpm, the same happened to a member that another member depends on (`workspace:*`). Members are the project's own code, so they're no longer checked. Their dependencies still are.
+- **pnpm workspace roots scan every member.** Running license-cop in the root of a pnpm workspace only looked at the root's own dependencies, so a root with none of its own (the usual shape) scanned nothing and passed. It now scans the dependencies of every member. npm and yarn already did.
+
+- **Why:** the first was noise that forced people to give private packages a license, or to allow-list them by name; the second was a silent false pass.
+- **Affected:** pnpm workspaces, whose runs can now fail on a member's dependency that has a forbidden or missing license; and npm, yarn and pnpm workspaces that allow-listed a member in `packages`, or gave a member a license only to get past the check, which can now be undone.
+- **Migrate:** fix or allow-list whatever the check now reports. Remove any allow-list entry that was only there for a member.

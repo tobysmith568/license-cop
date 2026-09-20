@@ -56,7 +56,7 @@ So the two engines disagree, and pnpm produces a false negative for a package th
 - [x] Extend `dev-dependencies.spec.ts` (or its successor) so the default / include / only modes are pinned for optional dependencies in both engines.
 - [x] Checked by the same contract test: yarn 1/3/4 match npm and pnpm 11 matches the other pnpms (before the fix: only pnpm 10/11/12 failed; after it, all seven package managers pass).
 
-### G2 Workspaces
+### G2 Workspaces (root scans done; member scans continue in G3)
 
 **Verified, and worse than expected.** A root with `workspaces: ["packages/*"]`, member `a` depending on `prod-pkg` (MIT) and member `b` depending on `opt-pkg` (ISC), real installs, MIT only allowed:
 
@@ -70,11 +70,17 @@ Two different false negatives, both passing with exit code 0:
 - **pnpm from the root** scans nothing: `buildDependenciesTree` is only given `[workingDirectory]`, so only the root importer is read, and the root has no dependencies of its own. `Object.values(dependencyHierarchies)` in the engine implies it was written expecting several importers.
 - **npm from a member** scans nothing: the member has no `node_modules` of its own, because everything is hoisted to the root.
 
-- [ ] Add workspace contract tests for npm and pnpm (a root with two members, scanned from the root and from a member), and watch both fail. `createProject` needs to grow the ability to write extra files (member `package.json`s, `pnpm-workspace.yaml`).
-- [ ] **Decide the semantics before fixing**, then record them in the docs: scanning a workspace root should cover every member; scanning a member should cover that member's dependencies (or refuse, saying to scan from the root). Recommended: root scans everything, and a member is refused with a clear message rather than made to work, since npm's hoisting makes "just that member's tree" ambiguous.
-- [ ] pnpm root: hand every workspace project directory to `buildDependenciesTree` (find them from `pnpm-workspace.yaml`), so all importers are scanned.
+**Two more found while writing the tests** (both fixed):
+
+- **npm and yarn reported the members themselves.** A workspace member shows up in the tree as a linked package, so a member with no `license` (typical, since it's the project's own code) was reported as a package with no license, failing the check.
+- **pnpm reported a member that another member depends on** (`workspace:*`) the same way, as an unlicensed `link:` dependency.
+
+- [x] Add workspace contract tests: `workspaces.spec.ts`, a root with three members (one depending on `mit`, one on `isc`, one on the first member), unlicensed members, all seven package managers, scanned from the root. It failed for npm and yarn (members reported) and for pnpm (nothing found). `createProject` gained a `members` option and `PackageJsonBuilder` gained `dependsOnMember`. **Scanning from a member is not covered here**: it needs G3's error for npm and yarn, so its tests are added there for every package manager together.
+- [x] **Semantics decided.** Scanning a workspace root covers the dependencies of every member, and never the members themselves. Scanning a member's own directory covers what that package manager has installed for it: pnpm gives that member's dependencies, and npm and yarn (which hoist everything to the root) currently give nothing, which G3 turns into an error pointing at the workspace root. The earlier recommendation to refuse member scans everywhere was dropped: it would need a workspace-detection step per package manager, to refuse a scan that already works on pnpm.
+- [x] pnpm root: the lockfile's `importers` (every project it covers) are handed to `buildDependenciesTree`, rather than only the working directory. This adds `@pnpm/lockfile.fs` as a direct dependency of core (already a transitive one of the hierarchy library), and falls back to the working directory when there is no lockfile. Reading `pnpm-workspace.yaml` instead would have needed a YAML parser and globbing.
+- [x] Workspace members are skipped rather than classified: by arborist's `isWorkspace` for npm and yarn, and, for pnpm, by a linked node's path being one of the scanned projects. Their dependencies are still walked in both engines.
 - [ ] npm member: falls out of G3 (declared dependencies, nothing installed), provided that check gives a message that mentions running from the workspace root.
-- [ ] yarn 1/3/4 workspaces should follow npm. Cover with the same test rather than assuming, as with G1.
+- [x] yarn 1/3/4 workspaces follow npm, and are covered by the same test.
 
 ### G3 A project that isn't installed passes
 

@@ -11,6 +11,7 @@ export class PackageJsonBuilder {
   private readonly dependencies: FixturePackage[] = [];
   private readonly devDependencies: FixturePackage[] = [];
   private readonly optionalDependencies: FixturePackage[] = [];
+  private readonly members: string[] = [];
   private readonly overridden: FixturePackage[] = [];
 
   dependsOn(...fixtures: FixturePackage[]): this {
@@ -28,6 +29,12 @@ export class PackageJsonBuilder {
     return this;
   }
 
+  /** Depends on another member of the same workspace, by its directory name. */
+  dependsOnMember(...names: string[]): this {
+    this.members.push(...names);
+    return this;
+  }
+
   /** Redirects a fixture that is only depended on indirectly (by another fixture) to its tarball. */
   overriding(...fixtures: FixturePackage[]): this {
     this.overridden.push(...fixtures);
@@ -35,7 +42,10 @@ export class PackageJsonBuilder {
   }
 
   async build(packageManager: PackageManager): Promise<object> {
-    const dependencies = await toFileSpecifiers(this.dependencies);
+    const dependencies = {
+      ...(await toFileSpecifiers(this.dependencies)),
+      ...toMemberSpecifiers(this.members, packageManager)
+    };
     const devDependencies = await toFileSpecifiers(this.devDependencies);
     const optionalDependencies = await toFileSpecifiers(this.optionalDependencies);
     const overrides = await toFileSpecifiers(this.overridden);
@@ -83,4 +93,13 @@ const toFileSpecifiers = async (fixtures: FixturePackage[]) => {
   }
 
   return specifiers;
+};
+
+// Members are named `member-<directory>` (see `createProject`). npm and yarn 1 resolve a plain range
+// to a workspace member that satisfies it; pnpm and yarn 2+ need the explicit protocol.
+const toMemberSpecifiers = (names: string[], packageManager: PackageManager) => {
+  const usesWorkspaceProtocol = packageManager !== "npm" && packageManager !== "yarn-1";
+  const specifier = usesWorkspaceProtocol ? "workspace:*" : "*";
+
+  return Object.fromEntries(names.map(name => [`member-${name}`, specifier]));
 };
