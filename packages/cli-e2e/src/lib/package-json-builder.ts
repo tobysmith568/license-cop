@@ -10,6 +10,7 @@ import type { PackageManager } from "./package-managers";
 export class PackageJsonBuilder {
   private readonly dependencies: FixturePackage[] = [];
   private readonly devDependencies: FixturePackage[] = [];
+  private readonly optionalDependencies: FixturePackage[] = [];
   private readonly overridden: FixturePackage[] = [];
 
   dependsOn(...fixtures: FixturePackage[]): this {
@@ -22,6 +23,11 @@ export class PackageJsonBuilder {
     return this;
   }
 
+  optionallyDependsOn(...fixtures: FixturePackage[]): this {
+    this.optionalDependencies.push(...fixtures);
+    return this;
+  }
+
   /** Redirects a fixture that is only depended on indirectly (by another fixture) to its tarball. */
   overriding(...fixtures: FixturePackage[]): this {
     this.overridden.push(...fixtures);
@@ -31,6 +37,7 @@ export class PackageJsonBuilder {
   async build(packageManager: PackageManager): Promise<object> {
     const dependencies = await toFileSpecifiers(this.dependencies);
     const devDependencies = await toFileSpecifiers(this.devDependencies);
+    const optionalDependencies = await toFileSpecifiers(this.optionalDependencies);
     const overrides = await toFileSpecifiers(this.overridden);
 
     const packageJson = {
@@ -38,7 +45,8 @@ export class PackageJsonBuilder {
       version: "0.0.0",
       private: true,
       dependencies,
-      devDependencies
+      devDependencies,
+      ...(this.optionalDependencies.length > 0 ? { optionalDependencies } : {})
     };
 
     if (this.overridden.length === 0) {

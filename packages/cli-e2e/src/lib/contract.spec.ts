@@ -70,3 +70,56 @@ describe.each(packageManagers)("%s", packageManager => {
 
 const namesAndVersions = (packages: CheckLicensesResult[keyof CheckLicensesResult]) =>
   [...packages].map(pkg => `${pkg.name}@${pkg.version}`).sort();
+
+// An optional dependency that got installed is shipped like any other, so it has to be checked.
+// The forbidden license (only MIT is allowed) is what would go unnoticed if it were skipped.
+//
+//   dependencies:         mit (MIT)
+//   optionalDependencies: isc (ISC)
+describe.each(packageManagers)("%s with an optional dependency", packageManager => {
+  let project: Project;
+
+  beforeAll(async () => {
+    const packageJson = new PackageJsonBuilder().dependsOn("mit").optionallyDependsOn("isc");
+
+    project = await createProject({ packageManager, packageJson });
+  });
+
+  afterAll(async () => {
+    await project.remove();
+  });
+
+  const check = (options: { includeDevDependencies?: boolean; devDependenciesOnly?: boolean }) =>
+    checkLicenses({
+      allowedLicenses: ["MIT"],
+      allowedPackages: [],
+      workingDirectory: project.path,
+      ...options
+    });
+
+  it("should find it by default", async () => {
+    const result = await check({});
+
+    expect(namesAndVersions(result.allowedLicenses)).toEqual([
+      "@license-cop/mit-test-package@4.5.6"
+    ]);
+    expect(namesAndVersions(result.forbiddenLicenses)).toEqual([
+      "@license-cop/isc-test-package@1.2.3"
+    ]);
+  });
+
+  it("should find it when including dev dependencies", async () => {
+    const result = await check({ includeDevDependencies: true });
+
+    expect(namesAndVersions(result.forbiddenLicenses)).toEqual([
+      "@license-cop/isc-test-package@1.2.3"
+    ]);
+  });
+
+  it("should not find it when scanning dev dependencies only", async () => {
+    const result = await check({ devDependenciesOnly: true });
+
+    expect(result.allowedLicenses.size).toBe(0);
+    expect(result.forbiddenLicenses.size).toBe(0);
+  });
+});

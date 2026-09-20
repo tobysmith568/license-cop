@@ -2,7 +2,7 @@
 
 Follow-up to the final pass on the 2.x milestones in [migration.md](migration.md): the gaps and cleanups that review found, worked through before Part 3 (bun) starts, so that bun and Plug'n'Play are added on top of a settled base. Nothing here changes the shape of the migration; it closes holes in what 2.1–2.5 delivered.
 
-Each item says what was found, what was verified, and what "done" looks like. Where an item was spiked, the result is recorded here so it isn't re-derived. Tick items off as they land.
+Each item says what was found, what was verified, and what "done" looks like. Where an item was spiked, the result is recorded here so it isn't re-derived. Tick items off as they land. Anything that can change the outcome of a run for an existing user (a check that used to pass and now fails, a flag or output change) also gets an entry in [breaking-changes.md](breaking-changes.md) when it lands.
 
 ## Suggested order
 
@@ -39,31 +39,31 @@ There are four error classes with no common ancestor: `ConfigError` (which doesn
 
 ## Correctness
 
-### G1 pnpm silently skips optional dependencies
+### G1 pnpm silently skips optional dependencies ✅ done
 
 **Verified.** A project with `dependencies: { prod-pkg (MIT) }` and `optionalDependencies: { opt-pkg (ISC) }`, real installs from local tarballs, scanned with only MIT allowed:
 
-| Package manager | `opt-pkg` in `node_modules` | Result |
-| --- | --- | --- |
-| npm | yes | `opt-pkg` reported as forbidden |
-| pnpm 10 | yes | **not scanned**, no forbidden license reported |
-| pnpm 12 | yes | **not scanned**, no forbidden license reported |
+| Package manager | `opt-pkg` in `node_modules` | Result                                         |
+| --------------- | --------------------------- | ---------------------------------------------- |
+| npm             | yes                         | `opt-pkg` reported as forbidden                |
+| pnpm 10         | yes                         | **not scanned**, no forbidden license reported |
+| pnpm 12         | yes                         | **not scanned**, no forbidden license reported |
 
 So the two engines disagree, and pnpm produces a false negative for a package that is installed and shipped. [pnpm.ts](packages/core/src/lib/dependency-scanning/pnpm.ts) passes `optionalDependencies: false` to `buildDependenciesTree`, then reads `hierarchies.optionalDependencies` anyway, which is dead code today. npm is the right behaviour: an optional dependency that got installed is a dependency.
 
-- [ ] Add a contract test first (an optional dependency with a forbidden license, run against every package manager in `packageManagers`), and watch it fail for pnpm. This needs a fixture package with a different license; `packages/e2e/isc-package` can serve as the optional one.
-- [ ] Fix: `optionalDependencies: !devDependenciesOnly` in the pnpm engine, mirroring `dependencies` (an optional dependency is a production one, and arborist already excludes it from a dev-only scan by way of `node.dev`).
-- [ ] Extend `dev-dependencies.spec.ts` (or its successor) so the default / include / only modes are pinned for optional dependencies in both engines.
-- [ ] Not yet checked: yarn 1/3/4 (they share the npm engine and so should match npm) and pnpm 11. The contract test will cover both.
+- [x] Add a contract test first (an optional dependency with a forbidden license, run against every package manager in `packageManagers`), and watch it fail for pnpm. This needs a fixture package with a different license; `packages/e2e/isc-package` can serve as the optional one.
+- [x] Fix: `optionalDependencies: !devDependenciesOnly` in the pnpm engine, mirroring `dependencies` (an optional dependency is a production one, and arborist already excludes it from a dev-only scan by way of `node.dev`).
+- [x] Extend `dev-dependencies.spec.ts` (or its successor) so the default / include / only modes are pinned for optional dependencies in both engines.
+- [x] Checked by the same contract test: yarn 1/3/4 match npm and pnpm 11 matches the other pnpms (before the fix: only pnpm 10/11/12 failed; after it, all seven package managers pass).
 
 ### G2 Workspaces
 
 **Verified, and worse than expected.** A root with `workspaces: ["packages/*"]`, member `a` depending on `prod-pkg` (MIT) and member `b` depending on `opt-pkg` (ISC), real installs, MIT only allowed:
 
-| Scan target | npm | pnpm 12 |
-| --- | --- | --- |
+| Scan target    | npm                                                | pnpm 12           |
+| -------------- | -------------------------------------------------- | ----------------- |
 | workspace root | finds `a`, `b`, `prod-pkg` and forbidden `opt-pkg` | **finds nothing** |
-| member `a` | **finds nothing** | finds `prod-pkg` |
+| member `a`     | **finds nothing**                                  | finds `prod-pkg`  |
 
 Two different false negatives, both passing with exit code 0:
 
@@ -88,14 +88,14 @@ Today a project with no `node_modules` scans as an empty tree and passes, whiche
 
 ### G4 `init` refuses when a config already exists
 
-[init.ts](packages/cli/src/commands/init.ts) writes `.licenses.json` unconditionally, overwriting an existing file, and has no test for it. It must fail if the project already has *any* config that license-cop would load, not only the file `init` itself creates.
+[init.ts](packages/cli/src/commands/init.ts) writes `.licenses.json` unconditionally, overwriting an existing file, and has no test for it. It must fail if the project already has _any_ config that license-cop would load, not only the file `init` itself creates.
 
 The search list lives privately in [find-config.ts](packages/core/src/lib/config/find-config.ts): four module names (`licenses`, `licences`, `licensesrc`, `licencesrc`) across `.name`, `.name.{json,jsonc,json5,yaml,yml,js,cjs}`, `.config/name…` and `name.config.{js,cjs}`, plus a `licensecop` key in `package.json`.
 
 - [ ] Add a core function (for example `findConfigFile(directory): Promise<string | undefined>`) that reuses the same `searchPlaces` and cosmiconfig options as `findConfig`, so the two can never drift apart, and export it. `init` must not keep its own list.
 - [ ] `runInit` checks it first and, if a file is found, fails with a message naming that file and exit code 1, without writing anything. Route it through a `LicenseCopError` subclass (F2) so it is reported like the other user-facing failures.
 - [ ] Only the target directory counts. `findConfig` stops at `rootDir` anyway, so there's no parent-directory case to think about.
-- [ ] Follow cosmiconfig's own semantics for the odd cases and pin them: a `package.json` without a `licensecop` key is *not* a config; an empty config file is skipped by cosmiconfig and by `findConfig` alike. Decide explicitly whether an empty file blocks `init` (recommended: it does, since the user clearly put it there, so this may mean checking file existence directly rather than through cosmiconfig; settle it while writing the spec).
+- [ ] Follow cosmiconfig's own semantics for the odd cases and pin them: a `package.json` without a `licensecop` key is _not_ a config; an empty config file is skipped by cosmiconfig and by `findConfig` alike. Decide explicitly whether an empty file blocks `init` (recommended: it does, since the user clearly put it there, so this may mean checking file existence directly rather than through cosmiconfig; settle it while writing the spec).
 - [ ] Specs: one per config location shape (a dotfile, a `.config/` file, a `*.config.js`, a `licensecop` key in package.json, each spelling of the module name is not needed in full: a couple per shape is enough), that nothing is overwritten, and that a clean directory still works. Add the built-CLI case to `cli.spec.ts` (init twice: the second exits 1).
 - [ ] README, the copy in `packages/cli`, and `apps/website/src/pages/docs.md`: say that `init` won't overwrite an existing config.
 
@@ -115,15 +115,15 @@ Anything that isn't a known error currently escapes `run` (the rethrow at [main.
 The core API currently exports `loadConfig`, `readPackageJson` and `PackageJsonError` mainly so the CLI can do its job, and the step that merges the config file with the `--dev-dependencies` flag ([dev-dependencies.ts](packages/cli/src/commands/dev-dependencies.ts)) lives in the CLI. A library user cannot get "what the CLI would do for this directory" without copying it, and the merge rule is business logic, not presentation.
 
 - [ ] Move `DevDependenciesMode` and `resolveDevDependencyOptions` into core, with their spec.
-- [ ] Add one core function that resolves everything the CLI needs before scanning: the project's name, the loaded config, and the ready-to-use `LicenseCopOptions` (config plus the dev-dependencies flag). Recommended shape: `resolveCheckOptions(directory, { devDependencies, onVerbose })` returning `{ productName, options }`, so the CLI can still print "Scanning dependencies of: …" *before* the scan starts (and before a slow one finishes), then call `checkLicenses(options)`.
+- [ ] Add one core function that resolves everything the CLI needs before scanning: the project's name, the loaded config, and the ready-to-use `LicenseCopOptions` (config plus the dev-dependencies flag). Recommended shape: `resolveCheckOptions(directory, { devDependencies, onVerbose })` returning `{ productName, options }`, so the CLI can still print "Scanning dependencies of: …" _before_ the scan starts (and before a slow one finishes), then call `checkLicenses(options)`.
 - [ ] `check.ts` uses it. This also fixes C6c (`package.json` read twice), since only core reads it.
 - [ ] Once the CLI no longer needs them, stop exporting `loadConfig`, `readPackageJson` and `PackageJsonError` from core if nothing else does (the CLI's [help.ts](packages/cli/src/help.ts) reads its own version through `readPackageJson`; either give it its own tiny reader or keep that one export, and record which). Anything removed from the public surface should be re-checked against `packages/core/README.md`.
 
 ### C5 Lean into zod for argument parsing
 
-Yes, this is better. Today [parse.ts](packages/cli/src/args/parse.ts) builds the invocation object by hand, validates the mode by hand (`parseDevDependencies`, alongside an unused-in-practice `devDependenciesModeSchema`), rejects `init --dev-dependencies` and stray positionals by hand, and *then* runs the finished, already-typed object through zod, a step whose failure branch is unreachable and untested. There are two sources of truth for the mode and a validation step that can't fail.
+Yes, this is better. Today [parse.ts](packages/cli/src/args/parse.ts) builds the invocation object by hand, validates the mode by hand (`parseDevDependencies`, alongside an unused-in-practice `devDependenciesModeSchema`), rejects `init --dev-dependencies` and stray positionals by hand, and _then_ runs the finished, already-typed object through zod, a step whose failure branch is unreachable and untested. There are two sources of truth for the mode and a validation step that can't fail.
 
-- [ ] Validate the *raw* tokenized values with zod instead: parse `parseArgs`' output through a schema (a discriminated union on the command taken from `positionals[0]`) that owns the enum, the `init` + `--dev-dependencies` exclusion and the unexpected-argument rule, and produces the `CliInvocation` directly. Delete the hand-rolled `parseDevDependencies` and the after-the-fact `validate`.
+- [ ] Validate the _raw_ tokenized values with zod instead: parse `parseArgs`' output through a schema (a discriminated union on the command taken from `positionals[0]`) that owns the enum, the `init` + `--dev-dependencies` exclusion and the unexpected-argument rule, and produces the `CliInvocation` directly. Delete the hand-rolled `parseDevDependencies` and the after-the-fact `validate`.
 - [ ] Keep every user-facing message word for word: `parse.spec.ts` pins them, and it is the safety net for this refactor, so refactor with it green rather than rewriting the specs. zod's default messages are not user-friendly (see the note in 2.3 about `exclude` leaking through), so each rule needs a custom `error`.
 - [ ] `throwIfRemovedFlag` stays a pre-pass; it exists to give a better message than a schema could.
 - [ ] Check the result against `z.prettifyError`'s output for the cases that remain, and keep `schema.ts` as the one place the invocation shape is defined.

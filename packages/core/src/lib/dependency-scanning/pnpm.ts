@@ -19,12 +19,14 @@ export const pnpmDependencyScanning = async (
 
   // Dev-dependencies are filtered upstream here, via the options given to pnpm
   // npm.ts filters them per node instead, while walking arborist's tree
+  // Optional dependencies are production dependencies that may not have been installed, so they're
+  // scanned with the production ones, the same as npm.ts's tree includes them
   const dependencyHierarchies = await buildDependenciesTree([workingDirectory], {
     depth: Infinity,
     include: {
       dependencies: !devDependenciesOnly,
       devDependencies: includeDevDependencies || devDependenciesOnly,
-      optionalDependencies: false
+      optionalDependencies: !devDependenciesOnly
     },
     lockfileDir: workingDirectory,
     virtualStoreDirMaxLength: Infinity

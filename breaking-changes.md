@@ -57,3 +57,11 @@ On pnpm projects, `devDependenciesOnly` (set by `--dev-dependencies only`, forme
 - **Why:** the option was silently a no-op on pnpm, so the check gave a false pass.
 - **Affected:** pnpm projects that use `devDependenciesOnly` or `--dev-dependencies only`. Runs that used to pass vacuously can now fail if a dev dependency has a forbidden or missing license.
 - **Migrate:** fix or allow-list whatever the check now reports.
+
+### Optional dependencies are now checked on pnpm projects (final touches)
+
+On pnpm projects, `optionalDependencies` were never scanned, even when installed, so an optional dependency with a forbidden or missing license passed the check. npm and yarn projects were not affected and already checked them. They're now scanned with the production dependencies (so not by `--dev-dependencies only`).
+
+- **Why:** an optional dependency that got installed is shipped like any other, so skipping it was a silent false pass.
+- **Affected:** pnpm projects with an installed optional dependency that has a forbidden or missing license. Runs that used to pass can now fail.
+- **Migrate:** fix or allow-list whatever the check now reports.

@@ -9,8 +9,8 @@ import { pnpmDependencyScanning } from "./pnpm";
 // Pins down how each engine treats dev-dependencies from the caller's perspective, so that the
 // engines can be refactored onto a shared classifier without changing behaviour.
 //
-// The fixture project has two prod packages (`prod` -> `prod-child`) and two dev packages
-// (`dev` -> `dev-child`), all MIT licensed.
+// The fixture project has two prod packages (`prod` -> `prod-child`), two dev packages
+// (`dev` -> `dev-child`) and an optional one (`optional`), all MIT licensed.
 
 const engines: [string, () => string, DependencyScanner][] = [
   ["npm", () => npmDir, npmDependencyScanning],
@@ -51,13 +51,13 @@ describe.each(engines)("%s dev-dependency handling", (_name, getDir, scan) => {
   it("should only find production dependencies by default", async () => {
     const found = await run(false, false);
 
-    expect(found).toEqual(["prod", "prod-child"]);
+    expect(found).toEqual(["optional", "prod", "prod-child"]);
   });
 
   it("should find production and dev dependencies when including dev dependencies", async () => {
     const found = await run(true, false);
 
-    expect(found).toEqual(["dev", "dev-child", "prod", "prod-child"]);
+    expect(found).toEqual(["dev", "dev-child", "optional", "prod", "prod-child"]);
   });
 
   it("should only find dev dependencies when scanning dev dependencies only", async () => {
@@ -78,9 +78,11 @@ const createNpmFixture = async (dir: string) => {
     name: "fixture",
     version: "0.0.0",
     dependencies: { prod: "1.0.0" },
-    devDependencies: { dev: "1.0.0" }
+    devDependencies: { dev: "1.0.0" },
+    optionalDependencies: { optional: "1.0.0" }
   });
 
+  await writePackage(join(dir, "node_modules", "optional"), "optional");
   await writePackage(join(dir, "node_modules", "prod"), "prod", { "prod-child": "1.0.0" });
   await writePackage(join(dir, "node_modules", "prod-child"), "prod-child");
   await writePackage(join(dir, "node_modules", "dev"), "dev", { "dev-child": "1.0.0" });
@@ -92,7 +94,8 @@ const createPnpmFixture = async (dir: string) => {
     name: "fixture",
     version: "0.0.0",
     dependencies: { prod: "1.0.0" },
-    devDependencies: { dev: "1.0.0" }
+    devDependencies: { dev: "1.0.0" },
+    optionalDependencies: { optional: "1.0.0" }
   });
 
   const lockfile = `lockfileVersion: '9.0'
@@ -112,6 +115,10 @@ importers:
       dev:
         specifier: 1.0.0
         version: 1.0.0
+    optionalDependencies:
+      optional:
+        specifier: 1.0.0
+        version: 1.0.0
 
 packages:
 
@@ -119,6 +126,9 @@ packages:
     resolution: {integrity: sha512-AAAA}
 
   dev@1.0.0:
+    resolution: {integrity: sha512-AAAA}
+
+  optional@1.0.0:
     resolution: {integrity: sha512-AAAA}
 
   prod-child@1.0.0:
@@ -134,6 +144,9 @@ snapshots:
   dev@1.0.0:
     dependencies:
       dev-child: 1.0.0
+
+  optional@1.0.0:
+    optional: true
 
   prod-child@1.0.0: {}
 
@@ -176,6 +189,7 @@ virtualStoreDirMaxLength: 120
   await writePackage(join(virtualStore("prod-child"), "prod-child"), "prod-child");
   await writePackage(join(virtualStore("dev"), "dev"), "dev");
   await writePackage(join(virtualStore("dev-child"), "dev-child"), "dev-child");
+  await writePackage(join(virtualStore("optional"), "optional"), "optional");
 
   await link(
     join(virtualStore("prod"), "prod-child"),
@@ -184,6 +198,7 @@ virtualStoreDirMaxLength: 120
   await link(join(virtualStore("dev"), "dev-child"), join(virtualStore("dev-child"), "dev-child"));
   await link(join(modulesDir, "prod"), join(virtualStore("prod"), "prod"));
   await link(join(modulesDir, "dev"), join(virtualStore("dev"), "dev"));
+  await link(join(modulesDir, "optional"), join(virtualStore("optional"), "optional"));
 };
 
 const writePackage = async (dir: string, name: string, dependencies?: Record<string, string>) => {
