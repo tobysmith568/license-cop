@@ -1,4 +1,6 @@
-export class ConfigError extends Error {
+import { LicenseCopError } from "../license-cop-error";
+
+export class ConfigError extends LicenseCopError {
   constructor(message: string) {
     super(`Config error: ${message}`);
   }

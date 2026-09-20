@@ -20,14 +20,14 @@ Each item says what was found, what was verified, and what "done" looks like. Wh
 - [x] Use `stat().isFile()` semantics: the package.json copy is the stricter one, and every current caller (`yarn.lock`, `pnpm-lock.yaml`, `.pnp.cjs`, `package.json`) is looking for a file. Say so in a comment, since `access` would also have said yes to a directory.
 - [x] Delete the three private copies.
 
-### F2 A `LicenseCopError` base class
+### F2 A `LicenseCopError` base class ✅ done
 
 There are four error classes with no common ancestor: `ConfigError` (which doesn't set `name`, and prefixes its message with `Config error:`), `PackageJsonError`, `UnsupportedProjectError`, and the CLI's own `UsageError`. [main.ts](packages/cli/src/main.ts) handles the first three through a hard-coded `instanceof` list, so a new error type that isn't added there surfaces as a stack trace. Parts 3 and 4 and items G3/G4 below each add one.
 
-- [ ] Add `LicenseCopError` to core, setting `this.name = new.target.name` so subclasses no longer repeat it. Export it from `index.ts`.
-- [ ] `ConfigError`, `PackageJsonError` and `UnsupportedProjectError` extend it. Keep `ConfigError`'s message prefix.
-- [ ] `main.ts` catches `LicenseCopError` instead of the list. `UsageError` stays CLI-local and separate: it is the only one that prints the "Run 'license-cop --help'" hint.
-- [ ] Specs: each subclass is an `instanceof LicenseCopError` and has the right `name`; `run` returns 1 with the message for a fresh subclass that `main.ts` has never heard of.
+- [x] Add `LicenseCopError` to core, setting `this.name = new.target.name` so subclasses no longer repeat it. Export it from `index.ts`.
+- [x] `ConfigError`, `PackageJsonError` and `UnsupportedProjectError` extend it. Keep `ConfigError`'s message prefix.
+- [x] `main.ts` catches `LicenseCopError` instead of the list. `UsageError` stays CLI-local and separate: it is the only one that prints the "Run 'license-cop --help'" hint.
+- [x] Specs: each subclass is an `instanceof LicenseCopError` and has the right `name`; `run` returns 1 with the message for a fresh subclass that `main.ts` has never heard of.
 
 ### F3 Explicit engine dispatch
 

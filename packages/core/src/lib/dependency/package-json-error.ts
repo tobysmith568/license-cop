@@ -1,6 +1,3 @@
-export class PackageJsonError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PackageJsonError";
-  }
-}
+import { LicenseCopError } from "../license-cop-error";
+
+export class PackageJsonError extends LicenseCopError {}
