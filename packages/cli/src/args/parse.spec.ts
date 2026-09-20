@@ -11,9 +11,9 @@ describe("parseCliArgs", () => {
     expect(invocation).toEqual({
       kind: "check",
       directory: defaultDirectory,
-      verbose: false,
-      devDependencies: "exclude"
+      verbose: false
     });
+    expect(invocation).toMatchObject({ devDependencies: undefined });
   });
 
   it("should parse every check flag", () => {

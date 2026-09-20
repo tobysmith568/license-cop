@@ -60,9 +60,9 @@ const throwIfRemovedFlag = (args: string[]) => {
   }
 };
 
-const parseDevDependencies = (value: string | undefined): DevDependenciesMode => {
+const parseDevDependencies = (value: string | undefined): DevDependenciesMode | undefined => {
   if (value === undefined) {
-    return "exclude";
+    return undefined;
   }
 
   if (value === "include" || value === "only") {

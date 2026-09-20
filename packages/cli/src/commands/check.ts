@@ -10,11 +10,12 @@ import type { DevDependenciesMode } from "../args/schema";
 import { createVerboseLogger, type Io } from "../io";
 import { reportFailure } from "../report-failure";
 import { reportSuccess } from "../report-success";
+import { resolveDevDependencyOptions } from "./dev-dependencies";
 
 export type CheckOptions = {
   directory: string;
   verbose: boolean;
-  devDependencies: DevDependenciesMode;
+  devDependencies?: DevDependenciesMode | undefined;
 };
 
 export const runCheck = async (options: CheckOptions, io: Io): Promise<number> => {
@@ -33,8 +34,7 @@ export const runCheck = async (options: CheckOptions, io: Io): Promise<number> =
     allowedPackages: config.packages,
 
     workingDirectory: directory,
-    includeDevDependencies: devDependencies === "include" || config.includeDevDependencies,
-    devDependenciesOnly: devDependencies === "only" || config.devDependenciesOnly,
+    ...resolveDevDependencyOptions(devDependencies, config),
     onVerbose: verbose
   };
 

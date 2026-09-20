@@ -26,14 +26,15 @@ const writeJson = async (path: string, value: unknown) => {
 const createProject = async (
   root: string,
   dependencyLicense: string,
-  dependencyKind: "dependencies" | "devDependencies" = "dependencies"
+  dependencyKind: "dependencies" | "devDependencies" = "dependencies",
+  config: object = {}
 ) => {
   await writeJson(join(root, "package.json"), {
     name: "test-project",
     version: "1.0.0",
     [dependencyKind]: { "some-dependency": "2.0.0" }
   });
-  await writeJson(join(root, ".licenses.json"), { licenses: ["MIT"], packages: [] });
+  await writeJson(join(root, ".licenses.json"), { licenses: ["MIT"], packages: [], ...config });
 
   const dependencyDirectory = join(root, "node_modules", "some-dependency");
   await mkdir(dependencyDirectory, { recursive: true });
@@ -140,6 +141,22 @@ describe("run", () => {
       expect(io.stderrLines).toContain("some-dependency@2.0.0 - GPL-3.0");
     }
   );
+
+  it("should use the dev dependency settings of the config file when there is no flag", async () => {
+    await createProject(directory, "GPL-3.0", "devDependencies", { includeDevDependencies: true });
+
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(1);
+  });
+
+  it("should let the flag replace the dev dependency settings of the config file", async () => {
+    await createProject(directory, "GPL-3.0", "dependencies", { includeDevDependencies: true });
+
+    const exitCode = await run(["--dev-dependencies", "only"], io, directory);
+
+    expect(exitCode).toBe(0);
+  });
 
   it("should ignore a forbidden production dependency with --dev-dependencies only", async () => {
     await createProject(directory, "GPL-3.0");
