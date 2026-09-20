@@ -1,6 +1,6 @@
-import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { noopOnVerbose, type OnVerbose } from "../on-verbose";
+import { fileExists } from "../utils/file-exists";
 import { readPackageManagerField } from "./package-json";
 
 export type PackageManager = "npm" | "yarn" | "pnpm";
@@ -48,13 +48,4 @@ const resolveFromLockFileDiscovery = async (workingDirectory: string): Promise<P
   }
 
   return "npm";
-};
-
-const fileExists = async (path: string): Promise<boolean> => {
-  try {
-    await access(path);
-    return true;
-  } catch (_error) {
-    return false;
-  }
 };

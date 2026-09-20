@@ -1,8 +1,8 @@
-import { Stats } from "fs";
-import { readFile, stat } from "fs/promises";
+import { readFile } from "fs/promises";
 import { z } from "zod";
 import { json5Parse } from "../config/parsers/json5";
 import { noopOnVerbose, type OnVerbose } from "../on-verbose";
+import { fileExists } from "../utils/file-exists";
 import { PackageJsonError } from "./package-json-error";
 
 const licenseSectionValidator = z.object({
@@ -85,7 +85,7 @@ export const getLicenseExpression = (packageJson: PackageJson): string => {
 };
 
 const readJsonFile = async (path: string, onVerbose: OnVerbose): Promise<unknown> => {
-  const doesPackageJsonExist = await doesFileExist(path);
+  const doesPackageJsonExist = await fileExists(path);
   if (!doesPackageJsonExist) {
     onVerbose(`Cannot find the package.json: '${path}'`);
     throw new PackageJsonError(`Cannot find the file: '${path}'`);
@@ -98,14 +98,5 @@ const readJsonFile = async (path: string, onVerbose: OnVerbose): Promise<unknown
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new PackageJsonError(`Unable to parse package.json: ${path}: ${reason}`);
-  }
-};
-
-const doesFileExist = async (path: string): Promise<boolean> => {
-  try {
-    const stats: Stats = await stat(path);
-    return stats.isFile();
-  } catch {
-    return false;
   }
 };
