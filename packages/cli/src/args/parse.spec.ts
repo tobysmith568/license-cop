@@ -5,6 +5,12 @@ import { parseCliArgs } from "./parse";
 const defaultDirectory = "/default/dir";
 
 describe("parseCliArgs", () => {
+  it("should not mistake a removed flag inside a flag's value for the flag itself", () => {
+    const invocation = parseCliArgs(["--directory=--init"], defaultDirectory);
+
+    expect(invocation).toMatchObject({ kind: "check", directory: "--init" });
+  });
+
   it("should default to a check of the default directory", () => {
     const invocation = parseCliArgs([], defaultDirectory);
 

@@ -1,4 +1,4 @@
-import { parseArgs } from "node:util";
+import { parseArgs, type ParseArgsConfig } from "node:util";
 import { z } from "zod";
 import { UsageError } from "../errors";
 import { cliInvocationSchema, type CliInvocation, type DevDependenciesMode } from "./schema";
@@ -10,6 +10,14 @@ const removedFlagHints: Record<string, string> = {
     "the --include-dev flag has been removed, use '--dev-dependencies include' instead",
   "--dev-only": "the --dev-only flag has been removed, use '--dev-dependencies only' instead"
 };
+
+export const cliOptions = {
+  directory: { type: "string", short: "d" },
+  verbose: { type: "boolean" },
+  "dev-dependencies": { type: "string" },
+  version: { type: "boolean", short: "v" },
+  help: { type: "boolean", short: "h" }
+} as const satisfies ParseArgsConfig["options"];
 
 export const parseCliArgs = (args: string[], defaultDirectory: string): CliInvocation => {
   throwIfRemovedFlag(args);
@@ -78,13 +86,7 @@ const tokenize = (args: string[]) => {
       args,
       allowPositionals: true,
       strict: true,
-      options: {
-        directory: { type: "string", short: "d" },
-        verbose: { type: "boolean" },
-        "dev-dependencies": { type: "string" },
-        version: { type: "boolean", short: "v" },
-        help: { type: "boolean", short: "h" }
-      }
+      options: cliOptions
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
