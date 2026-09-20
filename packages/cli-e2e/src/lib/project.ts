@@ -1,7 +1,7 @@
 import { createTempDir, writeJson } from "@license-cop/test-utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { cliBinPath, getPnpmBinPath, getYarnReleasePath } from "./fixtures";
+import { cliBinPath, getPackageManagerEntryPoint } from "./fixtures";
 import type { LicenseFileBuilder } from "./license-file-builder";
 import type { PackageJsonBuilder } from "./package-json-builder";
 import type { PackageManager } from "./package-managers";
@@ -42,10 +42,8 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
     await writeLicenseFile(licenseFile);
   }
 
-  if (
-    packageManager === "yarn-3-with-node-modules" ||
-    packageManager === "yarn-4-with-node-modules"
-  ) {
+  // license-cop reads node_modules, so yarn 2+ has to be told not to use Plug'n'Play
+  if (packageManager === "yarn-3" || packageManager === "yarn-4") {
     await writeFile(join(path, ".yarnrc.yml"), "nodeLinker: node-modules\n");
   }
 
@@ -86,15 +84,15 @@ const getInstallCommand = (packageManager: PackageManager): InstallCommand => {
     case "pnpm-12":
       return {
         command: "node",
-        args: [getPnpmBinPath(packageManager), "install", "--no-frozen-lockfile"]
+        args: [getPackageManagerEntryPoint(packageManager), "install", "--no-frozen-lockfile"]
       };
     case "yarn-1":
-      return { command: "node", args: [getYarnReleasePath(packageManager), "install"] };
-    case "yarn-3-with-node-modules":
-    case "yarn-4-with-node-modules":
+      return { command: "node", args: [getPackageManagerEntryPoint(packageManager), "install"] };
+    case "yarn-3":
+    case "yarn-4":
       return {
         command: "node",
-        args: [getYarnReleasePath(packageManager), "install"],
+        args: [getPackageManagerEntryPoint(packageManager), "install"],
         env: { YARN_ENABLE_IMMUTABLE_INSTALLS: "false" }
       };
     default: {

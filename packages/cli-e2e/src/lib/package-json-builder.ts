@@ -53,8 +53,8 @@ export class PackageJsonBuilder {
       case "pnpm-12":
         return { ...packageJson, pnpm: { overrides } };
       case "yarn-1":
-      case "yarn-3-with-node-modules":
-      case "yarn-4-with-node-modules":
+      case "yarn-3":
+      case "yarn-4":
         return { ...packageJson, resolutions: overrides };
       default: {
         const _exhaustiveCheck: never = packageManager;

@@ -1,7 +1,5 @@
-export type PnpmPackageManager = "pnpm-10" | "pnpm-11" | "pnpm-12";
-
 export type PackageManager =
-  "npm" | PnpmPackageManager | "yarn-1" | "yarn-3-with-node-modules" | "yarn-4-with-node-modules";
+  "npm" | "pnpm-10" | "pnpm-11" | "pnpm-12" | "yarn-1" | "yarn-3" | "yarn-4";
 
 export const packageManagers: PackageManager[] = [
   "npm",
@@ -9,6 +7,8 @@ export const packageManagers: PackageManager[] = [
   "pnpm-11",
   "pnpm-12",
   "yarn-1",
-  "yarn-3-with-node-modules",
-  "yarn-4-with-node-modules"
+  "yarn-3",
+  "yarn-4"
 ];
+
+export type PinnedPackageManager = Exclude<PackageManager, "npm">;

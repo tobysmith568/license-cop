@@ -1,4 +1,33 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>tobysmith568/renovate-config"]
+  "extends": ["local>tobysmith568/renovate-config"],
+  "packageRules": [
+    {
+      "description": "Each package manager under test in cli-e2e is an aliased devDependency for one major. They're named after their alias, so match on that; the shared config's pnpm rule (^10) would otherwise apply to every pnpm alias.",
+      "matchFileNames": ["packages/cli-e2e/package.json"],
+      "matchDepNames": ["pnpm-11"],
+      "allowedVersions": "^11"
+    },
+    {
+      "matchFileNames": ["packages/cli-e2e/package.json"],
+      "matchDepNames": ["pnpm-12"],
+      "allowedVersions": "^12"
+    },
+    {
+      "matchFileNames": ["packages/cli-e2e/package.json"],
+      "matchDepNames": ["yarn-3"],
+      "allowedVersions": "^3"
+    },
+    {
+      "matchFileNames": ["packages/cli-e2e/package.json"],
+      "matchDepNames": ["yarn-4"],
+      "allowedVersions": "^4"
+    },
+    {
+      "description": "Yarn 1 is frozen at its final release",
+      "matchFileNames": ["packages/cli-e2e/package.json"],
+      "matchDepNames": ["yarn-1"],
+      "enabled": false
+    }
+  ]
 }

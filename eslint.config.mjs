@@ -21,13 +21,7 @@ const astroConfigs = astro.configs["flat/recommended"].map(config => {
 
 export default [
   {
-    ignores: [
-      "**/dist/**",
-      "**/node_modules/**",
-      "**/coverage/**",
-      "**/.astro/**",
-      "**/yarn-releases/**"
-    ]
+    ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**", "**/.astro/**"]
   },
   ...tobysmith568.recommended,
   ...astroConfigs

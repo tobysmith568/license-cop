@@ -5,4 +5,3 @@ coverage
 **/.yarn/releases/**
 
 .turbo
-**/yarn-releases/**
