@@ -12,7 +12,7 @@ import { runProcess } from "./run-process";
 // The built CLI binary against a real install: args parsed -> config loaded -> engine invoked ->
 // report printed -> exit code. Just confirming the pieces wire together, one project per engine
 // (npm and pnpm are the two distinct engines). Scenarios live in the unit and contract tests.
-describe.each<PackageManager>(["npm", "pnpm"])("cli with %s", packageManager => {
+describe.each<PackageManager>(["npm", "pnpm-10"])("cli with %s", packageManager => {
   let project: Project;
 
   beforeAll(async () => {

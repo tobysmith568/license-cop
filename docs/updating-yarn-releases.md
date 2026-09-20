@@ -50,3 +50,11 @@ A new major means a new package manager key rather than a bump:
 ## Why not corepack, `yarn set version` or a global yarn?
 
 Each of these reaches the network or depends on whatever is installed on the machine, which is exactly what the local-tarball e2e setup is designed to avoid. Committing the releases keeps the suite offline and deterministic; the cost is a few megabytes in the repo and this manual bump process.
+
+## pnpm
+
+pnpm is pinned differently: one exact-version `devDependency` of `packages/cli-e2e` per major, aliased to its package manager key (`"pnpm-10": "npm:pnpm@10.x.y"`), each run with `node` on its entry point (see `pnpmEntryPoints` in `fixtures.ts`; pnpm 12 ships as a native binary and only keeps a Node entry point at `bin/pnpm.mjs`). To bump one, change its version and run `bun install` and the e2e suite. A new major is a new key in `package-managers.ts`, `fixtures.ts`, `package-json-builder.ts` and `project.ts`. npm is the only package manager that isn't pinned: it's whatever comes with the Node.js version of the CI matrix leg, which is deliberate.
+
+### pnpm 9 is not covered
+
+pnpm 9 fails the contract test: for a dependency whose virtual store directory name is longer than 120 characters (which the `file:` tarball paths are), pnpm 9 shortens it with an MD5 hash, while pnpm 10 and later use a base32 SHA-256 one. `@license-cop/core`'s pnpm engine computes the pnpm 10 name, so it looks for a directory that doesn't exist and throws `Cannot find the file: '.../package.json'`. Registry packages with short names are unaffected; it's only a problem for long ones, such as those with many peer dependency suffixes.

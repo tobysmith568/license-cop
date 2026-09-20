@@ -48,7 +48,9 @@ export class PackageJsonBuilder {
     switch (packageManager) {
       case "npm":
         return { ...packageJson, overrides };
-      case "pnpm":
+      case "pnpm-10":
+      case "pnpm-11":
+      case "pnpm-12":
         return { ...packageJson, pnpm: { overrides } };
       case "yarn-1":
       case "yarn-3-with-node-modules":

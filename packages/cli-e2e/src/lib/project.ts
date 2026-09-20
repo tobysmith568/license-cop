@@ -1,7 +1,7 @@
 import { createTempDir, writeJson } from "@license-cop/test-utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { cliBinPath, getYarnReleasePath } from "./fixtures";
+import { cliBinPath, getPnpmBinPath, getYarnReleasePath } from "./fixtures";
 import type { LicenseFileBuilder } from "./license-file-builder";
 import type { PackageJsonBuilder } from "./package-json-builder";
 import type { PackageManager } from "./package-managers";
@@ -78,11 +78,16 @@ interface InstallCommand {
 // Each project is installed fresh, so CI's default of refusing to write a lockfile has to be off
 const getInstallCommand = (packageManager: PackageManager): InstallCommand => {
   switch (packageManager) {
-    // Shell so that Windows resolves the .cmd shims these two ship as
+    // npm is the one that comes with the Node.js under test; shell so that Windows resolves its .cmd shim
     case "npm":
       return { command: "npm", args: ["install", "--no-audit", "--no-fund"], shell: true };
-    case "pnpm":
-      return { command: "pnpm", args: ["install", "--no-frozen-lockfile"], shell: true };
+    case "pnpm-10":
+    case "pnpm-11":
+    case "pnpm-12":
+      return {
+        command: "node",
+        args: [getPnpmBinPath(packageManager), "install", "--no-frozen-lockfile"]
+      };
     case "yarn-1":
       return { command: "node", args: [getYarnReleasePath(packageManager), "install"] };
     case "yarn-3-with-node-modules":

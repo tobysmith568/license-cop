@@ -1,5 +1,6 @@
 import { readdir } from "fs/promises";
 import { join } from "path";
+import type { PnpmPackageManager } from "./package-managers";
 
 export const workspaceRoot = join(__dirname, "../../../..");
 
@@ -15,6 +16,20 @@ const yarnReleases = {
 
 export const getYarnReleasePath = (packageManager: keyof typeof yarnReleases): string =>
   join(__dirname, "../../yarn-releases", yarnReleases[packageManager]);
+
+// Each pnpm is a pinned devDependency of this package, aliased by package manager key, rather than
+// a global install, so the versions under test are the same on every machine. `bun install` puts
+// them in this package's own node_modules.
+// pnpm 12 ships as a native binary and only keeps a Node entry point at bin/pnpm.mjs (the path
+// corepack uses). Earlier majors have a CommonJS one.
+const pnpmEntryPoints = {
+  "pnpm-10": "bin/pnpm.cjs",
+  "pnpm-11": "bin/pnpm.mjs",
+  "pnpm-12": "bin/pnpm.mjs"
+} as const satisfies Record<PnpmPackageManager, string>;
+
+export const getPnpmBinPath = (packageManager: PnpmPackageManager): string =>
+  join(__dirname, "../../node_modules", packageManager, pnpmEntryPoints[packageManager]);
 
 export const fixturePackages = {
   isc: { name: "@license-cop/isc-test-package", directory: "isc-package" },
