@@ -11,11 +11,13 @@
     "lint": {},
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
     },
     "dev": {
       "cache": false,

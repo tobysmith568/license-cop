@@ -15,10 +15,19 @@ export type CreateTempDirOptions = {
   prefix?: string;
 };
 
+/**
+ * Set to make every temp dir be created inside this one directory rather than the OS temp dir, so
+ * that they can all be found (and, with `KEEP_TEMP`, collected) in one place.
+ */
+export const tempRootEnvVariable = "LICENSE_COP_TEST_TEMP_DIR";
+
 export const createTempDir = async (options: CreateTempDirOptions = {}): Promise<TempDir> => {
   const { prefix = "license-cop-test-" } = options;
 
-  const created = await mkdtemp(join(tmpdir(), prefix));
+  const root = process.env[tempRootEnvVariable] ?? tmpdir();
+  await mkdir(root, { recursive: true });
+
+  const created = await mkdtemp(join(root, prefix));
 
   // On macOS the temp dir sits behind a /var -> /private/var symlink
   const path = await realpath(created);

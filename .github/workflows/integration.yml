@@ -99,8 +99,18 @@ jobs:
     steps:
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/actions/keep-temp-dirs
+        id: temp-dirs
+
       - name: Run Unit Tests
         run: bunx turbo run test
+
+      - name: Upload Temp Dirs
+        if: failure()
+        uses: ./.github/actions/upload-temp-dirs
+        with:
+          name: temp-dirs-unit-tests
+          path: ${{ steps.temp-dirs.outputs.path }}
 
       - name: Codecov
         uses: codecov/codecov-action@v5.5.2
@@ -182,8 +192,18 @@ jobs:
         with:
           name: build
 
+      - uses: ./.github/actions/keep-temp-dirs
+        id: temp-dirs
+
       - name: Run E2E Tests
         run: bunx turbo run e2e --filter=cli-e2e
+
+      - name: Upload Temp Dirs
+        if: failure()
+        uses: ./.github/actions/upload-temp-dirs
+        with:
+          name: temp-dirs-e2e-${{ matrix.os.name }}-node-${{ matrix.node }}
+          path: ${{ steps.temp-dirs.outputs.path }}
 
   e2e-website:
     name: E2E Test Website

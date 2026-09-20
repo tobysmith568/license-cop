@@ -1,7 +1,8 @@
-import { afterEach, describe, expect, it } from "bun:test";
-import { access, readFile } from "node:fs/promises";
-import { basename, join } from "node:path";
-import { createTempDir, type TempDir } from "./temp-dir";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { access, readFile, realpath } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { basename, dirname, join } from "node:path";
+import { createTempDir, tempRootEnvVariable, type TempDir } from "./temp-dir";
 
 describe("createTempDir", () => {
   const created: TempDir[] = [];
@@ -12,9 +13,28 @@ describe("createTempDir", () => {
     return dir;
   };
 
+  // CI sets these for the whole run, which would otherwise change what these tests observe
+  const variables = [tempRootEnvVariable, "KEEP_TEMP"];
+  const original = new Map<string, string | undefined>();
+
+  beforeEach(() => {
+    for (const variable of variables) {
+      original.set(variable, process.env[variable]);
+      delete process.env[variable];
+    }
+  });
+
   afterEach(async () => {
     for (const dir of created.splice(0)) {
       await dir.remove();
+    }
+
+    for (const [variable, value] of original) {
+      if (value === undefined) {
+        delete process.env[variable];
+      } else {
+        process.env[variable] = value;
+      }
     }
   });
 
@@ -23,6 +43,28 @@ describe("createTempDir", () => {
 
     await access(dir.path);
     expect(basename(dir.path)).toStartWith("my-prefix-");
+  });
+
+  it("should use the OS temp dir by default", async () => {
+    const dir = await create();
+
+    expect(dirname(dir.path)).toBe(await realpath(tmpdir()));
+  });
+
+  it("should create every temp dir inside the directory named by the environment variable", async () => {
+    const root = await create();
+    const nested = join(root.path, "not", "created", "yet");
+    process.env[tempRootEnvVariable] = nested;
+
+    try {
+      const first = await create();
+      const second = await create();
+
+      expect(dirname(first.path)).toBe(await realpath(nested));
+      expect(dirname(second.path)).toBe(await realpath(nested));
+    } finally {
+      delete process.env[tempRootEnvVariable];
+    }
   });
 
   it("should write strings as they are and objects as JSON, creating parent directories", async () => {
@@ -58,6 +100,8 @@ describe("createTempDir", () => {
 
     await access(dir.path);
     expect(write.output()).toContain(dir.path);
+
+    await dir.remove();
   });
 });
 
