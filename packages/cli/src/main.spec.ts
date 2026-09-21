@@ -88,12 +88,69 @@ describe("run", () => {
     expect(io.stdoutLines).toContain("Done!");
   });
 
+  it.each([
+    [".licenses.json", "{}"],
+    [".licencesrc.yaml", "licenses: []"],
+    [".config/licenses.json5", "{}"],
+    ["licenses.config.cjs", "module.exports = {}"],
+    ["package.json", JSON.stringify({ name: "test", licensecop: { licenses: ["MIT"] } })]
+  ])("should refuse to initialise when there is already a config in %s", async (file, contents) => {
+    await tempDir.write({ [file]: contents });
+
+    const exitCode = await run(["init"], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toHaveLength(1);
+    expect(io.stderrLines[0]).toContain(join(directory, file));
+    expect(io.stdoutLines).not.toContain("Done!");
+  });
+
+  it("should refuse to initialise when the existing config can't be loaded, without writing", async () => {
+    await tempDir.write({ ".licenses.json": "{ not valid" });
+
+    const exitCode = await run(["init"], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toHaveLength(1);
+    const config = await readFile(join(directory, ".licenses.json"), "utf8");
+    expect(config).toBe("{ not valid");
+  });
+
+  it("should not count an empty file as a config, since license-cop wouldn't use it", async () => {
+    await tempDir.write({ ".licenses.json": "" });
+
+    const exitCode = await run(["init"], io, directory);
+
+    expect(exitCode).toBe(0);
+  });
+
+  it("should leave an existing config untouched when refusing to initialise", async () => {
+    await tempDir.write({ ".licenses.json": "my own config" });
+
+    await run(["init"], io, directory);
+
+    const config = await readFile(join(directory, ".licenses.json"), "utf8");
+    expect(config).toBe("my own config");
+  });
+
+  it("should initialise next to a package.json that has no config", async () => {
+    await tempDir.write({ "package.json": { name: "test" } });
+
+    const exitCode = await run(["init"], io, directory);
+
+    expect(exitCode).toBe(0);
+  });
+
   it("should only log the verbose lines when --verbose is set", async () => {
     await run(["init"], io, directory);
     expect(io.stdoutLines.join("\n")).not.toContain("Writing config file to");
 
+    // The first run made a config, so init would refuse to run again in the same directory
+    const otherDirectory = join(directory, "other");
+    await mkdir(otherDirectory);
+
     const verboseIo = createFakeIo();
-    await run(["init", "--verbose"], verboseIo, directory);
+    await run(["init", "--verbose"], verboseIo, otherDirectory);
     expect(verboseIo.stdoutLines[0]).toBe("Verbose logging enabled");
     expect(verboseIo.stdoutLines.join("\n")).toContain("Writing config file to");
   });

@@ -1,3 +1,4 @@
+import { ConfigError, searchConfig } from "@license-cop/core";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createVerboseLogger, type Io } from "../io";
@@ -17,6 +18,12 @@ const defaultConfig = `{
 export const runInit = async (options: InitOptions, io: Io): Promise<number> => {
   const { directory, verbose: verboseEnabled } = options;
   const verbose = createVerboseLogger(io, verboseEnabled);
+
+  const existingConfig = await searchConfig(directory);
+
+  if (existingConfig) {
+    throw new ConfigError(`this project already has a config file: ${existingConfig.filepath}`);
+  }
 
   io.stdout("Setting up a new license-cop config file...");
 

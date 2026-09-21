@@ -1,7 +1,7 @@
 import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { ConfigError } from "./config-error";
-import { findConfig } from "./find-config";
+import { findConfig, searchConfig } from "./find-config";
 
 describe("findConfig", () => {
   let dir: TempDir;
@@ -98,5 +98,41 @@ describe("findConfig", () => {
     const act = findConfig(`${dir.path}/child`);
 
     await expect(act).rejects.toThrow(ConfigError);
+  });
+
+  describe("searchConfig", () => {
+    it("should resolve to the loaded config and where it was found", async () => {
+      await dir.write({ ".licenses.json": config });
+
+      const result = await searchConfig(dir.path);
+
+      expect(result?.config).toEqual(config);
+      expect(result?.filepath).toBe(`${dir.path}/.licenses.json`);
+    });
+
+    it("should resolve to null when there is no config", async () => {
+      await dir.write({ "package.json": { name: "test", version: "1.0.0" } });
+
+      const result = await searchConfig(dir.path);
+
+      expect(result).toBeNull();
+    });
+
+    it("should not count an empty file", async () => {
+      await dir.write({ ".licenses.json": "" });
+
+      const result = await searchConfig(dir.path);
+
+      expect(result).toBeNull();
+    });
+
+    it("should throw a ConfigError when the config can't be loaded", async () => {
+      await dir.write({ "licenses.config.cjs": "throw new Error('broken');" });
+
+      const act = searchConfig(dir.path);
+
+      await expect(act).rejects.toThrow(ConfigError);
+      await expect(act).rejects.toThrow("broken");
+    });
   });
 });

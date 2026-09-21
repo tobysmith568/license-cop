@@ -1,4 +1,5 @@
 export { ConfigError } from "./lib/config/config-error";
+export { searchConfig } from "./lib/config/find-config";
 export { loadConfig } from "./lib/config/load-config";
 export { readPackageJson } from "./lib/dependency/package-json";
 export { PackageJsonError } from "./lib/dependency/package-json-error";

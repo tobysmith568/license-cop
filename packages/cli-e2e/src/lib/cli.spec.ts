@@ -87,4 +87,15 @@ describe("cli", () => {
     const config = await readFile(join(directory, ".licenses.json"), "utf8");
     expect(JSON.parse(config)).toHaveProperty("licenses");
   });
+
+  it("should refuse to initialise again, leaving the config it made alone", async () => {
+    const before = await readFile(join(directory, ".licenses.json"), "utf8");
+
+    const { exitCode, output } = await runCli(["init"]);
+
+    expect(exitCode).toBe(1);
+    expect(output).toContain("already has a config file");
+    const after = await readFile(join(directory, ".licenses.json"), "utf8");
+    expect(after).toBe(before);
+  });
 });

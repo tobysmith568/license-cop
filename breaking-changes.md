@@ -84,3 +84,11 @@ Running license-cop in a project whose dependencies haven't been installed (no `
 - **Why:** an empty scan is indistinguishable from a clean one, so a CI job that forgot its install step passed no matter what the dependencies were.
 - **Affected:** CI jobs and scripts that run license-cop before installing. They were passing without checking anything. It also applies to a workspace member scanned on its own under npm or yarn, where the dependencies are hoisted to the root: run license-cop from the workspace root instead.
 - **Migrate:** install before running license-cop, or run it from the workspace root.
+
+### `init` no longer overwrites an existing config (final touches)
+
+`license-cop init` used to write `.licenses.json` unconditionally, replacing any file already there. It now fails with exit code 1, naming the file, if the project already has a config that license-cop would use, in any of the places it reads one from (any spelling and format: `.licenses.*`, `.licences.*`, `.licensesrc.*`, `.config/…`, `licenses.config.*`, or a `licensecop` key in `package.json`). A config that can't be loaded also refuses, with the reason. An empty file isn't a config, so it doesn't. Nothing is written.
+
+- **Why:** re-running `init` silently destroyed the user's own allow-list.
+- **Affected:** scripts that run `license-cop init` on every run (for example to regenerate the default config) and relied on it replacing the file.
+- **Migrate:** delete the existing config first, or only run `init` when there isn't one.

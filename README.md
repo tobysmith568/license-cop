@@ -50,9 +50,9 @@ license-cop [options] [command]
 | `-v, --version`                      | Print the installed version of license-cop.                                                                               |
 | `-h, --help`                         | Display the help text.                                                                                                    |
 
-| Command | Description                           |
-| ------- | ------------------------------------- |
-| `init`  | Create a new license-cop config file. |
+| Command | Description                                                                                                                            |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `init`  | Create a new license-cop config file. It won't overwrite one: it fails if the project already has a config in any of the places below. |
 
 When `--dev-dependencies` is given it replaces the [`includeDevDependencies`](#includedevdependencies) and [`devDependenciesOnly`](#devdependenciesonly) config options; when it's absent those config options apply.
 

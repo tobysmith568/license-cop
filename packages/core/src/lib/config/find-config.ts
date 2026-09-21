@@ -1,4 +1,9 @@
-import { cosmiconfig, type Options as CosmiconfigOptions, type Loader } from "cosmiconfig";
+import {
+  cosmiconfig,
+  type Options as CosmiconfigOptions,
+  type CosmiconfigResult,
+  type Loader
+} from "cosmiconfig";
 import { ConfigError } from "./config-error";
 import { json5Parse } from "./parsers/json5";
 
@@ -34,7 +39,12 @@ for (const moduleName of moduleNames) {
 
 const json5Loader: Loader = (_filepath, content) => Promise.resolve(json5Parse(content));
 
-export const findConfig = async (rootDir: string): Promise<unknown> => {
+/**
+ * Looks for a config in the directory, loading it the way a normal run would. Resolves to `null`
+ * when there isn't one, and throws a `ConfigError` when there is one that can't be loaded. Empty
+ * files are skipped, so they don't count as a config.
+ */
+export const searchConfig = async (rootDir: string): Promise<CosmiconfigResult> => {
   const options: Partial<CosmiconfigOptions> = {
     stopDir: rootDir,
     searchPlaces,
@@ -48,14 +58,18 @@ export const findConfig = async (rootDir: string): Promise<unknown> => {
   const explorer = cosmiconfig("licensecop", options);
 
   try {
-    const result = await explorer.search(rootDir);
-
-    if (!result?.config) {
-      throw new Error("No config file found");
-    }
-
-    return result.config;
+    return await explorer.search(rootDir);
   } catch (e) {
     throw ConfigError.fromUnknown(e);
   }
+};
+
+export const findConfig = async (rootDir: string): Promise<unknown> => {
+  const result = await searchConfig(rootDir);
+
+  if (!result?.config) {
+    throw ConfigError.fromUnknown("No config file found");
+  }
+
+  return result.config;
 };
