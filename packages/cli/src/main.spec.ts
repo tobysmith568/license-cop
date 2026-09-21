@@ -214,7 +214,9 @@ describe("run", () => {
     const exitCode = await run([], io, directory);
 
     expect(exitCode).toBe(1);
+    expect(io.stderrLines).toContain("Found the following issues...\n");
     expect(io.stderrLines).toContain("Packages with forbidden licenses:");
+    expect(io.stdoutLines).not.toContain("Found the following issues...\n");
     expect(io.stderrLines).toContain("some-dependency@2.0.0 - GPL-3.0");
   });
 

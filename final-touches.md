@@ -144,11 +144,13 @@ Yes, this is better. Today [parse.ts](packages/cli/src/args/parse.ts) builds the
 
 **How it landed.** `parse.ts` does the plain parts and `schema.ts` does the checking, with no hand-written validation left. `parse.ts` runs the removed-flag pre-pass, tokenizes with `parseArgs`, then `toCandidate` decides the command once (help, then version, then `init`, else check; an unexpected argument is a `UsageError` there) and lays the flags out. `cliInvocationSchema` alone validates that candidate: the `--dev-dependencies` enum with its own message, and the rule that `init` takes no `--dev-dependencies` (that variant's `devDependencies` must be undefined, with that message). The user sees `issues[0].message`, never `z.prettifyError`, so every message is one we wrote. `parseDevDependencies` and the second, unreachable `validate` are deleted. A first attempt at this was a single zod chain (a schema for the tokens, a `superRefine`, a `transform` and a `pipe`); it was replaced because it repeated the flag names and the command decision in three places, and zod silently strips a flag that `cliOptions` has but the schema forgot. I pinned the wording in new specs _first_ and ran them against the old code, since the existing ones mostly only checked that a `UsageError` was thrown; all CLI specs pass unchanged after each version. The candidate's `kind` is still a plain string until the schema checks it, which is what the schema is there for.
 
-### C6 Small inconsistencies in `check`
+### C6 Small inconsistencies in `check` ✅ done
 
 - [x] **C6a Exit logging.** [check.ts](packages/cli/src/commands/check.ts) logs `Exiting with error code 0` in verbose mode on success only, which is wrong twice over: 0 isn't an error code, and the failure path (exit 1) says nothing. Log `Exiting with code N` on both paths (one place, after the result is known), and update the specs that match the old wording.
-- [ ] **C6b Streams.** [report-failure.ts](packages/cli/src/report-failure.ts) prints `Found the following issues...` to stdout and the details to stderr, so a user who redirects one stream gets half a report and the wrong order. Send the whole failure report to stderr, and update `report-failure.spec.ts` and any smoke test that reads only stdout.
+- [x] **C6b Streams.** [report-failure.ts](packages/cli/src/report-failure.ts) prints `Found the following issues...` to stdout and the details to stderr, so a user who redirects one stream gets half a report and the wrong order. Send the whole failure report to stderr, and update `report-failure.spec.ts` and any smoke test that reads only stdout.
 - [x] **C6c Double read.** Resolved by C4; nothing separate to do.
+
+**How C6b landed.** `Found the following issues...` now goes to stderr with the rest of the failure report, so redirecting either stream gives all of the report or none of it. The progress lines (`Scanning dependencies of: …`, the success summary) stay on stdout.
 
 ## Decided, no action
 

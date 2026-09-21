@@ -8,7 +8,7 @@ import type { Io } from "./io";
 export const reportFailure = (result: CheckLicensesResult, io: Io): void => {
   const { noLicenses, forbiddenLicenses } = result;
 
-  io.stdout("Found the following issues...\n");
+  io.stderr("Found the following issues...\n");
 
   if (noLicenses.size > 0) {
     logNoLicenseIssues(noLicenses, io);

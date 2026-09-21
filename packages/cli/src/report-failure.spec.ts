@@ -31,10 +31,29 @@ const report = (result: CheckLicensesResult) => {
 };
 
 describe("reportFailure", () => {
-  it("should announce the issues on stdout", () => {
-    const { stdoutLines } = report(createResult([], []));
+  it("should announce the issues on stderr, so that the whole report is on one stream", () => {
+    const { stdoutLines, stderrLines } = report(createResult([], []));
 
-    expect(stdoutLines).toEqual(["Found the following issues...\n"]);
+    expect(stderrLines).toEqual(["Found the following issues...\n"]);
+    expect(stdoutLines).toEqual([]);
+  });
+
+  it("should put the announcement before the issues", () => {
+    const { stderrLines } = report(createResult([{ name: "a", version: "1.0.0" }], []));
+
+    expect(stderrLines[0]).toBe("Found the following issues...\n");
+    expect(stderrLines[1]).toBe("Packages with no license:");
+  });
+
+  it("should write nothing to stdout, whatever the issues", () => {
+    const { stdoutLines } = report(
+      createResult(
+        [{ name: "a", version: "1.0.0" }],
+        [{ name: "b", version: "2.0.0", licenseIdentifiers: "GPL-3.0", spdxExpression: "GPL-3.0" }]
+      )
+    );
+
+    expect(stdoutLines).toEqual([]);
   });
 
   it("should list packages with no license", () => {
@@ -48,7 +67,7 @@ describe("reportFailure", () => {
       )
     );
 
-    expect(stderrLines).toEqual(["Packages with no license:", "a@1.0.0", "b@2.0.0", ""]);
+    expect(stderrLines.slice(1)).toEqual(["Packages with no license:", "a@1.0.0", "b@2.0.0", ""]);
   });
 
   it("should list packages with forbidden licenses", () => {
@@ -59,7 +78,10 @@ describe("reportFailure", () => {
       )
     );
 
-    expect(stderrLines).toEqual(["Packages with forbidden licenses:", "a@1.0.0 - GPL-3.0"]);
+    expect(stderrLines.slice(1)).toEqual([
+      "Packages with forbidden licenses:",
+      "a@1.0.0 - GPL-3.0"
+    ]);
   });
 
   it("should say where the forbidden license came from when the expression is different", () => {
@@ -88,7 +110,7 @@ describe("reportFailure", () => {
       )
     );
 
-    expect(stderrLines).toEqual([
+    expect(stderrLines.slice(1)).toEqual([
       "Packages with no license:",
       "a@1.0.0",
       "",

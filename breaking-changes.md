@@ -99,3 +99,11 @@ An error nobody planned for (for example `init` in a directory that doesn't exis
 
 - **Affected:** anything that parses license-cop's stderr for a stack trace. Unlikely, but the output did change.
 - **Migrate:** pass `--verbose` to get the stack trace back.
+
+### The failure report is written entirely to stderr (final touches)
+
+When a check fails, the `Found the following issues...` line went to stdout while the lists of packages went to stderr. The whole failure report now goes to stderr. Progress and success output (`Scanning dependencies of: …`, `Done! No issues found`) are unchanged on stdout.
+
+- **Why:** redirecting either stream used to give half a report, with the parts in the wrong order.
+- **Affected:** scripts that capture stdout and look for `Found the following issues...`.
+- **Migrate:** read stderr (or both streams) instead, or just use the exit code, which is unchanged: 1 when there are issues.
