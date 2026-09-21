@@ -96,4 +96,39 @@ describe("parseCliArgs", () => {
   ])("should throw a UsageError for %s", (_description, args) => {
     expect(() => parseCliArgs(args, defaultDirectory)).toThrow(UsageError);
   });
+
+  // The wording is what users see, so it's pinned whichever way the parsing is built
+  it.each([
+    [
+      ["--dev-dependencies", "sometimes"],
+      "--dev-dependencies must be 'include' or 'only', but got 'sometimes'"
+    ],
+    [["init", "--dev-dependencies", "only"], "'init' does not accept --dev-dependencies"],
+    [["unknown-command"], "unexpected argument 'unknown-command'"],
+    [["init", "extra", "more"], "unexpected argument 'extra'"],
+    [["--init"], "the --init flag has been removed, use 'license-cop init' instead"]
+  ])("should explain %p as: %s", (args, message) => {
+    const act = () => parseCliArgs(args, defaultDirectory);
+
+    expect(act).toThrow(new UsageError(message));
+  });
+
+  it("should not mention internals of the schema in an error", () => {
+    const act = () => parseCliArgs(["--dev-dependencies", "exclude"], defaultDirectory);
+
+    expect(act).toThrow("--dev-dependencies must be 'include' or 'only'");
+    expect(act).not.toThrow("kind");
+  });
+
+  it("should let --help win over anything else on the command line", () => {
+    const invocation = parseCliArgs(["--help", "unexpected"], defaultDirectory);
+
+    expect(invocation).toEqual({ kind: "help" });
+  });
+
+  it("should let --version win over anything else on the command line", () => {
+    const invocation = parseCliArgs(["--version", "unexpected"], defaultDirectory);
+
+    expect(invocation).toEqual({ kind: "version" });
+  });
 });

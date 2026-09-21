@@ -1,6 +1,5 @@
-import type { DevDependenciesMode } from "@license-cop/core";
 import { parseArgs, type ParseArgsConfig } from "node:util";
-import { z } from "zod";
+import type { z } from "zod";
 import { UsageError } from "../errors";
 import { cliInvocationSchema, type CliInvocation } from "./schema";
 
@@ -23,40 +22,17 @@ export const cliOptions = {
 export const parseCliArgs = (args: string[], defaultDirectory: string): CliInvocation => {
   throwIfRemovedFlag(args);
 
-  const { values, positionals } = tokenize(args);
+  const tokens = tokenize(args);
+  const candidate = toCandidate(tokens, defaultDirectory);
 
-  if (values.help) {
-    return { kind: "help" };
+  // What each value may be, and what may go with what, is the schema's to say
+  const result = cliInvocationSchema.safeParse(candidate);
+
+  if (!result.success) {
+    throw new UsageError(firstMessage(result.error));
   }
 
-  if (values.version) {
-    return { kind: "version" };
-  }
-
-  const isInit = positionals[0] === "init";
-  const unexpectedPositionals = isInit ? positionals.slice(1) : positionals;
-
-  if (unexpectedPositionals.length > 0) {
-    throw new UsageError(`unexpected argument '${unexpectedPositionals[0]}'`);
-  }
-
-  const directory = values.directory ?? defaultDirectory;
-  const verbose = values.verbose ?? false;
-
-  if (isInit) {
-    if (values["dev-dependencies"] !== undefined) {
-      throw new UsageError("'init' does not accept --dev-dependencies");
-    }
-
-    return validate({ kind: "init", directory, verbose });
-  }
-
-  return validate({
-    kind: "check",
-    directory,
-    verbose,
-    devDependencies: parseDevDependencies(values["dev-dependencies"])
-  });
+  return result.data;
 };
 
 const throwIfRemovedFlag = (args: string[]) => {
@@ -69,38 +45,50 @@ const throwIfRemovedFlag = (args: string[]) => {
   }
 };
 
-const parseDevDependencies = (value: string | undefined): DevDependenciesMode | undefined => {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (value === "include" || value === "only") {
-    return value;
-  }
-
-  throw new UsageError(`--dev-dependencies must be 'include' or 'only', but got '${value}'`);
-};
+type Tokens = ReturnType<typeof tokenize>;
 
 const tokenize = (args: string[]) => {
   try {
-    return parseArgs({
+    const { values, positionals } = parseArgs({
       args,
       allowPositionals: true,
       strict: true,
       options: cliOptions
     });
+
+    return { values, positionals };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     throw new UsageError(message);
   }
 };
 
-const validate = (candidate: unknown): CliInvocation => {
-  const result = cliInvocationSchema.safeParse(candidate);
-
-  if (!result.success) {
-    throw new UsageError(z.prettifyError(result.error));
+/**
+ * Decides which command was asked for, once, and lays the flags out for the schema to check. Help
+ * and the version win over everything else on the command line.
+ */
+const toCandidate = ({ values, positionals }: Tokens, defaultDirectory: string) => {
+  if (values.help) {
+    return { kind: "help" };
   }
 
-  return result.data;
+  if (values.version) {
+    return { kind: "version" };
+  }
+
+  const isInit = positionals[0] === "init";
+  const unexpected = isInit ? positionals[1] : positionals[0];
+
+  if (unexpected !== undefined) {
+    throw new UsageError(`unexpected argument '${unexpected}'`);
+  }
+
+  return {
+    kind: isInit ? "init" : "check",
+    directory: values.directory ?? defaultDirectory,
+    verbose: values.verbose ?? false,
+    devDependencies: values["dev-dependencies"]
+  };
 };
+
+const firstMessage = (error: z.ZodError): string => error.issues[0]?.message ?? error.message;
