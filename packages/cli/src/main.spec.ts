@@ -1,6 +1,6 @@
 import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { mkdir, readFile } from "node:fs/promises";
+import { chmod, mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Io } from "./io";
 import { run } from "./main";
@@ -122,6 +122,36 @@ describe("run", () => {
     const exitCode = await run(["init"], io, directory);
 
     expect(exitCode).toBe(0);
+  });
+
+  it("should say so, without a stack, when initialising in a directory that doesn't exist", async () => {
+    const missing = join(directory, "missing");
+
+    const exitCode = await run(["init", "--directory", missing], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toEqual([
+      `Cannot set up a config file: ${missing} isn't a directory that exists`
+    ]);
+    expect(io.stdoutLines).not.toContain("Done!");
+  });
+
+  it("should say so, without a stack, when the directory can't be written to", async () => {
+    // Root can write anywhere, so there'd be nothing to see
+    if (process.getuid?.() === 0) {
+      return;
+    }
+
+    await chmod(directory, 0o500);
+
+    const exitCode = await run(["init"], io, directory);
+    await chmod(directory, 0o700);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines[0]).toBe(
+      `error: permission denied: ${join(directory, ".licenses.json")}`
+    );
+    expect(io.stderrLines[1]).toContain("--verbose");
   });
 
   it("should leave an existing config untouched when refusing to initialise", async () => {

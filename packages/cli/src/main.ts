@@ -1,33 +1,25 @@
-import { LicenseCopError } from "@license-cop/core";
 import { parseCliArgs } from "./args/parse";
 import type { CliInvocation } from "./args/schema";
 import { runCheck } from "./commands/check";
 import { runInit } from "./commands/init";
-import { UsageError } from "./errors";
 import { helpText, versionText } from "./help";
 import { defaultIo, type Io } from "./io";
+import { reportError } from "./report-error";
 
 export const run = async (
   args: string[],
   io: Io = defaultIo,
   cwd: string = process.cwd()
 ): Promise<number> => {
+  let verbose = false;
+
   try {
     const invocation = parseCliArgs(args, cwd);
+    verbose = "verbose" in invocation && invocation.verbose;
+
     return await execute(invocation, io);
   } catch (error) {
-    if (error instanceof UsageError) {
-      io.stderr(`error: ${error.message}`);
-      io.stderr("Run 'license-cop --help' for usage");
-      return 1;
-    }
-
-    if (error instanceof LicenseCopError) {
-      io.stderr(error.message);
-      return 1;
-    }
-
-    throw error;
+    return reportError(error, io, verbose);
   }
 };
 

@@ -1,5 +1,5 @@
 import { ConfigError, searchConfig } from "@license-cop/core";
-import { writeFile } from "node:fs/promises";
+import { stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createVerboseLogger, type Io } from "../io";
 
@@ -19,6 +19,17 @@ export const runInit = async (options: InitOptions, io: Io): Promise<number> => 
   const { directory, verbose: verboseEnabled } = options;
   const verbose = createVerboseLogger(io, verboseEnabled);
 
+  const isDirectory = await stat(directory).then(
+    stats => stats.isDirectory(),
+    () => false
+  );
+
+  if (!isDirectory) {
+    io.stderr(`Cannot set up a config file: ${directory} isn't a directory that exists`);
+    return 1;
+  }
+
+  // Loaded the way a normal run would, so a config counts if license-cop would use it
   const existingConfig = await searchConfig(directory);
 
   if (existingConfig) {

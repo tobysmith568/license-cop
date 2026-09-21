@@ -80,6 +80,16 @@ describe("cli", () => {
     expect(output).toContain("error:");
   });
 
+  it("should explain, without a stack trace, when the directory doesn't exist", async () => {
+    const missing = join(directory, "missing");
+
+    const { exitCode, output } = await runCli(["init", "--directory", missing]);
+
+    expect(exitCode).toBe(1);
+    expect(output).toContain("isn't a directory that exists");
+    expect(output).not.toContain("    at ");
+  });
+
   it("should write a config file when initialising", async () => {
     const { exitCode } = await runCli(["init"]);
 

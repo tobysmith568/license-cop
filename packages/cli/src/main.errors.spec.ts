@@ -29,4 +29,25 @@ describe("run", () => {
     expect(exitCode).toBe(1);
     expect(stderr).toEqual(["this project can't be checked"]);
   });
+
+  it("should report an unexpected error as one line, without the stack", async () => {
+    runCheck.mockRejectedValue(new Error("something broke"));
+    const { io, stderr } = createIo();
+
+    const exitCode = await run([], io, "/project");
+
+    expect(exitCode).toBe(1);
+    expect(stderr[0]).toBe("error: something broke");
+    expect(stderr.join("\n")).not.toContain("    at ");
+  });
+
+  it("should include the stack for an unexpected error when --verbose is set", async () => {
+    runCheck.mockRejectedValue(new Error("something broke"));
+    const { io, stderr } = createIo();
+
+    const exitCode = await run(["--verbose"], io, "/project");
+
+    expect(exitCode).toBe(1);
+    expect(stderr.join("\n")).toContain("    at ");
+  });
 });

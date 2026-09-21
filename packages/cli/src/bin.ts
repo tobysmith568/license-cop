@@ -3,15 +3,7 @@
 import { defaultIo } from "./io";
 import { run } from "./main";
 
-const main = async () => {
-  try {
-    const args = process.argv.slice(2);
-    process.exitCode = await run(args, defaultIo);
-  } catch (error) {
-    const message = error instanceof Error ? (error.stack ?? error.message) : String(error);
-    defaultIo.stderr(message);
-    process.exitCode = 1;
-  }
-};
-
-void main();
+// `run` reports every failure itself and resolves to the exit code, so there is nothing to catch
+void run(process.argv.slice(2), defaultIo).then(exitCode => {
+  process.exitCode = exitCode;
+});

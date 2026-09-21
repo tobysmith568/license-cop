@@ -92,3 +92,10 @@ Running license-cop in a project whose dependencies haven't been installed (no `
 - **Why:** re-running `init` silently destroyed the user's own allow-list.
 - **Affected:** scripts that run `license-cop init` on every run (for example to regenerate the default config) and relied on it replacing the file.
 - **Migrate:** delete the existing config first, or only run `init` when there isn't one.
+
+### Unexpected errors are reported as one line instead of a stack trace (final touches)
+
+An error nobody planned for (for example `init` in a directory that doesn't exist or can't be written to) used to end the process with a full Node stack trace. It now prints `error: <message>` on stderr and exits with code 1, and says to re-run with `--verbose` for the stack. The exit code is unchanged; the output is not.
+
+- **Affected:** anything that parses license-cop's stderr for a stack trace. Unlikely, but the output did change.
+- **Migrate:** pass `--verbose` to get the stack trace back.
