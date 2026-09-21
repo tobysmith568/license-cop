@@ -202,4 +202,18 @@ describe("run", () => {
     expect(io.stderrLines[0]).toContain("Plug'n'Play");
     expect(io.stderrLines[0]).toContain("nodeLinker: node-modules");
   });
+
+  it("should exit 1 and say to install when the dependencies aren't installed", async () => {
+    await tempDir.write({
+      "package.json": { name: "test-project", version: "1.0.0", dependencies: { a: "1.0.0" } },
+      ".licenses.json": { licenses: ["MIT"], packages: [] }
+    });
+
+    const exitCode = await run([], io, directory);
+
+    expect(exitCode).toBe(1);
+    expect(io.stderrLines).toHaveLength(1);
+    expect(io.stderrLines[0]).toContain("aren't installed");
+    expect(io.stderrLines[0]).toContain("npm install");
+  });
 });

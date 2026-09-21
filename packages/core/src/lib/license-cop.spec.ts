@@ -2,6 +2,7 @@ import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { join, relative } from "node:path";
 import type { DependencyScanningOptions } from "./dependency-scanning/options";
+import { NotInstalledError } from "./not-installed-error";
 import type { CheckLicensesResult } from "./result";
 import { UnsupportedProjectError } from "./unsupported-project-error";
 
@@ -88,6 +89,28 @@ describe("checkLicenses", () => {
 
     it("should not look for Plug'n'Play files in projects of other package managers", async () => {
       await dir.write({ "package.json": packageJson(), ".pnp.cjs": "" });
+
+      const result = await checkLicenses(baseOptions());
+
+      expect(result).toEqual(emptyResult("npm"));
+    });
+  });
+
+  describe("installation", () => {
+    it("should refuse a project that has dependencies but isn't installed, without scanning it", async () => {
+      await dir.write({ "package.json": packageJson({ dependencies: { react: "19.0.0" } }) });
+
+      const act = checkLicenses(baseOptions());
+
+      await expect(act).rejects.toThrow(NotInstalledError);
+      expect(npmDependencyScanning).not.toHaveBeenCalled();
+    });
+
+    it("should scan a project that has dependencies and is installed", async () => {
+      await dir.write({
+        "package.json": packageJson({ dependencies: { react: "19.0.0" } }),
+        "node_modules/.keep": ""
+      });
 
       const result = await checkLicenses(baseOptions());
 

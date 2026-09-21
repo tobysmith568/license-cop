@@ -925,8 +925,6 @@ A fourth branch, after Part 3: it builds on the test pyramid from 2.5 and on Par
 - [ ] Docs: remove the "set `nodeLinker: node-modules`" guidance from the README, the copy in `packages/cli`, and `apps/website/src/pages/docs.md`, and document Plug'n'Play as supported.
 - [ ] Add a Yarn PnP leg to the CI `e2e` matrix only if the contract-test approach above doesn't already cover it (it should — the matrix legs vary OS and Node, not package manager).
 
-**Related, separate gap (not part of this part).** A project that hasn't been installed yet — no `node_modules` and no `.pnp.cjs` — also scans as an empty tree and passes, whichever package manager it uses. The PnP refusal above doesn't catch it. Worth its own small item (fail with "run your install first") whenever convenient.
-
 ## Suggested order
 
 **Part 1 (one branch):**

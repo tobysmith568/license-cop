@@ -82,15 +82,17 @@ Two different false negatives, both passing with exit code 0:
 - [ ] npm member: falls out of G3 (declared dependencies, nothing installed), provided that check gives a message that mentions running from the workspace root.
 - [x] yarn 1/3/4 workspaces follow npm, and are covered by the same test.
 
-### G3 A project that isn't installed passes
+### G3 A project that isn't installed passes ✅ done
 
 Today a project with no `node_modules` scans as an empty tree and passes, whichever package manager it uses. This is the same false negative that `UnsupportedProjectError` already closes for Plug'n'Play, and G2's npm-member case needs it too. It was listed as a separate gap under Part 4; it belongs here, before bun adds another package manager that has to honour it.
 
-- [ ] **A project with no dependencies must still pass.** Only fail when the package.json declares dependencies that the scan mode would include (production by default, dev with `include`/`only`) and the engine found no installed tree. Pin that with a test first, since getting it wrong turns a valid empty project into an error.
-- [ ] Add a `NotInstalledError` extending `LicenseCopError` (F2) with a message naming the package manager's install command. Exported from core, so the CLI needs no change beyond F2.
-- [ ] Where it's checked is a design decision for the implementation: probably in `checkLicenses`, between choosing the engine and running it, using `readPackageJson`-style access to the declared dependencies. Yarn Plug'n'Play keeps its own earlier `assertNotPlugAndPlay` refusal until Part 4 replaces it.
-- [ ] Tests: not installed with dependencies (fails, per package manager family), not installed with none (passes), installed (passes), dev-only scan with only production dependencies declared and none installed (decide and pin whether that fails).
-- [ ] Remove the "Related, separate gap" paragraph from Part 4 of migration.md once this lands.
+- [x] **A project with no dependencies must still pass.** Only fail when the package.json declares dependencies that the scan mode would include (production by default, dev with `include`/`only`) and the engine found no installed tree. Pin that with a test first, since getting it wrong turns a valid empty project into an error.
+- [x] Add a `NotInstalledError` extending `LicenseCopError` (F2) with a message naming the package manager's install command. Exported from core, so the CLI needs no change beyond F2.
+- [x] Where it's checked is a design decision for the implementation: probably in `checkLicenses`, between choosing the engine and running it, using `readPackageJson`-style access to the declared dependencies. Yarn Plug'n'Play keeps its own earlier `assertNotPlugAndPlay` refusal until Part 4 replaces it.
+- [x] Tests: not installed with dependencies (fails, per package manager family), not installed with none (passes), installed (passes), dev-only scan with only production dependencies declared and none installed (decide and pin whether that fails).
+- [x] Remove the "Related, separate gap" paragraph from Part 4 of migration.md once this lands.
+
+**How it landed.** `assertInstalled` (core, called by `checkLicenses` after the Plug'n'Play refusal) reads the declared dependencies from the package.json and fails with `NotInstalledError` when any are in scope for the current mode and there is no `node_modules` directory. The dev-dependency options decide what is in scope: a dev-only scan of a project with no dev dependencies passes, and a production scan ignores declared dev dependencies. The message names the package manager's install command and suggests the workspace root. The member-scan tests for every package manager are in `workspaces.spec.ts` (pnpm members work, npm and yarn members are refused). **Known limit:** the check is only that `node_modules` exists, not that every declared dependency is in it, so a partial install still passes, and so does a workspace member that has some nested `node_modules` of its own.
 
 ### G4 `init` refuses when a config already exists
 

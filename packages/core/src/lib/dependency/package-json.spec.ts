@@ -1,6 +1,11 @@
 import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { getLicenseExpression, readPackageJson, type PackageJson } from "./package-json";
+import {
+  getLicenseExpression,
+  readDeclaredDependencies,
+  readPackageJson,
+  type PackageJson
+} from "./package-json";
 import { PackageJsonError } from "./package-json-error";
 
 describe("PackageJson", () => {
@@ -129,6 +134,67 @@ describe("PackageJson", () => {
       await dir.write({ "package.json": { name: "test", version: 1 } });
 
       const act = readPackageJson(`${dir.path}/package.json`);
+
+      await expect(act).rejects.toThrow(PackageJsonError);
+      await expect(act).rejects.toThrow("Unable to parse package.json");
+    });
+  });
+
+  describe("readDeclaredDependencies", () => {
+    let dir: TempDir;
+
+    beforeEach(async () => {
+      dir = await createTempDir();
+    });
+
+    afterEach(async () => {
+      await dir.remove();
+    });
+
+    it("should list the names of each kind of dependency", async () => {
+      await dir.write({
+        "package.json": {
+          dependencies: { a: "1.0.0", b: "^2.0.0" },
+          devDependencies: { c: "3.0.0" },
+          optionalDependencies: { d: "4.0.0" }
+        }
+      });
+
+      const result = await readDeclaredDependencies(`${dir.path}/package.json`);
+
+      expect(result).toEqual({
+        dependencies: ["a", "b"],
+        devDependencies: ["c"],
+        optionalDependencies: ["d"]
+      });
+    });
+
+    it("should return empty lists when nothing is declared", async () => {
+      await dir.write({ "package.json": {} });
+
+      const result = await readDeclaredDependencies(`${dir.path}/package.json`);
+
+      expect(result).toEqual({ dependencies: [], devDependencies: [], optionalDependencies: [] });
+    });
+
+    it("should not need a name or version", async () => {
+      await dir.write({ "package.json": { private: true, dependencies: { a: "1.0.0" } } });
+
+      const result = await readDeclaredDependencies(`${dir.path}/package.json`);
+
+      expect(result.dependencies).toEqual(["a"]);
+    });
+
+    it("should throw when the file is missing", async () => {
+      const act = readDeclaredDependencies(`${dir.path}/package.json`);
+
+      await expect(act).rejects.toThrow("Cannot find the file");
+    });
+
+    it("should throw when the dependencies aren't a map of strings", async () => {
+      await dir.write({ "package.json": { dependencies: ["a"] } });
+
+      const act = readDeclaredDependencies(`${dir.path}/package.json`);
 
       await expect(act).rejects.toThrow(PackageJsonError);
       await expect(act).rejects.toThrow("Unable to parse package.json");

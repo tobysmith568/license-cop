@@ -76,3 +76,11 @@ Two changes to how monorepos are scanned:
 - **Why:** the first was noise that forced people to give private packages a license, or to allow-list them by name; the second was a silent false pass.
 - **Affected:** pnpm workspaces, whose runs can now fail on a member's dependency that has a forbidden or missing license; and npm, yarn and pnpm workspaces that allow-listed a member in `packages`, or gave a member a license only to get past the check, which can now be undone.
 - **Migrate:** fix or allow-list whatever the check now reports. Remove any allow-list entry that was only there for a member.
+
+### Projects that aren't installed now fail instead of passing (final touches)
+
+Running license-cop in a project whose dependencies haven't been installed (no `node_modules`) used to find nothing and print "Done! No issues found" with exit code 0, whichever package manager it uses. It now fails with exit code 1 and asks for an install (for example `Run 'npm install' first`). A project that declares no dependencies to check still passes, and so does a `--dev-dependencies only` run of a project with no dev dependencies.
+
+- **Why:** an empty scan is indistinguishable from a clean one, so a CI job that forgot its install step passed no matter what the dependencies were.
+- **Affected:** CI jobs and scripts that run license-cop before installing. They were passing without checking anything. It also applies to a workspace member scanned on its own under npm or yarn, where the dependencies are hoisted to the root: run license-cop from the workspace root instead.
+- **Migrate:** install before running license-cop, or run it from the workspace root.

@@ -2,6 +2,7 @@ import { isAbsolute, join } from "path";
 import { npmDependencyScanning } from "./dependency-scanning/npm";
 import type { DependencyScanner, DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
+import { assertInstalled } from "./dependency/assert-installed";
 import { getPackageManager, type PackageManager } from "./dependency/get-package-manager";
 import { assertNotPlugAndPlay } from "./dependency/plug-and-play";
 import { noopOnVerbose, type OnVerbose } from "./on-verbose";
@@ -43,6 +44,8 @@ export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLi
   if (packageManager === "yarn") {
     await assertNotPlugAndPlay(fullProjectPath);
   }
+
+  await assertInstalled(fullProjectPath, packageManager, dependencyScanningOptions, onVerbose);
 
   const scan = scanners[packageManager];
 
