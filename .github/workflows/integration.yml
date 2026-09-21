@@ -171,9 +171,9 @@ jobs:
           - name: Windows
             value: windows-latest
         node:
-          - 20
           - 22
           - 24
+          - 26
 
     name: E2E Test License-Cop (Node ${{ matrix.node }} on ${{ matrix.os.name }})
 
