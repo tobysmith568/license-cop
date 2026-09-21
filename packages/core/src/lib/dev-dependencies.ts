@@ -1,4 +1,5 @@
-import type { DevDependenciesMode } from "../args/schema";
+/** What `--dev-dependencies` can ask for. Leaving it out means "whatever the config says". */
+export type DevDependenciesMode = "include" | "only";
 
 export type DevDependencyOptions = {
   includeDevDependencies: boolean;

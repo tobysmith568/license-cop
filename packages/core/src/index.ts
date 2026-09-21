@@ -1,13 +1,14 @@
 export { ConfigError } from "./lib/config/config-error";
 export { searchConfig } from "./lib/config/find-config";
-export { loadConfig } from "./lib/config/load-config";
-export { readPackageJson } from "./lib/dependency/package-json";
 export { PackageJsonError } from "./lib/dependency/package-json-error";
+export type { DevDependenciesMode } from "./lib/dev-dependencies";
 export { checkLicenses } from "./lib/license-cop";
 export type { LicenseCopOptions } from "./lib/license-cop";
 export { LicenseCopError } from "./lib/license-cop-error";
 export { NotInstalledError } from "./lib/not-installed-error";
 export type { OnVerbose } from "./lib/on-verbose";
+export { resolveCheckOptions } from "./lib/resolve-check-options";
+export type { ResolveCheckOptionsInput, ResolvedCheck } from "./lib/resolve-check-options";
 export type {
   AllowedPackage,
   CheckLicensesResult,

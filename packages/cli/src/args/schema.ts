@@ -1,8 +1,11 @@
+import type { DevDependenciesMode } from "@license-cop/core";
 import { z } from "zod";
 
-export const devDependenciesModeSchema = z.enum(["include", "only"]);
-
-export type DevDependenciesMode = z.infer<typeof devDependenciesModeSchema>;
+// The modes themselves belong to core, which acts on them; `satisfies` keeps the two from drifting
+export const devDependenciesModeSchema = z.enum([
+  "include",
+  "only"
+] as const satisfies DevDependenciesMode[]);
 
 export const cliInvocationSchema = z.discriminatedUnion("kind", [
   z.object({

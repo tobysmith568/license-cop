@@ -122,14 +122,16 @@ Anything that isn't a known error currently escapes `run` (the rethrow at [main.
 
 ## Cleanliness
 
-### C4 Move the config-to-options step into core
+### C4 Move the config-to-options step into core ✅ done
 
 The core API currently exports `loadConfig`, `readPackageJson` and `PackageJsonError` mainly so the CLI can do its job, and the step that merges the config file with the `--dev-dependencies` flag ([dev-dependencies.ts](packages/cli/src/commands/dev-dependencies.ts)) lives in the CLI. A library user cannot get "what the CLI would do for this directory" without copying it, and the merge rule is business logic, not presentation.
 
-- [ ] Move `DevDependenciesMode` and `resolveDevDependencyOptions` into core, with their spec.
-- [ ] Add one core function that resolves everything the CLI needs before scanning: the project's name, the loaded config, and the ready-to-use `LicenseCopOptions` (config plus the dev-dependencies flag). Recommended shape: `resolveCheckOptions(directory, { devDependencies, onVerbose })` returning `{ productName, options }`, so the CLI can still print "Scanning dependencies of: …" _before_ the scan starts (and before a slow one finishes), then call `checkLicenses(options)`.
-- [ ] `check.ts` uses it. This also fixes C6c (`package.json` read twice), since only core reads it.
-- [ ] Once the CLI no longer needs them, stop exporting `loadConfig`, `readPackageJson` and `PackageJsonError` from core if nothing else does (the CLI's [help.ts](packages/cli/src/help.ts) reads its own version through `readPackageJson`; either give it its own tiny reader or keep that one export, and record which). Anything removed from the public surface should be re-checked against `packages/core/README.md`.
+- [x] Move `DevDependenciesMode` and `resolveDevDependencyOptions` into core, with their spec.
+- [x] Add one core function that resolves everything the CLI needs before scanning: the project's name, the loaded config, and the ready-to-use `LicenseCopOptions` (config plus the dev-dependencies flag). Recommended shape: `resolveCheckOptions(directory, { devDependencies, onVerbose })` returning `{ productName, options }`, so the CLI can still print "Scanning dependencies of: …" _before_ the scan starts (and before a slow one finishes), then call `checkLicenses(options)`.
+- [x] `check.ts` uses it. This also fixes C6c (`package.json` read twice), since only core reads it.
+- [x] Once the CLI no longer needs them, stop exporting `loadConfig`, `readPackageJson` and `PackageJsonError` from core if nothing else does (the CLI's [help.ts](packages/cli/src/help.ts) reads its own version through `readPackageJson`; either give it its own tiny reader or keep that one export, and record which). Anything removed from the public surface should be re-checked against `packages/core/README.md`.
+
+**How it landed.** `resolveCheckOptions(directory, { devDependencies, onVerbose })` in core returns `{ productName, options }`, and `DevDependenciesMode` and `resolveDevDependencyOptions` moved there with their spec. `check.ts` shrank to that call, `checkLicenses` and the reporting. Core no longer exports `loadConfig` or `readPackageJson` (the CLI's `help.ts` reads its own version from its own package.json with a two-line zod schema instead, since it is a different job from reading a project's). `PackageJsonError` stays exported: it's part of what library callers can catch. One visible difference: the CLI now loads the config _before_ printing "Scanning dependencies of: …", so a broken config fails without that line. The CLI's zod schema keeps its own enum of modes, tied to core's type with `satisfies`; C5 revisits that.
 
 ### C5 Lean into zod for argument parsing
 
@@ -142,9 +144,9 @@ Yes, this is better. Today [parse.ts](packages/cli/src/args/parse.ts) builds the
 
 ### C6 Small inconsistencies in `check`
 
-- [ ] **C6a Exit logging.** [check.ts](packages/cli/src/commands/check.ts) logs `Exiting with error code 0` in verbose mode on success only, which is wrong twice over: 0 isn't an error code, and the failure path (exit 1) says nothing. Log `Exiting with code N` on both paths (one place, after the result is known), and update the specs that match the old wording.
+- [x] **C6a Exit logging.** [check.ts](packages/cli/src/commands/check.ts) logs `Exiting with error code 0` in verbose mode on success only, which is wrong twice over: 0 isn't an error code, and the failure path (exit 1) says nothing. Log `Exiting with code N` on both paths (one place, after the result is known), and update the specs that match the old wording.
 - [ ] **C6b Streams.** [report-failure.ts](packages/cli/src/report-failure.ts) prints `Found the following issues...` to stdout and the details to stderr, so a user who redirects one stream gets half a report and the wrong order. Send the whole failure report to stderr, and update `report-failure.spec.ts` and any smoke test that reads only stdout.
-- [ ] **C6c Double read.** Resolved by C4; nothing separate to do.
+- [x] **C6c Double read.** Resolved by C4; nothing separate to do.
 
 ## Decided, no action
 

@@ -1,5 +1,6 @@
-import { readPackageJson } from "@license-cop/core";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { z } from "zod";
 
 export const helpText = (): string =>
   `Usage: license-cop [options] [command]
@@ -20,7 +21,11 @@ Commands:
 
 export const versionText = async (): Promise<string> => {
   const packageJsonLocation = join(__dirname, "../package.json");
-  const { version } = await readPackageJson(packageJsonLocation);
+  const contents = await readFile(packageJsonLocation, "utf8");
+  const { version } = ownPackageJsonSchema.parse(JSON.parse(contents));
 
   return `v${version}`;
 };
+
+// The CLI's own package.json, which is always there and always valid, unlike a project's
+const ownPackageJsonSchema = z.object({ version: z.string() });

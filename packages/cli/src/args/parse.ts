@@ -1,7 +1,8 @@
+import type { DevDependenciesMode } from "@license-cop/core";
 import { parseArgs, type ParseArgsConfig } from "node:util";
 import { z } from "zod";
 import { UsageError } from "../errors";
-import { cliInvocationSchema, type CliInvocation, type DevDependenciesMode } from "./schema";
+import { cliInvocationSchema, type CliInvocation } from "./schema";
 
 const removedFlagHints: Record<string, string> = {
   "--init": "the --init flag has been removed, use 'license-cop init' instead",

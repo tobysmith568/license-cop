@@ -185,6 +185,17 @@ describe("run", () => {
     expect(verboseIo.stdoutLines.join("\n")).toContain("Writing config file to");
   });
 
+  it.each([
+    ["MIT", 0],
+    ["GPL-3.0", 1]
+  ])("should say which code it exits with when verbose (%s license)", async (license, code) => {
+    await createProject(directory, license);
+
+    await run(["--verbose"], io, directory);
+
+    expect(io.stdoutLines).toContain(`Exiting with code ${code}`);
+  });
+
   it("should exit 0 when every dependency has an allowed license", async () => {
     await createProject(directory, "MIT");
 
