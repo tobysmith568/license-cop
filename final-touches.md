@@ -79,7 +79,7 @@ Two different false negatives, both passing with exit code 0:
 - [x] **Semantics decided.** Scanning a workspace root covers the dependencies of every member, and never the members themselves. Scanning a member's own directory covers what that package manager has installed for it: pnpm gives that member's dependencies, and npm and yarn (which hoist everything to the root) currently give nothing, which G3 turns into an error pointing at the workspace root. The earlier recommendation to refuse member scans everywhere was dropped: it would need a workspace-detection step per package manager, to refuse a scan that already works on pnpm.
 - [x] pnpm root: the lockfile's `importers` (every project it covers) are handed to `buildDependenciesTree`, rather than only the working directory. This adds `@pnpm/lockfile.fs` as a direct dependency of core (already a transitive one of the hierarchy library), and falls back to the working directory when there is no lockfile. Reading `pnpm-workspace.yaml` instead would have needed a YAML parser and globbing.
 - [x] Workspace members are skipped rather than classified: by arborist's `isWorkspace` for npm and yarn, and, for pnpm, by a linked node's path being one of the scanned projects. Their dependencies are still walked in both engines.
-- [ ] npm member: falls out of G3 (declared dependencies, nothing installed), provided that check gives a message that mentions running from the workspace root.
+- [x] npm member (done in G3; covered by `workspaces.spec.ts`): falls out of G3 (declared dependencies, nothing installed), provided that check gives a message that mentions running from the workspace root.
 - [x] yarn 1/3/4 workspaces follow npm, and are covered by the same test.
 
 ### G3 A project that isn't installed passes ✅ done
@@ -158,18 +158,22 @@ Yes, this is better. Today [parse.ts](packages/cli/src/args/parse.ts) builds the
 
 Running bare `bun test` in `packages/core` fails around 30 tests, because `mock.module` in one file leaks into others. `--isolate` fixes it and is set in every package's `test` script, so turbo and CI are fine. **Checked whether it can be set in `bunfig.toml`: it can't.** On bun 1.4.0 a `[test]` section with `isolate = true` is silently ignored (a two-file spike, one mocking a module and one importing it for real, still failed the second file), and `--isolate` / `--parallel` are only CLI flags. So there is nothing to change.
 
-- [ ] Only worth one line of documentation: tests are run through `bun run test` / turbo, and a bare `bun test` in a package will show spurious failures. Put it wherever contributor notes live (`docs/` next to `updating-package-managers.md`, or the README).
+- [x] Only worth one line of documentation (now `docs/running-the-tests.md`): tests are run through `bun run test` / turbo, and a bare `bun test` in a package will show spurious failures. Put it wherever contributor notes live (`docs/` next to `updating-package-managers.md`, or the README).
 
 ### D2 Shared recursive walk in the npm and pnpm engines
 
 The two engines each have a small `normalizeNode`/`normalizeNodes` pair. They differ (npm filters out `undefined` nodes, pnpm doesn't), the shared part is about six lines, and the dev-dependency behaviour is already pinned by `dev-dependencies.spec.ts`. Extracting it now adds indirection for very little. **Not doing it now.** Revisit when Part 4's Plug'n'Play walker would be the third copy.
 
-## Not yet triaged
+## Housekeeping
 
-Raised in the review, not yet decided:
+- [x] migration.md linked to `migration-2.1-2.3-plan.md` at three places, and that file is deleted. The three links (and the "executed as Phase B/C of" wording) are gone; the notes stand on their own.
+- [x] `packages/test-utils` wasn't mentioned in migration.md. It now has a note under 2.5's "Found during implementation".
+- [x] D1's contributor note is [docs/running-the-tests.md](docs/running-the-tests.md).
+- [x] Unreachable branches: the `never` exhaustiveness throws in `main.ts`, `dev-dependencies.ts` and `calculate-issues.ts` show as uncovered. Fine as they are; listed so nobody spends time chasing them.
 
-- [ ] migration.md links to `migration-2.1-2.3-plan.md` at three places (2.1's, 2.2's and 2.3's notes), and that file is deleted, so the links are dead. Reword them, or drop them.
-- [ ] `packages/test-utils` (added during 2.5, used by core, the CLI and cli-e2e) isn't mentioned anywhere in migration.md.
-- [ ] Still open from 2.1: an npm trusted publisher must be configured for `@license-cop/core` (workflow `deployment.yml`) before the first release, or the publish fails.
-- [ ] Still open from 2.5: the `file:` tarball specifiers have never been run on the Windows CI leg.
-- [ ] Unreachable branches: the `never` exhaustiveness throws in `main.ts`, `dev-dependencies.ts` and `calculate-issues.ts` show as uncovered. Fine as they are; listed so nobody spends time chasing them.
+## Still open, outside this repo's code
+
+These can't be closed by a change here, and are already recorded where they came from (2.1's and 2.5's notes in migration.md). Do them before the first release.
+
+- [ ] Configure an npm trusted publisher for `@license-cop/core` (workflow `deployment.yml`), or the first publish of the CLI's dependency fails.
+- [ ] Run the `file:` tarball specifiers on the Windows CI leg. They use forward-slash absolute paths and should work, but it has never been run there.

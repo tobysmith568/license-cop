@@ -703,7 +703,7 @@ engine package with no CLI concerns, and a thin CLI package that depends on it v
 - [x] _(Done in 2.5, which reshaped that package anyway.)_ Consider whether `packages/license-cop-e2e` should be renamed alongside (`cli-e2e`?) for
       consistency — cosmetic, not required.
 
-**Found during implementation, not in the original plan:** (see [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md) for the shared 2.1–2.3 plan this was executed from)
+**Found during implementation, not in the original plan:**
 
 - `lib/logger.ts` couldn't simply move with the engine: engine code calls `logger.verbose(...)` in ~10 places, and the CLI needs the same singleton for its own output. Instead of exporting the singleton from core, core's `LicenseCopOptions` gained an optional `onVerbose?: (message: string) => void` (default no-op, so library use stays silent, exactly as before) threaded through the scanners, `loadConfig`/`loadParentConfig`/`parent-resolutions/*`, `readPackageJson` and `getPackageManager`. The CLI keeps its own `lib/logger.ts` for `log`/`error` and passes `logger.verbose` as `onVerbose`. This is the only place 2.1 wasn't a pure move; 2.2 deletes the CLI's copy along with the singleton.
 - Core's public surface is `checkLicenses`, `LicenseCopOptions`, the result types, plus `loadConfig`, `ConfigError`, `readPackageJson` and the `OnVerbose` type — the CLI genuinely needs the config/package.json helpers, so these are deliberate exports rather than the temporary ones the plan first assumed.
@@ -741,7 +741,7 @@ no framework, no global state, just plain data in and plain data out. Proposed m
 | `lib/logger.ts` (singleton, `enableLogging`/`enableVerboseLogging` mutable state)                                               | `src/io.ts` (`Io` interface: `stdout`, `stderr`, verbosity as an explicit field on the invocation/options rather than global state) | The behavioral piece worth keeping — verbose vs. normal output — moves from "a flag that mutates a singleton before anything runs" to "a value threaded through like every other option."                                                                                                                    |
 | `ConfigError` (from `@license-cop/core` post-2.1)                                                                               | unchanged, but caught in `run()` alongside the new `UsageError`                                                                     | Currently caught deep inside `commands/main.ts`'s `.action()`; moving the catch up to `run()` means every entry point (not just the default command) benefits, and both error kinds get the same "print message, set exit code" treatment.                                                                   |
 
-**Done** (executed as Phase B of [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md)). `packages/cli/src` is now `bin.ts`, `main.ts`, `io.ts`, `errors.ts`, `help.ts`, `args/{schema,parse}.ts`, `commands/{check,init}.ts` and `report-{failure,success}.ts`; `lib/cli/**`, the CLI's copy of the logger singleton and both commander dependencies are gone, and `zod` is back as a CLI dependency for the invocation schema. Flags were ported exactly as they were (2.3 changes them), and the e2e suite is unchanged at 42 pass / 18 fail (the 18 yarn unhappy paths, since `yarn` isn't installed here).
+**Done**. `packages/cli/src` is now `bin.ts`, `main.ts`, `io.ts`, `errors.ts`, `help.ts`, `args/{schema,parse}.ts`, `commands/{check,init}.ts` and `report-{failure,success}.ts`; `lib/cli/**`, the CLI's copy of the logger singleton and both commander dependencies are gone, and `zod` is back as a CLI dependency for the invocation schema. Flags were ported exactly as they were (2.3 changes them), and the e2e suite is unchanged at 42 pass / 18 fail (the 18 yarn unhappy paths, since `yarn` isn't installed here).
 
 **Found during implementation, not in the original plan:**
 
@@ -782,7 +782,7 @@ rather than deliberate design. Worth deciding on explicitly rather than porting 
       `should-fail-when-a-package-is-specified-with-a-caret`), so a flag rename needs a pass over
       those too.
 
-**Done** (Phase C of [migration-2.1-2.3-plan.md](migration-2.1-2.3-plan.md)). Decisions, made one flag at a time:
+**Done.** Decisions, made one flag at a time:
 
 - `-v`/`--version` keep their names; nothing to change once it's an ordinary invocation (it now actually works — see 2.2's notes).
 - **`--init` flag removed**, `init` subcommand kept. Breaking for anyone scripting `license-cop --init`.
@@ -883,6 +883,7 @@ Restructure into three tiers instead:
 - Not verified on Windows: the `file:` specifiers use forward-slash absolute paths, which should work on the Windows CI leg but hasn't been run there.
 - The network-fetching `parent-resolutions/{github,http,npm}.ts` modules didn't need a DI seam after all: their specs replace `axios` with `mock.module`, which is enough for fast unit tests, so the "consider injecting the fetcher" suggestion in the last bullet above was not taken.
 - The "collapse yarn" bullet above ended up going further than "one or two confirming fixtures": yarn's fixtures were replaced outright by the shared contract test, which runs against yarn 1, 3 and 4, so the yarn coverage that guards the "no yarn-specific code" decision is now a real install per major rather than a copy of the npm scenarios. See `docs/updating-package-managers.md` for how the committed releases are bumped.
+- `packages/test-utils` (`@license-cop/test-utils`, private) is the one shared test helper: `createTempDir` (every temp dir the tests create, under one configurable root, kept with `KEEP_TEMP=1`) and `writeJson`. Core, the CLI and `cli-e2e` depend on it; it is a workspace package with no build step (its `main` is the TypeScript source).
 - `mise.toml`/`mise.lock` (added only to put a yarn launcher on PATH for the old fixtures) are deleted: the suite runs each yarn straight from its committed release.
 
 ## Part 3 — bun.lock support
