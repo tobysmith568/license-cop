@@ -1,8 +1,11 @@
 import { checkLicenses, type CheckLicensesResult } from "@license-cop/core";
+import {
+  createProject,
+  PackageJsonBuilder,
+  packageManagers,
+  type Project
+} from "@license-cop/e2e-fixtures";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { PackageJsonBuilder } from "./package-json-builder";
-import { packageManagers } from "./package-managers";
-import { createProject, type Project } from "./project";
 
 // Not re-testing classification (that's the classifier's unit tests): just that each engine reads
 // its package manager's real on-disk state into the right packages, versions, licenses and

@@ -71,17 +71,8 @@
     "packages/cli-e2e": {
       "name": "cli-e2e",
       "devDependencies": {
-        "@license-cop/core": "workspace:*",
-        "@license-cop/isc-test-package": "workspace:*",
-        "@license-cop/mit-test-package": "workspace:*",
+        "@license-cop/e2e-fixtures": "workspace:*",
         "@license-cop/test-utils": "workspace:*",
-        "@license-cop/uses-isc-test-package": "workspace:*",
-        "pnpm-10": "npm:pnpm@10.34.5",
-        "pnpm-11": "npm:pnpm@11.27.0",
-        "pnpm-12": "npm:pnpm@12.5.1",
-        "yarn-1": "npm:yarn@1.22.22",
-        "yarn-3": "npm:@yarnpkg/cli-dist@3.8.7",
-        "yarn-4": "npm:@yarnpkg/cli-dist@4.18.0",
       },
     },
     "packages/core": {
@@ -98,6 +89,29 @@
       },
       "devDependencies": {
         "@license-cop/test-utils": "workspace:*",
+      },
+    },
+    "packages/core-e2e": {
+      "name": "core-e2e",
+      "devDependencies": {
+        "@license-cop/core": "workspace:*",
+        "@license-cop/e2e-fixtures": "workspace:*",
+      },
+    },
+    "packages/e2e-fixtures": {
+      "name": "@license-cop/e2e-fixtures",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@license-cop/isc-test-package": "workspace:*",
+        "@license-cop/mit-test-package": "workspace:*",
+        "@license-cop/test-utils": "workspace:*",
+        "@license-cop/uses-isc-test-package": "workspace:*",
+        "pnpm-10": "npm:pnpm@10.34.5",
+        "pnpm-11": "npm:pnpm@11.27.0",
+        "pnpm-12": "npm:pnpm@12.5.1",
+        "yarn-1": "npm:yarn@1.22.22",
+        "yarn-3": "npm:@yarnpkg/cli-dist@3.8.7",
+        "yarn-4": "npm:@yarnpkg/cli-dist@4.18.0",
       },
     },
     "packages/e2e/isc-package": {
@@ -514,6 +528,8 @@
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
 
     "@license-cop/core": ["@license-cop/core@workspace:packages/core"],
+
+    "@license-cop/e2e-fixtures": ["@license-cop/e2e-fixtures@workspace:packages/e2e-fixtures"],
 
     "@license-cop/isc-test-package": ["@license-cop/isc-test-package@workspace:packages/e2e/isc-package"],
 
@@ -1280,6 +1296,8 @@
     "cookie": ["cookie@1.1.1", "", {}, "sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ=="],
 
     "cookie-es": ["cookie-es@1.2.3", "", {}, "sha512-lXVyvUvrNXblMqzIRrxHb57UUVmqsSWlxqt3XIjCkUP0wDAf6uicO6KMbEgYrMNtEvWgWHwe42CKxPu9MYAnWw=="],
+
+    "core-e2e": ["core-e2e@workspace:packages/core-e2e"],
 
     "cosmiconfig": ["cosmiconfig@9.0.2", "", { "dependencies": { "env-paths": "^2.2.1", "import-fresh": "^3.3.0", "js-yaml": "^4.1.0", "parse-json": "^5.2.0" }, "peerDependencies": { "typescript": ">=4.9.5" }, "optionalPeers": ["typescript"] }, "sha512-gtTZxTDau1wL7Y7zifc2dd8jHSK/k6BTx/2Xp/BpdlAdnlYWFVt7qhJqgwi7637yRwRQ3qL4ZidbB4I8tA5VOg=="],
 

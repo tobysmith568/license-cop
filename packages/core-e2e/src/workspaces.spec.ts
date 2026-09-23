@@ -1,8 +1,12 @@
 import { checkLicenses, NotInstalledError, type CheckLicensesResult } from "@license-cop/core";
+import {
+  createProject,
+  PackageJsonBuilder,
+  packageManagers,
+  type PackageManager,
+  type Project
+} from "@license-cop/e2e-fixtures";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { PackageJsonBuilder } from "./package-json-builder";
-import { packageManagers, type PackageManager } from "./package-managers";
-import { createProject, type Project } from "./project";
 
 // A workspace root with three members, none of which has a license of its own (like most real
 // ones, since they're the project's own code rather than dependencies of it):

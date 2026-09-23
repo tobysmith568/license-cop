@@ -1,13 +1,15 @@
+import {
+  LicenseFileBuilder,
+  PackageJsonBuilder,
+  runProcess,
+  type PackageManager
+} from "@license-cop/e2e-fixtures";
 import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { cliBinPath } from "./fixtures";
-import { LicenseFileBuilder } from "./license-file-builder";
-import { PackageJsonBuilder } from "./package-json-builder";
-import type { PackageManager } from "./package-managers";
 import { createProject, type Project } from "./project";
-import { runProcess } from "./run-process";
 
 // The built CLI binary against a real install: args parsed -> config loaded -> engine invoked ->
 // report printed -> exit code. Just confirming the pieces wire together, one project per engine

@@ -1,13 +1,11 @@
-import { checkLicenses, UnsupportedProjectError } from "@license-cop/core";
+import type { PackageManager } from "@license-cop/e2e-fixtures";
+import { LicenseFileBuilder, PackageJsonBuilder } from "@license-cop/e2e-fixtures";
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { LicenseFileBuilder } from "./license-file-builder";
-import { PackageJsonBuilder } from "./package-json-builder";
-import type { PackageManager } from "./package-managers";
 import { createProject, type Project } from "./project";
 
 // Yarn 2+ defaults to Plug'n'Play: no node_modules at all, so scanning it would find nothing and
-// pass. It must be refused instead. The project has a forbidden license (ISC, with only MIT
-// allowed), so a wrongly passing check would be caught here too.
+// pass. The engine refusing it (`UnsupportedProjectError`) is covered in core-e2e; this only checks
+// that the built CLI reports it correctly, with exit 1 and the right explanation.
 describe.each<PackageManager>(["yarn-3", "yarn-4"])("%s with Plug'n'Play", packageManager => {
   let project: Project;
 
@@ -20,16 +18,6 @@ describe.each<PackageManager>(["yarn-3", "yarn-4"])("%s with Plug'n'Play", packa
 
   afterAll(async () => {
     await project.remove();
-  });
-
-  it("should be refused by checkLicenses instead of passing", async () => {
-    const act = checkLicenses({
-      allowedLicenses: ["MIT"],
-      allowedPackages: [],
-      workingDirectory: project.path
-    });
-
-    await expect(act).rejects.toThrow(UnsupportedProjectError);
   });
 
   it("should exit 1 and explain in the built CLI", async () => {

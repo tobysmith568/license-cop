@@ -1,9 +1,9 @@
 {
-  "name": "cli-e2e",
+  "name": "core-e2e",
   "private": true,
   "devDependencies": {
-    "@license-cop/e2e-fixtures": "workspace:*",
-    "@license-cop/test-utils": "workspace:*"
+    "@license-cop/core": "workspace:*",
+    "@license-cop/e2e-fixtures": "workspace:*"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

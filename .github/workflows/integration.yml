@@ -193,7 +193,7 @@ jobs:
         id: temp-dirs
 
       - name: Run E2E Tests
-        run: bunx turbo run e2e --filter=cli-e2e
+        run: bunx turbo run e2e --filter=cli-e2e --filter=core-e2e
 
       - name: Upload Temp Dirs
         if: failure()
