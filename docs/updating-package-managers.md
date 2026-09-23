@@ -1,6 +1,6 @@
 # Updating the package managers under test
 
-The e2e suite in `packages/cli-e2e` installs its test projects with the real package managers license-cop scans, so the contract tests cover what each one actually writes to disk. Every package manager except npm is a pinned, exact-version `devDependency` of `packages/cli-e2e`, aliased to its package manager key:
+The e2e suite installs its test projects with the real package managers license-cop scans, so the contract tests cover what each one actually writes to disk. Every package manager except npm is a pinned, exact-version `devDependency` of `packages/e2e-fixtures`, aliased to its package manager key:
 
 | Package manager key | `devDependencies` entry         | Entry point    |
 | ------------------- | ------------------------------- | -------------- |
@@ -11,23 +11,23 @@ The e2e suite in `packages/cli-e2e` installs its test projects with the real pac
 | `yarn-3`            | `"npm:@yarnpkg/cli-dist@3.x.y"` | `bin/yarn.js`  |
 | `yarn-4`            | `"npm:@yarnpkg/cli-dist@4.x.y"` | `bin/yarn.js`  |
 
-`bun install` puts each in `packages/cli-e2e/node_modules/<key>` and `project.ts` runs its entry point straight with `node`, so nothing needs to be installed on the machine and the exact versions under test are recorded, with an integrity hash, in `bun.lock`. The entry points are mapped in `entryPoints` in `packages/cli-e2e/src/lib/fixtures.ts`. pnpm 12 ships as a native binary and only keeps a Node entry point at `bin/pnpm.mjs`, which is why it isn't `.cjs` like pnpm 10.
+`bun install` puts each in `packages/e2e-fixtures/node_modules/<key>` and `project.ts` runs its entry point straight with `node`, so nothing needs to be installed on the machine and the exact versions under test are recorded, with an integrity hash, in `bun.lock`. The entry points are mapped in `entryPoints` in `packages/e2e-fixtures/src/fixtures.ts`. pnpm 12 ships as a native binary and only keeps a Node entry point at `bin/pnpm.mjs`, which is why it isn't `.cjs` like pnpm 10.
 
 npm is the only one that isn't pinned: it's whatever comes with the Node.js version of the CI matrix leg, which is deliberate.
 
 ## Bumping a version
 
-Change the version in `packages/cli-e2e/package.json` (keeping it exact), run `bun install`, then run the suite with `bunx turbo run e2e --filter=cli-e2e`. Renovate does this for you within each major, see `.renovaterc.json`.
+Change the version in `packages/e2e-fixtures/package.json` (keeping it exact), run `bun install`, then run the suite with `bunx turbo run e2e --filter=core-e2e`. Renovate does this for you within each major, see `.renovaterc.json`.
 
 ## Adding another major
 
 A new major means a new package manager key rather than a bump:
 
-1. Add the key to `PackageManager` and `packageManagers` in `packages/cli-e2e/src/lib/package-managers.ts`, and its alias to `packages/cli-e2e/package.json`.
+1. Add the key to `PackageManager` and `packageManagers` in `packages/e2e-fixtures/src/package-managers.ts`, and its alias to `packages/e2e-fixtures/package.json`.
 2. Add its entry point to `entryPoints` in `fixtures.ts`.
 3. Add the key to `getInstallCommand` in `project.ts` and to the `overrides` case in `package-json-builder.ts`. Yarn 2 and later need `nodeLinker: node-modules` (and so a check in `createProject`) because license-cop reads `node_modules`, and `YARN_ENABLE_IMMUTABLE_INSTALLS=false` because yarn enables immutable installs on CI by default and each project is installed fresh.
 4. Add a `matchDepNames` rule for the new key to `.renovaterc.json`, allowing only its own major.
-5. Run the suite. `contract.spec.ts` runs every key in `packageManagers`, so the new one is covered automatically.
+5. Run the suite. `packages/core-e2e/src/contract.spec.ts` runs every key in `packageManagers`, so the new one is covered automatically.
 
 ## pnpm 9 is not covered
 
