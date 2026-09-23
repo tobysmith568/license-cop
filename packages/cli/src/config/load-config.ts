@@ -1,14 +1,11 @@
+import type { OnVerbose } from "@license-cop/core";
 import deepMerge from "deepmerge";
-import { noopOnVerbose, type OnVerbose } from "../on-verbose";
 import { applyConfigDefaults, parseRawConfig, type Config } from "./config";
 import { ConfigError } from "./config-error";
 import { findConfig } from "./find-config";
 import { loadParentConfig } from "./load-parent-config";
 
-export const loadConfig = async (
-  rootDir: string,
-  onVerbose: OnVerbose = noopOnVerbose
-): Promise<Config> => {
+export const loadConfig = async (rootDir: string, onVerbose: OnVerbose): Promise<Config> => {
   const foundConfig = await findConfig(rootDir);
 
   let config = parseRawConfig(foundConfig);

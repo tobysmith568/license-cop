@@ -17,6 +17,8 @@ void mock.module("git-filesystem", () => ({ GitHubClient: FakeGitHubClient }));
 
 const { githubResolution } = await import("./github");
 
+const noop = () => {};
+
 describe("githubResolution", () => {
   beforeEach(() => {
     readFile.mockReset();
@@ -27,7 +29,7 @@ describe("githubResolution", () => {
   it("should read .licenses.json from the given repo", async () => {
     readFile.mockResolvedValue(`{ "licenses": ["MIT"] }`);
 
-    const result = await githubResolution("owner/repo");
+    const result = await githubResolution("owner/repo", noop);
 
     expect(result).toEqual({ licenses: ["MIT"] });
     expect(gitHubClient).toHaveBeenCalledWith("owner", "", "license-cop");
@@ -38,7 +40,7 @@ describe("githubResolution", () => {
   it("should parse the file as JSON5", async () => {
     readFile.mockResolvedValue("{ licenses: ['MIT'], // comment\n }");
 
-    const result = await githubResolution("owner/repo");
+    const result = await githubResolution("owner/repo", noop);
 
     expect(result).toEqual({ licenses: ["MIT"] });
   });
@@ -55,7 +57,7 @@ describe("githubResolution", () => {
   it.each([[""], ["owner"], ["owner/"], ["/repo"], ["a/b/c"]])(
     "should throw a ConfigError for the invalid repo ID '%s'",
     async repoId => {
-      const act = githubResolution(repoId);
+      const act = githubResolution(repoId, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
       await expect(act).rejects.toThrow(`Invalid GitHub repo ID: ${repoId}`);
@@ -65,7 +67,7 @@ describe("githubResolution", () => {
   it("should throw a ConfigError, including the underlying message, when the file can't be read", async () => {
     readFile.mockRejectedValue(new Error("Not Found"));
 
-    const act = githubResolution("owner/repo");
+    const act = githubResolution("owner/repo", noop);
 
     await expect(act).rejects.toThrow(ConfigError);
     await expect(act).rejects.toThrow("Could not resolve config from GitHub repo: owner/repo");
@@ -75,7 +77,7 @@ describe("githubResolution", () => {
   it("should throw a ConfigError when the file isn't valid", async () => {
     readFile.mockResolvedValue("not a config");
 
-    const act = githubResolution("owner/repo");
+    const act = githubResolution("owner/repo", noop);
 
     await expect(act).rejects.toThrow(ConfigError);
   });

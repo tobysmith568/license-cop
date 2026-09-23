@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { ConfigError } from "../config-error";
 import { nodeModuleExists, npmResolution } from "./npm";
 
+const noop = () => {};
+
 describe("npm parent resolution", () => {
   let dir: TempDir;
 
@@ -18,7 +20,7 @@ describe("npm parent resolution", () => {
     it("should load the config from the installed package", async () => {
       await dir.write({ "node_modules/some-config/.licenses.json": { licenses: ["MIT"] } });
 
-      const result = await npmResolution("some-config", dir.path);
+      const result = await npmResolution("some-config", dir.path, noop);
 
       expect(result).toEqual({ licenses: ["MIT"] });
     });
@@ -26,7 +28,7 @@ describe("npm parent resolution", () => {
     it("should load the config from a scoped package", async () => {
       await dir.write({ "node_modules/@scope/config/.licenses.json": { licenses: ["ISC"] } });
 
-      const result = await npmResolution("@scope/config", dir.path);
+      const result = await npmResolution("@scope/config", dir.path, noop);
 
       expect(result).toEqual({ licenses: ["ISC"] });
     });
@@ -41,7 +43,7 @@ describe("npm parent resolution", () => {
     });
 
     it("should throw a ConfigError when the package isn't installed", async () => {
-      const act = npmResolution("missing", dir.path);
+      const act = npmResolution("missing", dir.path, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
     });

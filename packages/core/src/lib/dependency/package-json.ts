@@ -1,8 +1,8 @@
 import { readFile } from "fs/promises";
 import { z } from "zod";
-import { json5Parse } from "../config/parsers/json5";
 import { noopOnVerbose, type OnVerbose } from "../on-verbose";
 import { fileExists } from "../utils/file-exists";
+import { json5Parse } from "../utils/json5";
 import { PackageJsonError } from "./package-json-error";
 
 const licenseSectionValidator = z.object({

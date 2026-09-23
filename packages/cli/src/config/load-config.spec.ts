@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { ConfigError } from "./config-error";
 import { loadConfig } from "./load-config";
 
+const noop = () => {};
+
 describe("loadConfig", () => {
   let dir: TempDir;
 
@@ -17,7 +19,7 @@ describe("loadConfig", () => {
   it("should load and parse a config with no parent", async () => {
     await dir.write({ ".licenses.json": { licenses: ["MIT"], packages: ["react"] } });
 
-    const result = await loadConfig(dir.path);
+    const result = await loadConfig(dir.path, noop);
 
     expect(result).toEqual({
       extends: undefined,
@@ -29,7 +31,7 @@ describe("loadConfig", () => {
   });
 
   it("should throw a ConfigError when there is no config", async () => {
-    const act = loadConfig(dir.path);
+    const act = loadConfig(dir.path, noop);
 
     await expect(act).rejects.toThrow(ConfigError);
   });
@@ -37,7 +39,7 @@ describe("loadConfig", () => {
   it("should throw a ConfigError when the config is invalid", async () => {
     await dir.write({ ".licenses.json": { licenses: "MIT" } });
 
-    const act = loadConfig(dir.path);
+    const act = loadConfig(dir.path, noop);
 
     await expect(act).rejects.toThrow(ConfigError);
   });
@@ -49,7 +51,7 @@ describe("loadConfig", () => {
         "node_modules/parent/.licenses.json": { licenses: ["ISC"], packages: ["b"] }
       });
 
-      const result = await loadConfig(dir.path);
+      const result = await loadConfig(dir.path, noop);
 
       expect(result.licenses.sort()).toEqual(["ISC", "MIT"]);
       expect(result.packages.sort()).toEqual(["a", "b"]);
@@ -61,7 +63,7 @@ describe("loadConfig", () => {
         "node_modules/parent/.licenses.json": { licenses: ["ISC"] }
       });
 
-      const result = await loadConfig(dir.path);
+      const result = await loadConfig(dir.path, noop);
 
       expect(result.licenses.sort()).toEqual(["ISC", "MIT"]);
     });
@@ -75,7 +77,7 @@ describe("loadConfig", () => {
         }
       });
 
-      const result = await loadConfig(dir.path);
+      const result = await loadConfig(dir.path, noop);
 
       expect(result.includeDevDependencies).toBe(true);
       expect(result.devDependenciesOnly).toBe(true);
@@ -87,7 +89,7 @@ describe("loadConfig", () => {
         "node_modules/parent/.licenses.json": { includeDevDependencies: true }
       });
 
-      const result = await loadConfig(dir.path);
+      const result = await loadConfig(dir.path, noop);
 
       expect(result.includeDevDependencies).toBe(false);
     });
@@ -99,7 +101,7 @@ describe("loadConfig", () => {
         "node_modules/grandparent/.licenses.json": { licenses: ["Apache-2.0"] }
       });
 
-      const result = await loadConfig(dir.path);
+      const result = await loadConfig(dir.path, noop);
 
       expect(result.licenses.sort()).toEqual(["Apache-2.0", "ISC", "MIT"]);
       expect(result.extends).toBeUndefined();
@@ -120,7 +122,7 @@ describe("loadConfig", () => {
     it("should throw a ConfigError when a parent can't be found", async () => {
       await dir.write({ ".licenses.json": { extends: "npm:missing" } });
 
-      const act = loadConfig(dir.path);
+      const act = loadConfig(dir.path, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
     });
@@ -128,7 +130,7 @@ describe("loadConfig", () => {
     it("should throw a ConfigError for an unprefixed parent that isn't an installed module", async () => {
       await dir.write({ ".licenses.json": { extends: "not-installed" } });
 
-      const act = loadConfig(dir.path);
+      const act = loadConfig(dir.path, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
       await expect(act).rejects.toThrow("Invalid parent config location: not-installed");
@@ -140,7 +142,7 @@ describe("loadConfig", () => {
         "node_modules/parent/.licenses.json": { licenses: "MIT" }
       });
 
-      const act = loadConfig(dir.path);
+      const act = loadConfig(dir.path, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
     });
@@ -152,7 +154,7 @@ describe("loadConfig", () => {
         "node_modules/b/.licenses.json": { extends: "npm:a" }
       });
 
-      const act = loadConfig(dir.path);
+      const act = loadConfig(dir.path, noop);
 
       await expect(act).rejects.toThrow(ConfigError);
       await expect(act).rejects.toThrow("Circular");

@@ -1,5 +1,6 @@
-import { ConfigError, LicenseCopError } from "@license-cop/core";
+import { LicenseCopError } from "@license-cop/core";
 import { describe, expect, it } from "bun:test";
+import { ConfigError } from "./config/config-error";
 import { UsageError } from "./errors";
 import type { Io } from "./io";
 import { reportError } from "./report-error";

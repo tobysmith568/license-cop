@@ -1,9 +1,9 @@
+import type { OnVerbose } from "@license-cop/core";
 import { GitHubClient } from "git-filesystem";
-import { noopOnVerbose, type OnVerbose } from "../../on-verbose";
 import { ConfigError } from "../config-error";
 import { json5Parse } from "../parsers/json5";
 
-export const githubResolution = async (repoId: string, onVerbose: OnVerbose = noopOnVerbose) => {
+export const githubResolution = async (repoId: string, onVerbose: OnVerbose) => {
   onVerbose(`Resolving config from GitHub repo: ${repoId}`);
 
   const parts = repoId.split("/");

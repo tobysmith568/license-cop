@@ -1,5 +1,4 @@
 import { describe, expect, it } from "bun:test";
-import { ConfigError } from "./config/config-error";
 import { PackageJsonError } from "./dependency/package-json-error";
 import { LicenseCopError } from "./license-cop-error";
 import { UnsupportedProjectError } from "./unsupported-project-error";
@@ -23,7 +22,6 @@ describe("LicenseCopError", () => {
   });
 
   it.each([
-    ["ConfigError", ConfigError],
     ["PackageJsonError", PackageJsonError],
     ["UnsupportedProjectError", UnsupportedProjectError]
   ])("should be the base of %s", (name, ErrorClass) => {

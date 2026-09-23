@@ -1,13 +1,9 @@
+import type { OnVerbose } from "@license-cop/core";
 import { stat } from "fs/promises";
 import { join } from "path";
-import { noopOnVerbose, type OnVerbose } from "../../on-verbose";
 import { findConfig } from "../find-config";
 
-export const npmResolution = async (
-  packageName: string,
-  rootDir: string,
-  onVerbose: OnVerbose = noopOnVerbose
-) => {
+export const npmResolution = async (packageName: string, rootDir: string, onVerbose: OnVerbose) => {
   onVerbose(`Resolving npm package: ${packageName}`);
 
   const packagePath = getPackagePath(rootDir, packageName);

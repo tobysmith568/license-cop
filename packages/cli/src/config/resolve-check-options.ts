@@ -1,14 +1,13 @@
+import type { LicenseCopOptions, OnVerbose } from "@license-cop/core";
 import { join } from "node:path";
-import { loadConfig } from "./config/load-config";
-import { readPackageJson } from "./dependency/package-json";
+import { readProjectName } from "../read-project-name";
 import { resolveDevDependencyOptions, type DevDependenciesMode } from "./dev-dependencies";
-import type { LicenseCopOptions } from "./license-cop";
-import { noopOnVerbose, type OnVerbose } from "./on-verbose";
+import { loadConfig } from "./load-config";
 
 export type ResolveCheckOptionsInput = {
   /** Replaces the dev-dependency settings of the config file when given. */
-  devDependencies?: DevDependenciesMode | undefined;
-  onVerbose?: OnVerbose;
+  devDependencies: DevDependenciesMode | undefined;
+  onVerbose: OnVerbose;
 };
 
 export type ResolvedCheck = {
@@ -20,18 +19,18 @@ export type ResolvedCheck = {
 
 /**
  * Everything needed to check a project before scanning it: reads the project's name and its config
- * file (with anything it extends) and turns them into the options for `checkLicenses`. This is what
- * the `license-cop` command does for a directory, so that library users can do the same without
- * repeating it. Nothing is scanned, so it's quick, and it fails on a bad config before a slow scan.
+ * file (with anything it extends) and combines them with what the command line asked for into the
+ * options for `checkLicenses`. Nothing is scanned, so it's quick, and it fails on a bad config
+ * before a slow scan.
  */
 export const resolveCheckOptions = async (
   directory: string,
-  input: ResolveCheckOptionsInput = {}
+  input: ResolveCheckOptionsInput
 ): Promise<ResolvedCheck> => {
-  const { devDependencies, onVerbose = noopOnVerbose } = input;
+  const { devDependencies, onVerbose } = input;
 
   const packageJsonPath = join(directory, "package.json");
-  const packageJson = await readPackageJson(packageJsonPath, onVerbose);
+  const productName = await readProjectName(packageJsonPath, onVerbose);
   const config = await loadConfig(directory, onVerbose);
 
   const options: LicenseCopOptions = {
@@ -42,5 +41,5 @@ export const resolveCheckOptions = async (
     onVerbose
   };
 
-  return { productName: packageJson.name, options };
+  return { productName, options };
 };

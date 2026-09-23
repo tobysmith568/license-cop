@@ -1,6 +1,7 @@
-import { ConfigError, searchConfig } from "@license-cop/core";
 import { stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { ConfigError } from "../config/config-error";
+import { searchConfig } from "../config/find-config";
 import { createVerboseLogger, type Io } from "../io";
 
 export type InitOptions = {

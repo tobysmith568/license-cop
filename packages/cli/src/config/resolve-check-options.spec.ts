@@ -1,8 +1,11 @@
+import { PackageJsonError } from "@license-cop/core";
 import { createTempDir, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { ConfigError } from "./config/config-error";
-import { PackageJsonError } from "./dependency/package-json-error";
+import { ConfigError } from "./config-error";
 import { resolveCheckOptions } from "./resolve-check-options";
+
+const noop = () => {};
+const noFlag = { devDependencies: undefined, onVerbose: noop };
 
 describe("resolveCheckOptions", () => {
   let dir: TempDir;
@@ -24,7 +27,7 @@ describe("resolveCheckOptions", () => {
   it("should return the project's name", async () => {
     await writeProject();
 
-    const { productName } = await resolveCheckOptions(dir.path);
+    const { productName } = await resolveCheckOptions(dir.path, noFlag);
 
     expect(productName).toBe("my-project");
   });
@@ -32,7 +35,7 @@ describe("resolveCheckOptions", () => {
   it("should turn the config into options for checkLicenses", async () => {
     await writeProject();
 
-    const { options } = await resolveCheckOptions(dir.path);
+    const { options } = await resolveCheckOptions(dir.path, noFlag);
 
     expect(options).toMatchObject({
       allowedLicenses: ["MIT"],
@@ -46,7 +49,7 @@ describe("resolveCheckOptions", () => {
   it("should use the dev dependency settings of the config when there's no flag", async () => {
     await writeProject({ devDependenciesOnly: true });
 
-    const { options } = await resolveCheckOptions(dir.path);
+    const { options } = await resolveCheckOptions(dir.path, noFlag);
 
     expect(options.devDependenciesOnly).toBe(true);
   });
@@ -54,7 +57,10 @@ describe("resolveCheckOptions", () => {
   it("should let the flag replace the dev dependency settings of the config", async () => {
     await writeProject({ devDependenciesOnly: true });
 
-    const { options } = await resolveCheckOptions(dir.path, { devDependencies: "include" });
+    const { options } = await resolveCheckOptions(dir.path, {
+      ...noFlag,
+      devDependencies: "include"
+    });
 
     expect(options).toMatchObject({ includeDevDependencies: true, devDependenciesOnly: false });
   });
@@ -66,7 +72,7 @@ describe("resolveCheckOptions", () => {
       ".licenses.json": { extends: "npm:parent", licenses: ["MIT"] }
     });
 
-    const { options } = await resolveCheckOptions(dir.path);
+    const { options } = await resolveCheckOptions(dir.path, noFlag);
 
     expect(options.allowedLicenses.sort()).toEqual(["ISC", "MIT"]);
   });
@@ -79,7 +85,10 @@ describe("resolveCheckOptions", () => {
     });
     const messages: string[] = [];
 
-    await resolveCheckOptions(dir.path, { onVerbose: message => messages.push(message) });
+    await resolveCheckOptions(dir.path, {
+      ...noFlag,
+      onVerbose: message => messages.push(message)
+    });
 
     expect(messages).toContain("Extending config with npm:parent");
   });
@@ -88,7 +97,7 @@ describe("resolveCheckOptions", () => {
     await writeProject();
     const onVerbose = () => {};
 
-    const { options } = await resolveCheckOptions(dir.path, { onVerbose });
+    const { options } = await resolveCheckOptions(dir.path, { ...noFlag, onVerbose });
 
     expect(options.onVerbose).toBe(onVerbose);
   });
@@ -96,13 +105,13 @@ describe("resolveCheckOptions", () => {
   it("should throw a ConfigError when there is no config", async () => {
     await dir.write({ "package.json": { name: "my-project", version: "1.0.0" } });
 
-    const act = resolveCheckOptions(dir.path);
+    const act = resolveCheckOptions(dir.path, noFlag);
 
     await expect(act).rejects.toThrow(ConfigError);
   });
 
   it("should throw a PackageJsonError when there is no package.json", async () => {
-    const act = resolveCheckOptions(dir.path);
+    const act = resolveCheckOptions(dir.path, noFlag);
 
     await expect(act).rejects.toThrow(PackageJsonError);
   });

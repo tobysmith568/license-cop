@@ -1,7 +1,7 @@
-import type { DevDependenciesMode } from "@license-cop/core";
 import { z } from "zod";
+import type { DevDependenciesMode } from "../config/dev-dependencies";
 
-// The modes themselves belong to core, which acts on them; `satisfies` keeps the two from drifting
+// The modes themselves belong to the config code, which acts on them; `satisfies` keeps the two from drifting
 export const devDependenciesModeSchema = z.enum(
   ["include", "only"] as const satisfies DevDependenciesMode[],
   {

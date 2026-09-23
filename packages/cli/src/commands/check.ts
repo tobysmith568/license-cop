@@ -1,4 +1,6 @@
-import { checkLicenses, resolveCheckOptions, type DevDependenciesMode } from "@license-cop/core";
+import { checkLicenses } from "@license-cop/core";
+import type { DevDependenciesMode } from "../config/dev-dependencies";
+import { resolveCheckOptions } from "../config/resolve-check-options";
 import { createVerboseLogger, type Io } from "../io";
 import { reportFailure } from "../report-failure";
 import { reportSuccess } from "../report-success";

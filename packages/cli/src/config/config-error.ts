@@ -1,4 +1,4 @@
-import { LicenseCopError } from "../license-cop-error";
+import { LicenseCopError } from "@license-cop/core";
 
 export class ConfigError extends LicenseCopError {
   constructor(message: string) {

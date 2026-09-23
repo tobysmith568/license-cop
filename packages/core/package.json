@@ -45,11 +45,7 @@
     "@pnpm/lockfile.fs": "^1001.1.32",
     "@pnpm/logger": "^1001.0.1",
     "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
-    "axios": "^1.6.0",
     "compare-versions": "^6.0.0-rc.1",
-    "cosmiconfig": "^9.0.0",
-    "deepmerge": "^4.3.1",
-    "git-filesystem": "^0.0.6",
     "json5": "^2.2.3",
     "zod": "^4.0.0"
   },

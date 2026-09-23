@@ -1,4 +1,4 @@
-import { noopOnVerbose, type OnVerbose } from "../on-verbose";
+import type { OnVerbose } from "@license-cop/core";
 import { ConfigError } from "./config-error";
 import { githubResolution } from "./parent-resolutions/github";
 import { httpResolution } from "./parent-resolutions/http";
@@ -7,7 +7,7 @@ import { nodeModuleExists, npmResolution } from "./parent-resolutions/npm";
 export const loadParentConfig = async (
   parentConfigPath: string,
   rootDir: string,
-  onVerbose: OnVerbose = noopOnVerbose
+  onVerbose: OnVerbose
 ): Promise<unknown> => {
   if (parentConfigPath.startsWith("npm:")) {
     const packageName = parentConfigPath.substring(4);
