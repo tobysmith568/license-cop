@@ -11,6 +11,9 @@
     "pack": "bun pm pack",
     "publish": "npm publish *.tgz --access public --provenance --tag $NPM_TAG"
   },
+  "devDependencies": {
+    "json5": "^2.2.3"
+  },
   "author": {
     "name": "Toby Smith",
     "email": "contact@tobythe.dev",

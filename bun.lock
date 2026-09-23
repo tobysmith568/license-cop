@@ -4,11 +4,6 @@
   "workspaces": {
     "": {
       "name": "license-cop-monorepo",
-      "dependencies": {
-        "@primer/octicons": "^19.22.0",
-        "hastscript": "^9.0.1",
-        "tslib": "^2.8.1",
-      },
       "devDependencies": {
         "@astrojs/mdx": "^4.3.13",
         "@astrojs/sitemap": "^3.7.0",
@@ -45,6 +40,10 @@
     },
     "apps/website": {
       "name": "website",
+      "dependencies": {
+        "@primer/octicons": "^19.22.0",
+        "hastscript": "^9.0.1",
+      },
     },
     "apps/website-e2e": {
       "name": "website-e2e",
@@ -132,6 +131,9 @@
     "packages/permissive": {
       "name": "@license-cop/permissive",
       "version": "0.0.0",
+      "devDependencies": {
+        "json5": "^2.2.3",
+      },
     },
     "packages/test-utils": {
       "name": "@license-cop/test-utils",

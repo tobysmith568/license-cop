@@ -51,15 +51,9 @@
     "typescript": "5.9.3",
     "unist-util-visit": "^5.1.0"
   },
-  "dependencies": {
-    "@primer/octicons": "^19.22.0",
-    "hastscript": "^9.0.1",
-    "tslib": "^2.8.1"
-  },
   "trustedDependencies": [
     "@parcel/watcher",
     "esbuild",
-    "nice-napi",
     "sharp",
     "unrs-resolver"
   ]
