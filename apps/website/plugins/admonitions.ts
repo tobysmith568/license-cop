@@ -19,6 +19,8 @@ const admonitionTypes = {
 type AdmonitionTypes = keyof typeof admonitionTypes;
 
 const admonitionsPlugin = () => {
+  // The remark tree has no shared typing here; directive nodes are duck-typed below
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (tree: any) => {
     visit(tree, node => {
       if (

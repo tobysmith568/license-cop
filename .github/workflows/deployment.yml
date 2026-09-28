@@ -1,0 +1,122 @@
+name: Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: A SemVer for the release
+        default: ""
+        required: true
+        type: string
+
+jobs:
+  integration:
+    name: Run Integration
+    uses: ./.github/workflows/integration.yml
+    with:
+      version: ${{ inputs.version }}
+      is_release: true
+    secrets: inherit
+
+  publish:
+    name: Publish to npm
+
+    needs:
+      - integration
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          registry-url: https://registry.npmjs.org
+
+      - name: Download Build
+        uses: actions/download-artifact@v8
+        with:
+          name: build
+
+      - name: Set Version
+        run: bunx turbo run version
+        env:
+          VERSION: ${{ inputs.version }}
+
+      - name: Pack
+        run: bunx turbo run pack
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
+
+      - name: Publish
+        run: bunx turbo run publish
+        env:
+          NPM_TAG: latest
+
+  purge-jsdelivr:
+    name: Purge JsDelivr
+
+    needs:
+      - publish
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Purge JsDelivr cache
+        run: curl -fsSL "https://purge.jsdelivr.net/npm/@license-cop/permissive@latest/.licenses.jsonc"
+
+  deploy-website:
+    name: Deploy Website
+    uses: ./.github/workflows/pages.yml
+    needs:
+      - purge-jsdelivr
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+  create-release:
+    name: Create GitHub Release
+
+    needs:
+      - publish
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+
+      - name: Download Build
+        uses: actions/download-artifact@v8
+        with:
+          name: build
+
+      - name: Set Version
+        run: bunx turbo run version
+        env:
+          VERSION: ${{ inputs.version }}
+
+      - name: Pack assets
+        run: bunx turbo run pack
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ inputs.version }}
+          generate_release_notes: true
+          files: packages/**/*.tgz
+          body: |
+            # Release v${{ inputs.version }}
+
+            Download from [npm](https://www.npmjs.com/package/license-cop/v/${{ inputs.version }}): `npm install license-cop@${{ inputs.version }} --save-dev`

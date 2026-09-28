@@ -1,0 +1,19 @@
+name: Keep temp dirs
+description: Make the tests create all of their temp dirs in one directory and leave them behind, so a failed run can upload them with the upload-temp-dirs action
+
+outputs:
+  path:
+    description: The directory that all of the tests' temp dirs are created in
+    value: ${{ steps.set.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set temp dir environment variables
+      id: set
+      run: |
+        path="${{ runner.temp }}/license-cop-test-temp"
+        echo "LICENSE_COP_TEST_TEMP_DIR=$path" >> "$GITHUB_ENV"
+        echo "KEEP_TEMP=1" >> "$GITHUB_ENV"
+        echo "path=$path" >> "$GITHUB_OUTPUT"
+      shell: bash

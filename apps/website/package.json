@@ -1,0 +1,15 @@
+{
+  "name": "website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bunx astro dev",
+    "build": "bunx astro build",
+    "lint": "eslint . --max-warnings 0",
+    "serve": "bunx astro preview"
+  },
+  "dependencies": {
+    "@primer/octicons": "^19.22.0",
+    "hastscript": "^9.0.1"
+  }
+}

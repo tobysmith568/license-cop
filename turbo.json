@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["tsconfig.base.json"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {},
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
+    },
+    "e2e": {
+      "dependsOn": ["^build", "^pack-fixture"],
+      "cache": false,
+      "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "serve": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "version": {
+      "cache": false,
+      "passThroughEnv": ["VERSION"]
+    },
+    "pack-fixture": {
+      "dependsOn": ["build", "^pack-fixture"],
+      "outputs": ["tarballs/**"]
+    },
+    "pack": {
+      "cache": false
+    },
+    "publish": {
+      "dependsOn": ["^publish"],
+      "cache": false,
+      "passThroughEnv": [
+        "NPM_TAG",
+        "ACTIONS_ID_TOKEN_REQUEST_URL",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+      ]
+    }
+  }
+}

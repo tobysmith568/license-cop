@@ -27,9 +27,29 @@ npx license-cop
 
 The `license-cop` command will use an exit code of 0 if all your dependencies conform to the settings in your config file.
 
+## Command line options
+
+```bash
+license-cop [options] [command]
+```
+
+| Option                               | Description                                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `--dev-dependencies <include\|only>` | `include` checks your dev-dependencies as well as your production dependencies, `only` checks just your dev-dependencies. |
+| `-d, --directory <dir>`              | The directory of the project. Defaults to the current working directory.                                                  |
+| `--verbose`                          | Enable verbose logging.                                                                                                   |
+| `-v, --version`                      | Print the installed version of license-cop.                                                                               |
+| `-h, --help`                         | Display the help text.                                                                                                    |
+
+| Command | Description                                                                                                                            |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `init`  | Create a new license-cop config file. It won't overwrite one: it fails if the project already has a config in any of the places below. |
+
+When `--dev-dependencies` is given it replaces the [`includeDevDependencies`](#includedevdependencies) and [`devDependenciesOnly`](#devdependenciesonly) config options; when it's absent those config options apply.
+
 ## Config File
 
-By default the `--init` flag will make a `.licenses.json` file, however you can use many different variations of file name and file type including:
+By default the `init` command will make a `.licenses.json` file, however you can use many different variations of file name and file type including:
 
 <!--- cspell:disable-next-line --->
 
@@ -92,12 +112,12 @@ If you extend a remote file, and that in-turn extends an npm package, then you'r
 #### `includeDevDependencies`
 
 `false` by default.  
-Set to `true` to make license-cop also check your dev-dependencies.
+Set to `true` to make license-cop also check your dev-dependencies. The `--dev-dependencies` command line option takes precedence over this.
 
 #### `devDependenciesOnly`
 
 `false` by default.  
-Set to `true` to make license-cop only check your dev-dependencies.
+Set to `true` to make license-cop only check your dev-dependencies. The `--dev-dependencies` command line option takes precedence over this.
 
 ## CI/CD Example (GitHub Actions)
 
@@ -120,10 +140,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           cache: npm
 

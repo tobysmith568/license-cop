@@ -1,30 +1,22 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@license-cop/e2e/no-license-package": ["packages/e2e/no-license-package/src/index.ts"],
-      "@license-cop/isc-legacy-test-package": ["packages/e2e/isc-legacy-package/src/index.ts"],
-      "@license-cop/isc-test-package": ["packages/e2e/isc-package/src/index.ts"],
-      "@license-cop/license-cop-e2e": ["packages/license-cop-e2e/src/index.ts"],
-      "@license-cop/mit-test-package": ["packages/e2e/mit-package/src/index.ts"],
-      "@license-cop/permissive": ["packages/permissive/src/index.ts"],
-      "@license-cop/unlicensed-test-package": ["packages/e2e/unlicensed-package/src/index.ts"],
-      "@license-cop/uses-isc-test-package": ["packages/e2e/uses-isc-package/src/index.ts"],
-      "license-cop": ["packages/license-cop/src/index.ts"]
-    }
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "declaration": true,
+    "declarationMap": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "tmp"]
 }

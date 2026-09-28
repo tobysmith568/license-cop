@@ -3,7 +3,7 @@ import { getProjectLicenses } from "generate-license-file";
 import DocsLayout from "../layouts/DocsLayout.astro";
 import { join } from "path";
 
-const packageJsonPath = join(process.cwd(), "../../package.json");
+const packageJsonPath = join(process.cwd(), "package.json");
 const licenses = await getProjectLicenses(packageJsonPath);
 
 const getPackageUrl = (packageNameAndVersion: string) => {
@@ -33,7 +33,7 @@ const getPackageUrl = (packageNameAndVersion: string) => {
 
   <h2>Licenses</h2>
 
-  <p>Below lists all third-party licenses used by license-cop and this website.</p>
+  <p>Below lists all third-party licenses used by this website.</p>
 
   <p>
     This content was generated using the

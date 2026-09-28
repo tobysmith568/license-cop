@@ -1,0 +1,24 @@
+{
+  "name": "@license-cop/e2e-fixtures",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "@license-cop/isc-test-package": "workspace:*",
+    "@license-cop/mit-test-package": "workspace:*",
+    "@license-cop/test-utils": "workspace:*",
+    "@license-cop/uses-isc-test-package": "workspace:*",
+    "pnpm-10": "npm:pnpm@10.34.5",
+    "pnpm-11": "npm:pnpm@11.27.0",
+    "pnpm-12": "npm:pnpm@12.5.1",
+    "yarn-1": "npm:yarn@1.22.22",
+    "yarn-3": "npm:@yarnpkg/cli-dist@3.8.7",
+    "yarn-4": "npm:@yarnpkg/cli-dist@4.18.0"
+  }
+}
