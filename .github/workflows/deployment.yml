@@ -17,6 +17,10 @@ jobs:
       version: ${{ inputs.version }}
       is_release: true
     secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
   publish:
     name: Publish to npm
