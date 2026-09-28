@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { afterAll, beforeEach, describe, expect, it, mock } from "bun:test";
 
+const originalFetch = globalThis.fetch;
 const fetchMock = mock();
 globalThis.fetch = fetchMock as unknown as typeof fetch;
 
@@ -10,12 +11,16 @@ const noop = () => {};
 const okResponse = (data: string) => ({
   ok: true,
   status: 200,
-  text: () => Promise.resolve(data),
+  text: () => Promise.resolve(data)
 });
 
 describe("httpResolution", () => {
   beforeEach(() => {
     fetchMock.mockReset();
+  });
+
+  afterAll(() => {
+    globalThis.fetch = originalFetch;
   });
 
   it("should request the given url", async () => {

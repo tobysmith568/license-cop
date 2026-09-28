@@ -1,44 +1,48 @@
-import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { afterAll, beforeEach, describe, expect, it, mock } from "bun:test";
 import { ConfigError } from "../config-error";
 
-const readFile = mock();
-const getReadonlyRepository = mock(() => ({ readFile }));
-const gitHubClient = mock((_owner: string, _token: string, _userAgent: string) => ({
-  getReadonlyRepository
-}));
+const originalFetch = globalThis.fetch;
+const fetchMock = mock();
+globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-class FakeGitHubClient {
-  constructor(owner: string, token: string, userAgent: string) {
-    return gitHubClient(owner, token, userAgent);
-  }
-}
-
-void mock.module("git-filesystem", () => ({ GitHubClient: FakeGitHubClient }));
+afterAll(() => {
+  globalThis.fetch = originalFetch;
+});
 
 const { githubResolution } = await import("./github");
 
 const noop = () => {};
 
+const okResponse = (data: string) => ({
+  ok: true,
+  status: 200,
+  text: () => Promise.resolve(data),
+});
+
 describe("githubResolution", () => {
   beforeEach(() => {
-    readFile.mockReset();
-    getReadonlyRepository.mockClear();
-    gitHubClient.mockClear();
+    fetchMock.mockReset();
   });
 
   it("should read .licenses.json from the given repo", async () => {
-    readFile.mockResolvedValue(`{ "licenses": ["MIT"] }`);
+    fetchMock.mockResolvedValue(okResponse(`{ "licenses": ["MIT"] }`));
 
     const result = await githubResolution("owner/repo", noop);
 
     expect(result).toEqual({ licenses: ["MIT"] });
-    expect(gitHubClient).toHaveBeenCalledWith("owner", "", "license-cop");
-    expect(getReadonlyRepository).toHaveBeenCalledWith("repo");
-    expect(readFile).toHaveBeenCalledWith(".licenses.json");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.github.com/repos/owner/repo/contents/.licenses.json",
+      {
+        headers: {
+          accept: "application/vnd.github.raw+json",
+          "user-agent": "license-cop",
+        },
+      }
+    );
   });
 
   it("should parse the file as JSON5", async () => {
-    readFile.mockResolvedValue("{ licenses: ['MIT'], // comment\n }");
+    fetchMock.mockResolvedValue(okResponse("{ licenses: ['MIT'], // comment\n }"));
 
     const result = await githubResolution("owner/repo", noop);
 
@@ -46,7 +50,7 @@ describe("githubResolution", () => {
   });
 
   it("should report what it's resolving", async () => {
-    readFile.mockResolvedValue("{}");
+    fetchMock.mockResolvedValue(okResponse("{}"));
     const messages: string[] = [];
 
     await githubResolution("owner/repo", message => messages.push(message));
@@ -65,17 +69,17 @@ describe("githubResolution", () => {
   );
 
   it("should throw a ConfigError, including the underlying message, when the file can't be read", async () => {
-    readFile.mockRejectedValue(new Error("Not Found"));
+    fetchMock.mockResolvedValue({ ok: false, status: 404, text: () => Promise.resolve("") });
 
     const act = githubResolution("owner/repo", noop);
 
     await expect(act).rejects.toThrow(ConfigError);
     await expect(act).rejects.toThrow("Could not resolve config from GitHub repo: owner/repo");
-    await expect(act).rejects.toThrow("error: Not Found");
+    await expect(act).rejects.toThrow("error: Request failed with status code 404");
   });
 
   it("should throw a ConfigError when the file isn't valid", async () => {
-    readFile.mockResolvedValue("not a config");
+    fetchMock.mockResolvedValue(okResponse("not a config"));
 
     const act = githubResolution("owner/repo", noop);
 

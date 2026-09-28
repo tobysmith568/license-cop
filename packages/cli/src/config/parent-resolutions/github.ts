@@ -1,5 +1,4 @@
 import type { OnVerbose } from "@license-cop/core";
-import { GitHubClient } from "git-filesystem";
 import { ConfigError } from "../config-error";
 import { json5Parse } from "../parsers/json5";
 
@@ -20,8 +19,19 @@ export const githubResolution = async (repoId: string, onVerbose: OnVerbose) => 
   }
 
   try {
-    const repo = new GitHubClient(owner, "", "license-cop").getReadonlyRepository(repoName);
-    const fileContent = await repo.readFile(".licenses.json");
+    const url = `https://api.github.com/repos/${owner}/${repoName}/contents/.licenses.json`;
+    const response = await fetch(url, {
+      headers: {
+        accept: "application/vnd.github.raw+json",
+        "user-agent": "license-cop",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed with status code ${response.status}`);
+    }
+
+    const fileContent = await response.text();
 
     return json5Parse(fileContent);
   } catch (e) {
