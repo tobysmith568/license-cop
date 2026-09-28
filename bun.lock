@@ -20,7 +20,7 @@
         "eslint": "9.39.5",
         "eslint-plugin-astro": "^3.2.1",
         "prettier": "^3.8.1",
-        "prettier-plugin-astro": "^1.1.0",
+        "prettier-plugin-astro": "^0.14.1",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
         "ts-node": "10.9.2",
@@ -725,8 +725,6 @@
     "@pnpm/types": ["@pnpm/types@1001.3.0", "", {}, "sha512-NLTXheat/u7OEGg5M5vF6Z85zx8uKUZE0+whtX/sbFV2XL48RdnOWGPTKYuVVkv8M+launaLUTgGEXNs/ess2w=="],
 
     "@pnpm/util.lex-comparator": ["@pnpm/util.lex-comparator@3.0.2", "", {}, "sha512-blFO4Ws97tWv/SNE6N39ZdGmZBrocXnBOfVp0ln4kELmns4pGPZizqyRtR8EjfOLMLstbmNCTReBoDvLz1isVg=="],
-
-    "@prettier/parse-srcset": ["@prettier/parse-srcset@3.1.0", "", {}, "sha512-FIRv2rZotO9NP/r66taYqD1zICpPiBbrECqjKV/xqNotqDxF7fLzzUeK+1RSRx9Tenk0DajR/GcRmTJ2qtHaKQ=="],
 
     "@primer/octicons": ["@primer/octicons@19.36.0", "", { "dependencies": { "object-assign": "^4.1.1" } }, "sha512-oC+RG3N9i8kesxb1WWQE8eE/DgBMJ3hNHhMSvzMdAuDD0EavdYCbt6JFgSO3fhcH3rQxY2iDx23tH6A31AKWJA=="],
 
@@ -2080,7 +2078,7 @@
 
     "prettier": ["prettier@3.9.6", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g=="],
 
-    "prettier-plugin-astro": ["prettier-plugin-astro@1.1.0", "", { "dependencies": { "@astrojs/compiler-rs": "^0.4.0", "@prettier/parse-srcset": "^3.1.0", "sass-formatter": "^0.8.0" }, "peerDependencies": { "prettier": "^3.5.3" } }, "sha512-ujJ1VX+iin4eYJPHVCEbmXHzrEVsi1SaVehHtbAteTZv8VTrZyBiZPmYc6Ud6+fkr/UBMXuEu3N3+d49h7YfKw=="],
+    "prettier-plugin-astro": ["prettier-plugin-astro@0.14.1", "", { "dependencies": { "@astrojs/compiler": "^2.9.1", "prettier": "^3.0.0", "sass-formatter": "^0.7.6" } }, "sha512-RiBETaaP9veVstE4vUwSIcdATj6dKmXljouXc/DDNwBSPTp8FRkLGDSGFClKsAFeeg+13SB0Z1JZvbD76bigJw=="],
 
     "prettier-plugin-ignored": ["prettier-plugin-ignored@1.0.0", "", { "dependencies": { "prettier": "^3.0.0" } }, "sha512-q0wSUvUfHqg2cZ5SADkqnGK9Cv5bBn/ootjwDWAQ+8qE/iN1nklT3XHSaF6duRl6j0P4Ew70r0vAJkGZrn4/+w=="],
 
@@ -2214,7 +2212,7 @@
 
     "sass": ["sass@1.104.1", "", { "dependencies": { "chokidar": "^5.0.0", "immutable": "^5.1.5", "source-map-js": ">=0.6.2 <2.0.0" }, "optionalDependencies": { "@parcel/watcher": "^2.4.1" }, "bin": { "sass": "sass.js" } }, "sha512-yDA+1aIG3EHgN4V/BvuhCvu61FF6hEd4e+9DxikUm9U0CAGuvdIZ/UYy7qbOxjhbbWQraoyLlMuzdRGOSV5Bmw=="],
 
-    "sass-formatter": ["sass-formatter@0.8.0", "", { "dependencies": { "suf-log": "^2.5.3" }, "bin": { "sass-formatter": "dist/cli.js" } }, "sha512-Nf4eMGE2O5vnJG7KPCRyksWS9gVKSYoUWtPeMXRRxwZSPVQhSGtL602xVYS65LvMkHmkvKa7xpauF0+/5pPwrg=="],
+    "sass-formatter": ["sass-formatter@0.7.9", "", { "dependencies": { "suf-log": "^2.5.3" } }, "sha512-CWZ8XiSim+fJVG0cFLStwDvft1VI7uvXdCNJYXhDvowiv+DsbD1nXLiQ4zrE5UBvj5DWZJ93cwN0NX5PMsr1Pw=="],
 
     "satteri": ["satteri@0.10.5", "", { "dependencies": { "@types/estree-jsx": "^1.0.5", "@types/hast": "^3.0.5", "@types/mdast": "^4.0.4", "@types/unist": "^3.0.3" }, "optionalDependencies": { "@bruits/satteri-darwin-arm64": "0.10.5", "@bruits/satteri-darwin-x64": "0.10.5", "@bruits/satteri-linux-arm64-gnu": "0.10.5", "@bruits/satteri-linux-arm64-musl": "0.10.5", "@bruits/satteri-linux-x64-gnu": "0.10.5", "@bruits/satteri-linux-x64-musl": "0.10.5", "@bruits/satteri-wasm32-wasi": "0.10.5", "@bruits/satteri-win32-arm64-msvc": "0.10.5", "@bruits/satteri-win32-x64-msvc": "0.10.5" } }, "sha512-Ao1LKpAEa9Wdg0otgbVKViZHEq9ebdXe4DMrp3s9vQAU0HNIuHnFEuMuOcm0ZIXyV0Yzxj91NvhLpvXZJO/5ZQ=="],
 
@@ -2574,8 +2572,6 @@
 
     "@pnpm/store.cafs/ssri": ["ssri@10.0.5", "", { "dependencies": { "minipass": "^7.0.3" } }, "sha512-bSf16tAFkGeRlUNDjXu8FzaMQt6g2HZJrun7mtMbIPOddxt3GLMSz5VWUWcqTJUPfLEaDIepGxv+bYQW49596A=="],
 
-    "@tobysmith568/prettier-config/prettier-plugin-astro": ["prettier-plugin-astro@0.14.1", "", { "dependencies": { "@astrojs/compiler": "^2.9.1", "prettier": "^3.0.0", "sass-formatter": "^0.7.6" } }, "sha512-RiBETaaP9veVstE4vUwSIcdATj6dKmXljouXc/DDNwBSPTp8FRkLGDSGFClKsAFeeg+13SB0Z1JZvbD76bigJw=="],
-
     "@tufjs/models/minimatch": ["minimatch@10.2.6", "", { "dependencies": { "brace-expansion": "^5.0.8" } }, "sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A=="],
 
     "@types/cacache/@types/node": ["@types/node@26.5.1", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-CzNm2FezW4VR/LjG6yUdiEgLE/rAQ9Slj5gCu/C2VrdcW7I0ahNZ8DRbHT7zOZ6r3ONgd/bsQIeSaoDGrd1C6g=="],
@@ -2747,8 +2743,6 @@
     "@pnpm/npm-package-arg/hosted-git-info/lru-cache": ["lru-cache@6.0.0", "", { "dependencies": { "yallist": "^4.0.0" } }, "sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA=="],
 
     "@pnpm/store.cafs/p-limit/yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
-
-    "@tobysmith568/prettier-config/prettier-plugin-astro/sass-formatter": ["sass-formatter@0.7.9", "", { "dependencies": { "suf-log": "^2.5.3" } }, "sha512-CWZ8XiSim+fJVG0cFLStwDvft1VI7uvXdCNJYXhDvowiv+DsbD1nXLiQ4zrE5UBvj5DWZJ93cwN0NX5PMsr1Pw=="],
 
     "@tufjs/models/minimatch/brace-expansion": ["brace-expansion@5.0.9", "", { "dependencies": { "balanced-match": "^4.0.2" } }, "sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg=="],
 
