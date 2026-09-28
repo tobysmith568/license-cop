@@ -9,7 +9,9 @@ const { link, text, newTab } = Astro.props;
 ---
 
 <div class="item">
-  <a href={link} target={newTab ? "_blank" : null}>{text}</a>
+  <a href={link} target={newTab ? "_blank" : null}>
+    {text}
+  </a>
 </div>
 
 <style lang="scss">
