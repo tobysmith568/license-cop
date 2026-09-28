@@ -11,6 +11,7 @@
     "packages/e2e/*"
   ],
   "scripts": {
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
@@ -19,37 +20,28 @@
     "check": "turbo run build lint test typecheck"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/sitemap": "^3.7.0",
     "@playwright/test": "^1.63.0",
     "@tobysmith568/eslint-config": "^2.7.1",
     "@tobysmith568/prettier-config": "^2.2.1",
     "@types/bun": "^1.4.0",
     "@types/node": "^26.6.2",
     "@types/npmcli__arborist": "^6.3.3",
-    "@types/primer__octicons": "^19.21.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.56.1",
     "@typescript-eslint/utils": "^8.56.1",
-    "astro": "^5.18.0",
-    "astro-eslint-parser": "^3.1.0",
-    "astro-webmanifest": "^1.0.0",
+    "astro-eslint-parser": "^3.2.0",
     "cspell": "^9.7.0",
     "eslint": "9.39.5",
     "eslint-plugin-astro": "^3.2.1",
-    "generate-license-file": "^4.1.1",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "remark-directive": "^4.0.0",
-    "sass": "^1.97.3",
     "ts-node": "10.9.2",
     "tsdown": "^0.23.0",
     "turbo": "^2.10.12",
-    "typescript": "5.9.3",
-    "unist-util-visit": "^5.1.0"
+    "typescript": "5.9.3"
   },
   "trustedDependencies": [
     "@parcel/watcher",

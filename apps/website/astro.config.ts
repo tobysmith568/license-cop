@@ -1,3 +1,4 @@
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import webmanifest, { type WebmanifestOptions } from "astro-webmanifest";
@@ -31,7 +32,9 @@ export default defineConfig({
   integrations: [mdx(), sitemap(), webmanifest(webmanifestOptions)],
 
   markdown: {
-    remarkPlugins: [directive, admonitionsPlugin],
+    processor: unified({
+      remarkPlugins: [directive, admonitionsPlugin]
+    }),
     shikiConfig: {
       theme: "light-plus",
       wrap: true
