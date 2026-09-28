@@ -1,11 +1,7 @@
 name: Setup
-description: Check out the repo, install Node and bun, and install dependencies
+description: Install Node and bun, and install dependencies
 
 inputs:
-  ref:
-    description: The git ref to check out
-    required: false
-    default: ""
   node-version:
     description: The Node.js version to install
     required: false
@@ -18,11 +14,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout
-      uses: actions/checkout@v7
-      with:
-        ref: ${{ inputs.ref }}
-
     - name: Install Node
       uses: actions/setup-node@v7
       with:

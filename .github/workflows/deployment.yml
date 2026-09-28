@@ -30,6 +30,9 @@ jobs:
       id-token: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
         with:
           registry-url: https://registry.npmjs.org
@@ -89,6 +92,9 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Download Build

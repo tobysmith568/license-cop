@@ -36,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Run Prettier
@@ -47,6 +50,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Run ESLint
@@ -58,6 +64,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Run Typecheck
@@ -69,6 +78,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Build
@@ -97,6 +109,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - uses: ./.github/actions/keep-temp-dirs
@@ -126,6 +141,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Download Build
@@ -150,6 +168,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - uses: ./.github/actions/test-cli
@@ -180,6 +201,9 @@ jobs:
     runs-on: ${{ matrix.os.value }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node }}
@@ -211,6 +235,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup
 
       - name: Download Build
