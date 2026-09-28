@@ -1,27 +1,33 @@
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 
-const get = mock();
-void mock.module("axios", () => ({ default: { get } }));
+const fetchMock = mock();
+globalThis.fetch = fetchMock as unknown as typeof fetch;
 
 const { httpResolution } = await import("./http");
 
 const noop = () => {};
 
+const okResponse = (data: string) => ({
+  ok: true,
+  status: 200,
+  text: () => Promise.resolve(data),
+});
+
 describe("httpResolution", () => {
   beforeEach(() => {
-    get.mockReset();
+    fetchMock.mockReset();
   });
 
   it("should request the given url", async () => {
-    get.mockResolvedValue({ data: {} });
+    fetchMock.mockResolvedValue(okResponse("{}"));
 
     await httpResolution("https://example.com/config.json", noop);
 
-    expect(get).toHaveBeenCalledWith("https://example.com/config.json");
+    expect(fetchMock).toHaveBeenCalledWith("https://example.com/config.json");
   });
 
   it("should return an already-parsed response as-is", async () => {
-    get.mockResolvedValue({ data: { licenses: ["MIT"] } });
+    fetchMock.mockResolvedValue(okResponse('{ "licenses": ["MIT"] }'));
 
     const result = await httpResolution("https://example.com/config.json", noop);
 
@@ -29,7 +35,7 @@ describe("httpResolution", () => {
   });
 
   it("should parse a string response as JSON5", async () => {
-    get.mockResolvedValue({ data: "{ licenses: ['MIT'], // comment\n }" });
+    fetchMock.mockResolvedValue(okResponse("{ licenses: ['MIT'], // comment\n }"));
 
     const result = await httpResolution("https://example.com/.licenses.json5", noop);
 
@@ -37,7 +43,7 @@ describe("httpResolution", () => {
   });
 
   it("should throw when a string response isn't valid", async () => {
-    get.mockResolvedValue({ data: "<html>not a config</html>" });
+    fetchMock.mockResolvedValue(okResponse("<html>not a config</html>"));
 
     const act = httpResolution("https://example.com/config", noop);
 
@@ -45,7 +51,7 @@ describe("httpResolution", () => {
   });
 
   it("should report what it's resolving", async () => {
-    get.mockResolvedValue({ data: {} });
+    fetchMock.mockResolvedValue(okResponse("{}"));
     const messages: string[] = [];
 
     await httpResolution("https://example.com/config.json", message => messages.push(message));
@@ -54,10 +60,18 @@ describe("httpResolution", () => {
   });
 
   it("should propagate request failures", async () => {
-    get.mockRejectedValue(new Error("Network Error"));
+    fetchMock.mockRejectedValue(new Error("Network Error"));
 
     const act = httpResolution("https://example.com/config.json", noop);
 
     await expect(act).rejects.toThrow("Network Error");
+  });
+
+  it("should throw when the response status is not ok", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 404, text: () => Promise.resolve("") });
+
+    const act = httpResolution("https://example.com/config.json", noop);
+
+    await expect(act).rejects.toThrow("404");
   });
 });
