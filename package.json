@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "prettier": "@tobysmith568/prettier-config",
-  "packageManager": "bun@1.4.0",
+  "packageManager": "bun@1.4.2",
   "workspaces": [
     "apps/*",
     "packages/*",
