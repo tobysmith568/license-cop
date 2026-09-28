@@ -19,7 +19,7 @@
     "check": "turbo run build lint test typecheck"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/mdx": "^8.0.0",
     "@astrojs/sitemap": "^3.7.0",
     "@playwright/test": "^1.63.0",
     "@tobysmith568/eslint-config": "^2.7.1",
