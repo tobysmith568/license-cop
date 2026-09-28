@@ -16,7 +16,7 @@ const noop = () => {};
 const okResponse = (data: string) => ({
   ok: true,
   status: 200,
-  text: () => Promise.resolve(data),
+  text: () => Promise.resolve(data)
 });
 
 describe("githubResolution", () => {
@@ -35,8 +35,8 @@ describe("githubResolution", () => {
       {
         headers: {
           accept: "application/vnd.github.raw+json",
-          "user-agent": "license-cop",
-        },
+          "user-agent": "license-cop"
+        }
       }
     );
   });

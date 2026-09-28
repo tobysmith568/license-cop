@@ -23,8 +23,8 @@ export const githubResolution = async (repoId: string, onVerbose: OnVerbose) => 
     const response = await fetch(url, {
       headers: {
         accept: "application/vnd.github.raw+json",
-        "user-agent": "license-cop",
-      },
+        "user-agent": "license-cop"
+      }
     });
 
     if (!response.ok) {

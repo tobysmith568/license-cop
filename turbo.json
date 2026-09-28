@@ -16,7 +16,7 @@
       "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
     },
     "e2e": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^pack-fixture"],
       "cache": false,
       "passThroughEnv": ["KEEP_TEMP", "LICENSE_COP_TEST_TEMP_DIR"]
     },
@@ -34,7 +34,7 @@
       "passThroughEnv": ["VERSION"]
     },
     "pack-fixture": {
-      "dependsOn": ["build"],
+      "dependsOn": ["build", "^pack-fixture"],
       "outputs": ["tarballs/**"]
     },
     "pack": {

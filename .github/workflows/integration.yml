@@ -135,6 +135,10 @@ jobs:
   local-licenses:
     name: Check Licenses using Build
 
+    # Skipped until Part 3 (bun.lock support, see migration.md) lands: this repo's own
+    # dependencies are now installed by bun, which license-cop can't scan yet.
+    if: false
+
     needs:
       - build
 
@@ -158,9 +162,11 @@ jobs:
   published-licenses:
     name: Check Licenses using the Published Version
 
-    # We don't check this when releasing to make sure that broken released
-    # versions don't block fixes
-    if: inputs.is_release == false
+    # Also skipped until Part 3 (bun.lock support, see migration.md) lands, for the same
+    # reason as local-licenses above. The is_release condition it had before that
+    # (skip on release, so a broken published version doesn't block fixes) still applies once
+    # this is re-enabled: `if: inputs.is_release == false`
+    if: false
 
     needs:
       - build
