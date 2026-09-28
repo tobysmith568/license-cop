@@ -1,6 +1,7 @@
 {
   "name": "website-e2e",
   "private": true,
+  "type": "module",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . --max-warnings 0",

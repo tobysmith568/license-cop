@@ -1,7 +1,7 @@
 {
   "name": "license-cop",
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "bin": {
     "license-cop": "./dist/bin.js"
   },

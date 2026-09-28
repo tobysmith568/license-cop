@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
 export const helpText = (): string =>
@@ -20,7 +20,7 @@ Commands:
   init                      Create a new license-cop configuration file`;
 
 export const versionText = async (): Promise<string> => {
-  const packageJsonLocation = join(__dirname, "../package.json");
+  const packageJsonLocation = fileURLToPath(new URL("../package.json", import.meta.url));
   const contents = await readFile(packageJsonLocation, "utf8");
   const { version } = ownPackageJsonSchema.parse(JSON.parse(contents));
 

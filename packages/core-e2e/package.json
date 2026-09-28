@@ -1,6 +1,7 @@
 {
   "name": "core-e2e",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@license-cop/core": "workspace:*",
     "@license-cop/e2e-fixtures": "workspace:*"

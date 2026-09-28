@@ -1,6 +1,7 @@
 {
   "name": "cli-e2e",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@license-cop/e2e-fixtures": "workspace:*",
     "@license-cop/test-utils": "workspace:*"

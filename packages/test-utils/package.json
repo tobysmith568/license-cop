@@ -2,7 +2,7 @@
   "name": "@license-cop/test-utils",
   "version": "0.0.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {

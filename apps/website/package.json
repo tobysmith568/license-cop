@@ -1,6 +1,7 @@
 {
   "name": "website",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "bunx astro dev",
     "build": "bunx astro build",

@@ -107,3 +107,10 @@ When a check fails, the `Found the following issues...` line went to stdout whil
 - **Why:** redirecting either stream used to give half a report, with the parts in the wrong order.
 - **Affected:** scripts that capture stdout and look for `Found the following issues...`.
 - **Migrate:** read stderr (or both streams) instead, or just use the exit code, which is unchanged: 1 when there are issues.
+
+### Both packages are now ESM-only (final touches)
+
+`license-cop` and `@license-cop/core` publish `"type": "module"` and a single ESM build; there is no CommonJS build any more.
+
+- **Affected:** anyone who imports `@license-cop/core` with `require(...)`. The CLI itself isn't affected: `dist/bin.js` runs the same whether you invoke it via `npx license-cop`, an npm script, or `node_modules/.bin/license-cop`. A project's own config file isn't affected either, whatever its extension: cosmiconfig loads it independently of license-cop's own module format.
+- **Migrate:** switch `require("@license-cop/core")` to `import` (ESM), or `await import("@license-cop/core")` if the caller itself can't move off CommonJS.

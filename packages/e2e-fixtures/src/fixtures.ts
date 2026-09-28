@@ -1,6 +1,9 @@
 import { readdir } from "fs/promises";
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import type { PinnedPackageManager } from "./package-managers";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const workspaceRoot = join(__dirname, "../../..");
 
