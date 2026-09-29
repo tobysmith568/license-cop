@@ -7,7 +7,8 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "test": "bun test --isolate"
   },
   "devDependencies": {
     "@license-cop/isc-test-package": "workspace:*",
