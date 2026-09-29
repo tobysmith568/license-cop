@@ -7,10 +7,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const workspaceRoot = join(__dirname, "../../..");
 
+export type NodeEntryPointPackageManager = Exclude<
+  PinnedPackageManager,
+  "bun-1-hoisted" | "bun-1-isolated"
+>;
+
 // Every package manager except npm (which is whatever comes with the Node.js under test) is a
 // pinned devDependency of this package, aliased by its package manager key, rather than a global
 // install, so the versions under test are the same on every machine. `bun install` puts them in
-// this package's own node_modules, and each is run straight with `node`.
+// this package's own node_modules, and (bun itself aside, see `getBunEntryPoint`) each is run
+// straight with `node`.
 const entryPoints = {
   "pnpm-10": "bin/pnpm.cjs",
   // pnpm 12 ships as a native binary and only keeps a Node entry point at bin/pnpm.mjs (the path
@@ -20,10 +26,15 @@ const entryPoints = {
   "yarn-1": "bin/yarn.js",
   "yarn-3": "bin/yarn.js",
   "yarn-4": "bin/yarn.js"
-} as const satisfies Record<PinnedPackageManager, string>;
+} as const satisfies Record<NodeEntryPointPackageManager, string>;
 
-export const getPackageManagerEntryPoint = (packageManager: PinnedPackageManager): string =>
+export const getPackageManagerEntryPoint = (packageManager: NodeEntryPointPackageManager): string =>
   join(__dirname, "../node_modules", packageManager, entryPoints[packageManager]);
+
+// bun ships a native binary (bin/bun.exe, regardless of OS) rather than a Node script, so it's run
+// directly instead of through `node`. Both bun-1-hoisted and bun-1-isolated share this one pinned
+// binary; only their bunfig.toml-forced linker differs (see createProject).
+export const getBunEntryPoint = (): string => join(__dirname, "../node_modules/bun-1/bin/bun.exe");
 
 export const fixturePackages = {
   isc: { name: "@license-cop/isc-test-package", directory: "isc-package" },

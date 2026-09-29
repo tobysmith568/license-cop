@@ -225,23 +225,25 @@ const createBunIsolatedFixture = async (dir: string) => {
         devDependencies: { dev: "1.0.0" },
         optionalDependencies: { optional: "1.0.0" }
       }
-    },
-    packages: {
-      prod: ["prod@1.0.0", "", { dependencies: { "prod-child": "1.0.0" } }, "sha512-x"],
-      "prod-child": ["prod-child@1.0.0", "", {}, "sha512-x"],
-      dev: ["dev@1.0.0", "", { dependencies: { "dev-child": "1.0.0" } }, "sha512-x"],
-      "dev-child": ["dev-child@1.0.0", "", {}, "sha512-x"],
-      optional: ["optional@1.0.0", "", {}, "sha512-x"]
     }
   });
 
-  const store = (name: string) => join(dir, "node_modules", ".bun", `${name}@1.0.0`, "node_modules", name);
+  const modulesDir = join(dir, "node_modules");
+  // bun's isolated store: each package's real files under .bun/<name>@<version>/node_modules/<name>,
+  // with its own dependency edges symlinked as siblings inside that same node_modules.
+  const store = (name: string) => join(modulesDir, ".bun", `${name}@1.0.0`, "node_modules", name);
 
-  await writePackage(store("prod"), "prod");
+  await writePackage(store("prod"), "prod", { "prod-child": "1.0.0" });
   await writePackage(store("prod-child"), "prod-child");
-  await writePackage(store("dev"), "dev");
+  await writePackage(store("dev"), "dev", { "dev-child": "1.0.0" });
   await writePackage(store("dev-child"), "dev-child");
   await writePackage(store("optional"), "optional");
+
+  await link(join(modulesDir, "prod"), store("prod"));
+  await link(join(modulesDir, "dev"), store("dev"));
+  await link(join(modulesDir, "optional"), store("optional"));
+  await link(join(dirname(store("prod")), "prod-child"), store("prod-child"));
+  await link(join(dirname(store("dev")), "dev-child"), store("dev-child"));
 };
 
 const writePackage = async (dir: string, name: string, dependencies?: Record<string, string>) => {

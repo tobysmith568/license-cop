@@ -1,7 +1,7 @@
 import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, symlink } from "node:fs/promises";
+import { dirname, join, relative } from "node:path";
 import { bunDependencyScanning } from "./bun";
 
 describe("bunDependencyScanning", () => {
@@ -47,15 +47,20 @@ describe("bunDependencyScanning", () => {
       "bun.lock": {
         lockfileVersion: 2,
         configVersion: 1,
-        workspaces: { "": { name: "fixture", dependencies: { prod: "1.0.0" } } },
-        packages: { prod: ["prod@1.0.0", "", {}, "sha512-x"] }
+        workspaces: { "": { name: "fixture", dependencies: { prod: "1.0.0" } } }
       }
     });
-    await mkdir(join(dir.path, "node_modules", ".bun"), { recursive: true });
-    await writeJson(
-      join(dir.path, "node_modules", ".bun", "prod@1.0.0", "node_modules", "prod", "package.json"),
-      { name: "prod", version: "1.0.0", license: "MIT" }
-    );
+
+    const storeDir = join(dir.path, "node_modules", ".bun", "prod@1.0.0", "node_modules", "prod");
+    await writeJson(join(storeDir, "package.json"), {
+      name: "prod",
+      version: "1.0.0",
+      license: "MIT"
+    });
+
+    const linkPath = join(dir.path, "node_modules", "prod");
+    await mkdir(dirname(linkPath), { recursive: true });
+    await symlink(relative(dirname(linkPath), storeDir), linkPath);
 
     const result = await scan();
 

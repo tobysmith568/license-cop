@@ -13,28 +13,23 @@ const bunLockWorkspaceValidator = z.object({
   optionalDependencies: z.record(z.string(), z.string()).optional()
 });
 
+// Keyed by each workspace member's path relative to the lockfile, `""` for the root project itself
+// (present even for a single, non-workspace project).
 const bunLockValidator = z.object({
-  // Keyed by each workspace member's path relative to the lockfile, `""` for the root project
-  // itself (present even for a single, non-workspace project).
-  workspaces: z.record(z.string(), bunLockWorkspaceValidator),
-  // Each value is bun's own tuple shape: `[descriptor, registry, meta, integrity]`, trimmed to
-  // just `[descriptor]` for a workspace member. Left as `unknown[]` here and picked apart by
-  // `parsePackageEntry`, since a zod tuple can't express that variable length.
-  packages: z.record(z.string(), z.array(z.unknown()).min(1))
+  workspaces: z.record(z.string(), bunLockWorkspaceValidator)
 });
 
 export type BunLockWorkspace = z.infer<typeof bunLockWorkspaceValidator>;
 
-export type BunLockPackage = {
-  name: string;
-  version: string;
-  dependencies: Record<string, string>;
-};
-
+/**
+ * Only a project's declared dependencies are read from bun.lock here (including which are
+ * workspace members, via a `"workspace:"` specifier). *Resolving* a declared dependency to where it
+ * actually lives on disk is done by following bun's own `node_modules` symlinks instead, see
+ * bun-isolated.ts: a resolution's store folder name isn't always predictable, e.g. a `file:`
+ * dependency's is a hash, not a plain `name@version`.
+ */
 export type BunLock = {
   workspaces: Record<string, BunLockWorkspace>;
-  /** Keyed the same way bun.lock itself keys them, see `resolveBunLockPackage`. */
-  packages: Record<string, BunLockPackage>;
 };
 
 export const readBunLock = async (
@@ -64,66 +59,5 @@ export const readBunLock = async (
     throw new BunLockError(`Unable to parse bun.lock: ${path}: ${bunLock.error.message}`);
   }
 
-  const packages: Record<string, BunLockPackage> = {};
-  for (const [key, entry] of Object.entries(bunLock.data.packages)) {
-    const parsedEntry = parsePackageEntry(entry, key, path);
-    if (parsedEntry) {
-      packages[key] = parsedEntry;
-    }
-  }
-
-  return { workspaces: bunLock.data.workspaces, packages };
-};
-
-/**
- * Resolves the package a dependency edge reaching `name` from `ancestorPath` points to. bun
- * qualifies a package's key with its chain of ancestor names only when it needs to (a nested
- * resolution that differs from what an ancestor already settled on, e.g. `is-odd/is-number`),
- * falling back to the bare name otherwise. This mirrors the symlinks bun itself writes under
- * `node_modules/.bun/<name>@<version>/node_modules/<child>`. Confirmed two levels deep by spike;
- * deeper chains are assumed to drop the oldest ancestor first, the same direction pnpm's own
- * dependency-path keys resolve in.
- */
-export const resolveBunLockPackage = (
-  lock: BunLock,
-  ancestorPath: string[],
-  name: string
-): BunLockPackage | undefined => {
-  for (let dropped = 0; dropped <= ancestorPath.length; dropped++) {
-    const key = [...ancestorPath.slice(dropped), name].join("/");
-    const found = lock.packages[key];
-
-    if (found) {
-      return found;
-    }
-  }
-
-  return undefined;
-};
-
-const parsePackageEntry = (entry: unknown[], key: string, path: string): BunLockPackage | undefined => {
-  const descriptor = entry[0];
-
-  if (typeof descriptor !== "string") {
-    throw new BunLockError(`Unable to parse bun.lock: ${path}: package '${key}' has no descriptor`);
-  }
-
-  const separatorIndex = descriptor.lastIndexOf("@");
-  const name = separatorIndex > 0 ? descriptor.slice(0, separatorIndex) : descriptor;
-  const version = separatorIndex > 0 ? descriptor.slice(separatorIndex + 1) : "";
-
-  // A workspace member's own entry, e.g. `pkg-a@workspace:packages/a`: not an installed dependency
-  // with its own license to check, so it's left out, the same as npm.ts/pnpm.ts skip a workspace
-  // node itself and only check its dependencies.
-  if (version.startsWith("workspace:")) {
-    return undefined;
-  }
-
-  const meta = entry[2];
-  const dependencies =
-    meta !== null && typeof meta === "object" && "dependencies" in meta
-      ? (meta.dependencies as Record<string, string> | undefined)
-      : undefined;
-
-  return { name, version, dependencies: dependencies ?? {} };
+  return { workspaces: bunLock.data.workspaces };
 };
