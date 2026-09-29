@@ -1,22 +1,23 @@
 # license-cop migration plan
 
-This plan adds dependency-scanning support for bun, broadens npm's own fixture coverage to match
-pnpm/yarn's thoroughness, then adds support for Yarn Plug'n'Play. Infrastructure modernization
-(package manager, task runner, linter, test runner, browser-test runner, CI) and the CLI's internal
-architecture and public package boundary are complete. See "Suggested order" at the end for the
-concrete sequencing and dependencies between the remaining steps.
+This plan adds dependency-scanning support for bun, consolidates how a package manager is dispatched
+to now that bun has shown the current shape straining under it, broadens npm's own fixture coverage
+to match pnpm/yarn's thoroughness, then adds support for Yarn Plug'n'Play. Infrastructure
+modernization (package manager, task runner, linter, test runner, browser-test runner, CI) and the
+CLI's internal architecture and public package boundary are complete. See "Suggested order" at the
+end for the concrete sequencing and dependencies between the remaining steps.
 
 ## Guiding principles
 
 - **license-cop's whole job is understanding other package managers.** Keep npm, pnpm, yarn
   classic and yarn modern dependency-scanning support (and add bun, then Yarn PnP) regardless of
   what the workspace itself is built with.
-- **One big-bang branch per part, not one PR per item.** Part 3 (bun support), Part 4 (broadening
-  npm fixture coverage) and Part 5 (Yarn Plug'n'Play support) each land as a single branch merged in
-  one go, rather than each checklist item going out as its own PR. Within a branch, land the
-  checklist items as separate commits in the order listed so the history stays legible and
-  bisectable, but the repo only needs to be green again at branch-merge time, not after every
-  individual commit.
+- **One big-bang branch per part, not one PR per item.** Part 3 (bun support), Part 4 (consolidating
+  package-manager dispatch), Part 5 (broadening npm fixture coverage) and Part 6 (Yarn Plug'n'Play
+  support) each land as a single branch merged in one go, rather than each checklist item going out
+  as its own PR. Within a branch, land the checklist items as separate commits in the order listed
+  so the history stays legible and bisectable, but the repo only needs to be green again at
+  branch-merge time, not after every individual commit.
 
 ## Part 3 — bun support
 
@@ -36,19 +37,21 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
 `linker = "isolated"`, so isolated support isn't optional scope, it's required for `local-licenses`
 (see CI, below) to ever pass against this repo's own tree.
 
-- [ ] `@license-cop/core`'s `lib/dependency/get-package-manager.ts`: add `"bun"` to the
+- [x] `@license-cop/core`'s `lib/dependency/get-package-manager.ts`: add `"bun"` to the
       `PackageManager` union; `tryResolveFromPackageManager` gains a
       `packageManager.startsWith("bun")` branch; `resolveFromLockFileDiscovery` checks for
       `bun.lock` (text) and `bun.lockb` (legacy binary format), slotted in after the existing
       `yarn.lock`/`pnpm-lock.yaml` checks and before the npm default.
-- [ ] **`bun.lockb` (legacy binary lockfile): support it only if it comes for free.** There's no
+- [x] **`bun.lockb` (legacy binary lockfile): support it only if it comes for free.** There's no
       official library for reading it (only a stale, two-years-unmaintained community package), so
       don't hand-roll a binary-format parser for it. If the hoisted engine ends up needing no
       lockfile-content parsing at all (pure `node_modules` walking), or if `bun.lock` (text, which is
       plain JSON-ish) turns out easy enough to parse ourselves, extend that same support to
       `bun.lockb` for free. Otherwise, leave it unsupported. (`bun.lockb` predates isolated linker
       entirely, so a `bun.lockb`-based project is unlikely to ever need the isolated engine anyway.)
-- [ ] **Engine dispatch, both linkers.** `PackageManager` stays a single `"bun"` value (linker isn't
+      Landed as reasoned: hoisted never touches the lockfile at all, so detection-only support for
+      `bun.lockb` was free; isolated genuinely needs `bun.lock`'s text content.
+- [x] **Engine dispatch, both linkers.** `PackageManager` stays a single `"bun"` value (linker isn't
       a package-manager identity, the same way yarn PnP vs. node-modules doesn't get its own
       `PackageManager` value either). Which linker an already-installed project used is detected at
       *scan* time, inside a single `bun` entry in `lib/license-cop.ts`'s `scanners` record, once
@@ -67,7 +70,13 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
       `lib/dependency-scanning/bun-isolated.ts` (or whatever the lockfile spike settles on, possibly
       sharing code with `pnpm.ts` if the shapes are similar enough), since isolated's structure is
       exactly the phantom-dependency-preventing shape arborist can't already walk for pnpm.
-- [ ] Add bun to the contract test, both linkers: extend `packages/e2e-fixtures`'s `PackageManager`
+      Landed as `bun-isolated.ts`, but not lockfile-driven as originally planned: `bun.lock`'s
+      `packages` map doesn't reliably name a resolution's on-disk store folder (a `file:` dependency's
+      is a hash, not `name@version`), which broke against this repo's own `apps/website` and the
+      `file:`-tarball e2e fixtures. Resolves every dependency by following bun's own `node_modules`
+      symlinks via `realpath` instead; `bun.lock` is read only for declared dependencies and
+      workspace-member paths.
+- [x] Add bun to the contract test, both linkers: extend `packages/e2e-fixtures`'s `PackageManager`
       type/`packageManagers` list (`package-managers.ts`) with `"bun-1-hoisted"` and
       `"bun-1-isolated"` (major-version pin only, not full patch granularity — `bun` is published to
       the npm registry with `bun`/`bunx` bins, so `"bun-1": "npm:bun@^1"` slots into
@@ -86,7 +95,12 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
       doesn't: decide then, with the real trade-offs in view, whether `PackageJsonBuilder`'s
       `overriding` needs a bespoke bun workaround or whether it's acceptable to document the gap and
       drop that one contract permutation for bun.
-- [ ] CI: re-enable `local-licenses` (it runs this branch's own build,
+      `overrides` worked out of the box for both linkers, confirmed against a real `file:` tarball
+      redirect; no workaround needed. Also needed `"bun"` added to root `trustedDependencies` (bun
+      silently skips its own postinstall otherwise, leaving an error stub in place of the real
+      binary), and `getBunEntryPoint()` runs it directly rather than via `node`, since bun ships a
+      native binary (`bin/bun.exe`, that literal name on every OS) rather than a `.js` entry point.
+- [x] CI: re-enable `local-licenses` (it runs this branch's own build,
       `node ./packages/cli/dist/bin.js`) once bun support actually works end to end against this
       repo's own isolated-linker install. **Leave `published-licenses` disabled** — it runs
       `bunx license-cop`, which resolves the *currently-published* npm package, not this branch's
@@ -94,34 +108,105 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
       a follow-up PR at that point, restoring its original `if: inputs.is_release == false` condition.
       No change needed to the `e2e` job's OS/Node matrix itself, it varies OS/Node, not package
       manager, and `packageManagers` already carries the per-package-manager coverage.
+      Re-enabling surfaced two real, pre-existing forbidden-license transitive deps this check had
+      never actually run against before (`lightningcss`, `@img/sharp-libvips-*`, via `apps/website`'s
+      `astro` dependency); allow-listed in `.licenses.json` rather than broadening the allowed
+      licenses themselves.
 
-## Part 4 — Broaden npm fixture coverage
+## Part 4 — Consolidate package-manager dispatch
 
-A separate branch, after Part 3 merges and before Part 5. Not part of bun support itself, it's a
+A separate branch, after Part 3 merges and before Part 5. Not a feature; a structural cleanup
+prompted directly by what building bun exposed. `@license-cop/core` currently spreads each
+package manager's per-identity concerns across several independent, exhaustively-typed structures
+(`license-cop.ts`'s `scanners` record, `assert-installed.ts`'s `installCommands` record, and a
+one-off `if (packageManager === "yarn") { await assertNotPlugAndPlay(...) }` special case in
+`checkLicenses` that sits *outside* that exhaustiveness guarantee) rather than one cohesive
+structure per package manager. `packages/e2e-fixtures` has the same problem worse: `project.ts`'s
+`getInstallCommand` switch, `package-json-builder.ts`'s overrides/resolutions switch, and
+`fixtures.ts`'s `entryPoints` map are three separate exhaustive switches over the same
+`PackageManager` type, kept in sync only by convention. Adding bun meant touching all of them, plus
+hand-writing `bun.ts`, a bespoke dispatcher for "one package-manager identity, several install
+shapes, detected at scan time" — exactly the shape Yarn PnP (Part 6) needs too, and exactly the
+kind of one-off that should be a reusable pattern rather than copied by eye each time. Sequenced
+ahead of Part 5 (not just Part 6) because Part 5 touches these same switch statements to add more
+npm variants; doing this first means Part 5 adds each one as a single adapter object instead of
+editing three files, rather than adding to the old shape and needing a second migration later.
+
+**The domain has two axes, not one.** A package manager's **identity** (npm, yarn, pnpm, bun) is
+what decides its install command and any precondition checks (the yarn-PnP check today). Its
+**install shape** (npm-compatible hoisted `node_modules`, pnpm's virtual store, bun's isolated
+store, soon yarn PnP's zip-based store) is what an engine actually knows how to walk. Most
+identities have exactly one shape; bun has two, and yarn is about to. Today that second axis is
+invisible in the types, bun's two-shape-ness is expressed entirely inside `bun.ts`'s function body.
+
+**Not in scope: `classify-dependencies.ts` and `NormalizedNode`.** They're already the one part of
+this design that works well: a single package-manager-agnostic classifier, and a shared interchange
+shape every engine already produces regardless of how it walks its own tree. This part only touches
+how a package manager is *identified* and *dispatched* to an engine, not what an engine hands off
+once it's found one.
+
+- [ ] **Settle the design with a spike against the real code before committing to it** (the same
+      discipline Part 3 used for the engine questions); the sketch below is a starting point, not a
+      decided shape. (1) A **package-manager adapter** per identity, replacing `scanners` +
+      `installCommands` + the loose yarn-PnP `if` with one
+      `Record<PackageManager, PackageManagerAdapter>` in `@license-cop/core`, each adapter holding at
+      least an install command, a scanning engine (or a shape-detector for identities with more than
+      one), and an optional `assertPreconditions` hook — turning today's yarn-only special case into
+      a structured slot every adapter can use, not a branch bolted onto `checkLicenses`. (2) A
+      **`DependencyScanningEngine`** per install shape: one shared skeleton — call the shape's own
+      tree-walk, apply the dev/prod/optional-inclusion decision, hand the result to
+      `classifyDependencies` — with exactly one swappable primitive per shape (the walk itself),
+      rather than each engine re-deriving the whole sequence independently the way `npm.ts`, `pnpm.ts`
+      and `bun-isolated.ts` do today, held in sync only by a comment ("same as pnpm.ts"). Whether that
+      skeleton is a base class's template method or a factory function closing over the one swappable
+      primitive is exactly what the spike should decide; the shape matters more than the syntax.
+      Confirm during the spike whether pnpm's library-driven walk and bun's hand-rolled
+      symlink-following can share more than the walk's entry/exit points; if the walk itself has to
+      stay bespoke per engine, the shared skeleton is still worth it on its own. (3) An identity with
+      more than one shape (bun today; yarn once PnP lands) needs its own
+      `detectShape()`-style dispatch at scan time, the job `bun.ts` currently does by hand — decide
+      whether that's a method every adapter can optionally implement, or a small shared helper
+      adapters compose with.
+- [ ] `@license-cop/core`: implement the settled design. `npm.ts`, `pnpm.ts` and `bun-isolated.ts`
+      move onto the shared engine skeleton, so only their own tree-walk stays bespoke; `bun.ts` either
+      disappears into the new shape-detection mechanism or shrinks to just the bun-specific detector;
+      `assertNotPlugAndPlay`'s call site moves from its own `if` into the yarn adapter's
+      `assertPreconditions`; and `license-cop.ts`'s `scanners` record and `assert-installed.ts`'s
+      `installCommands` record both collapse into the one `PackageManagerAdapter` registry.
+- [ ] `packages/e2e-fixtures`: the equivalent consolidation for the fixture side — one
+      `Record<PackageManager, FixtureAdapter>` (install command, overrides shape, entry point)
+      replacing `project.ts`'s `getInstallCommand`, `package-json-builder.ts`'s overrides switch, and
+      `fixtures.ts`'s `entryPoints` map.
+- [ ] Update Part 6 (Yarn Plug'n'Play, below)'s text once this lands: it currently says PnP's engine
+      dispatch should follow "the same … shape Part 3 established for bun" — repoint that at
+      whatever this part actually lands, since that's what PnP would be extending by then.
+
+## Part 5 — Broaden npm fixture coverage
+
+A separate branch, after Part 4 merges and before Part 6. Not part of bun support itself, it's a
 standalone improvement: today `"npm"` in `packages/e2e-fixtures/src/package-managers.ts` means
 "whatever ships with the Node.js under test," the only package manager tested that way, unlike
 pnpm (`pnpm-10`/`11`/`12`) and yarn (`yarn-1`/`3`/`4`), which are each pinned to specific majors.
-npm should get the same treatment. Sequenced as its own branch rather than folded into Part 3
-because it touches the same shared switch statements Part 3 also touches (`toMemberSpecifiers`'s
-workspace-protocol check and the `overrides`/`resolutions` switch, both in
-`package-json-builder.ts`, both currently keyed on exact-match `"npm"`), so doing them in the same
-branch would just create needless in-flight conflicts.
+npm should get the same treatment. Sequenced after Part 4 so each new npm variant is added to the
+consolidated adapter shape rather than the old scattered switches Part 4 is replacing.
 
 - [ ] Decide which npm majors matter (mirroring how pnpm picked 10/11/12 and yarn picked 1/3/4), and
       whether the bare `"npm"` entry ("whatever ships with the Node.js under test") stays alongside
       the pinned ones or is replaced by them.
 - [ ] Pin the chosen npm majors as npm-aliased devDependencies (`"npm-X": "npm:npm@^X"`) in
-      `packages/e2e-fixtures/package.json`, with matching `entryPoints` lines in `fixtures.ts`.
+      `packages/e2e-fixtures/package.json`, with matching `entryPoints` lines in `fixtures.ts`
+      (or its Part 4 replacement).
 - [ ] Update every place currently keyed on the literal string `"npm"` to treat every pinned npm
       variant the same way: `toMemberSpecifiers`'s `usesWorkspaceProtocol` check and the `overrides`
-      vs `resolutions` switch, both in `package-json-builder.ts`.
+      vs `resolutions` switch, both in `package-json-builder.ts` (or wherever Part 4 relocates them).
 
-## Part 5 — Yarn Plug'n'Play support
+## Part 6 — Yarn Plug'n'Play support
 
-A sixth branch (after Parts 3 and 4 merge): it builds on the test pyramid from 2.5 and on Part 3
-having already settled how a new package manager is added to `@license-cop/core` and
-`packages/e2e-fixtures` (bun was the first addition under the pyramid; this is the second, and the
-first one that isn't arborist-readable).
+A seventh branch (after Parts 3, 4 and 5 merge): it builds on the test pyramid from 2.5 and on
+Part 4 having already settled how a package manager with more than one install shape is added to
+`@license-cop/core` and `packages/e2e-fixtures` (bun was the first such addition, worked out by
+hand in Part 3 and generalized in Part 4; this is the second, and the first one that isn't
+arborist- or pnpm-library-readable).
 
 **Where things stand today (added during the final pass on 2.x).** Yarn 2+ defaults to Plug'n'Play, which installs no `node_modules` at all — just a `.pnp.cjs` resolution map and zipped packages in `.yarn/cache`. license-cop's npm engine reads `node_modules` through arborist, so before the final pass a PnP project scanned as an empty tree and printed "Done! No issues found" with exit code 0, even with a forbidden license in the dependency graph (confirmed with a real yarn 4 install). That silent false negative is fixed for now by detect-and-refuse: `assertNotPlugAndPlay` in `@license-cop/core` throws an `UnsupportedProjectError` when the project resolves to yarn and has a `.pnp.cjs`/`.pnp.js`, telling the user to set `nodeLinker: node-modules`. `packages/cli-e2e/src/lib/plug-and-play.spec.ts` covers it with real yarn 3 and yarn 4 PnP installs (via `createProject`'s `linker: "pnp"` option). This part replaces the refusal with real support.
 
@@ -142,14 +227,21 @@ first one that isn't arborist-readable).
 
 **Part 4 (a branch, after Part 3 merges):**
 
-2. **Part 4** (broaden npm fixture coverage) — after bun, so the two efforts don't collide in the
-   same shared fixture-plumbing files; before Yarn PnP, so PnP's own fixture work lands on a settled
-   package-manager list rather than one still being broadened underneath it.
+2. **Part 4** (consolidate package-manager dispatch) — right after bun, while what it exposed is
+   still fresh, and before Part 5 touches the same switch statements this part replaces. Landing the
+   consolidation first means Part 5 adds each new npm variant as one adapter object instead of
+   editing the old scattered shape and needing a second migration later.
 
 **Part 5 (a branch, after Part 4 merges):**
 
-3. **Part 5** (Yarn Plug'n'Play support) — last, because it builds on the package-manager-addition
-   shape Part 3 settled under the 2.4/2.5 pyramid (including the "one package-manager identity, linker
-   detected and dispatched at scan time" pattern bun established), and because PnP is the first
-   package manager that needs its own way of reading an install rather than reusing arborist or the
-   pnpm hierarchy library.
+3. **Part 5** (broaden npm fixture coverage) — after the dispatch consolidation, so each new npm
+   variant is added to the settled adapter shape; before Yarn PnP, so PnP's own fixture work lands on
+   a settled package-manager list rather than one still being broadened underneath it.
+
+**Part 6 (a branch, after Part 5 merges):**
+
+4. **Part 6** (Yarn Plug'n'Play support) — last, because it builds on the package-manager-addition
+   shape Part 4 generalized from what Part 3 worked out by hand for bun (the adapter registry, and
+   the "one package-manager identity, several install shapes, detected at scan time" pattern), and
+   because PnP is the first package manager that needs its own way of reading an install rather than
+   reusing arborist or the pnpm hierarchy library.

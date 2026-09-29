@@ -12,7 +12,7 @@
   ],
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb", "fullstack", "css", "html", "typescript", "npm"],
-  "words": ["deepmerge", "lightningcss", "libvips"],
+  "words": ["deepmerge"],
   "ignoreWords": [
     "tobysmith",
     "nrwl",
@@ -28,7 +28,10 @@
     "hastscript",
     "shiki",
     "Fira",
-    "Codecov"
+    "Codecov",
+    "lightningcss",
+    "libvips",
+    "bunfig"
   ],
   "import": [],
   "ignoreRegExpList": [],
