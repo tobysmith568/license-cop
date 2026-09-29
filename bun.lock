@@ -81,7 +81,7 @@
       "dependencies": {
         "@npmcli/arborist": "^10.0.0",
         "@pnpm/lockfile.fs": "^1100.0.0",
-        "@pnpm/logger": "^1001.0.1",
+        "@pnpm/logger": "^1100.0.0",
         "@pnpm/reviewing.dependencies-hierarchy": "^1001.0.0",
         "compare-versions": "^6.0.0-rc.1",
         "json5": "^2.2.3",
@@ -706,7 +706,7 @@
 
     "@pnpm/lockfile.utils": ["@pnpm/lockfile.utils@1102.1.5", "", { "dependencies": { "@pnpm/config.normalize-registries": "1101.0.2", "@pnpm/constants": "1102.0.0", "@pnpm/deps.path": "1101.0.5", "@pnpm/error": "1100.2.1", "@pnpm/hooks.types": "1101.0.5", "@pnpm/lockfile.types": "1100.1.4", "@pnpm/resolving.resolver-base": "1101.3.2", "@pnpm/resolving.tarball-url": "1101.1.3", "@pnpm/types": "1102.1.1", "ramda": "npm:@pnpm/ramda@0.28.1" } }, "sha512-f8QOt5saUkIo/NIrnO6ZmXAIoVjUq856Por2gZZ/fp+SXp2jDf7duVx9lY4PfMT9SpPAJfXxuluRiZqpia6yKw=="],
 
-    "@pnpm/logger": ["@pnpm/logger@1001.0.1", "", { "dependencies": { "bole": "^5.0.17", "split2": "^4.2.0" } }, "sha512-gdwlAMXC4Wc0s7Dmg/4wNybMEd/4lSd9LsXQxeg/piWY0PPXjgz1IXJWnVScx6dZRaaodWP3c1ornrw8mZdFZw=="],
+    "@pnpm/logger": ["@pnpm/logger@1100.0.0", "", { "dependencies": { "bole": "^5.0.17", "split2": "^4.2.0" } }, "sha512-A3bRMTIZ5ptDPAE/KsDeY1J5UqqOiyo66+k/mUvaVjx++OJdMbp9If5kisEq9ljAV5r5TRpkxsJbSdrdJ5WtzQ=="],
 
     "@pnpm/matcher": ["@pnpm/matcher@1000.1.0", "", { "dependencies": { "escape-string-regexp": "^4.0.0" } }, "sha512-R1pl9wY1b9fQRGkD5pNDhe3+6AMfNCtSOoTvrMLj5kepQm6i/4i3ulDTuBxYuvzWOoD0nx1jVofjTrlKxK8RoQ=="],
 
@@ -2837,6 +2837,8 @@
     "@pnpm/reviewing.dependencies-hierarchy/@pnpm/lockfile.fs/@pnpm/lockfile.merger": ["@pnpm/lockfile.merger@1001.0.20", "", { "dependencies": { "@pnpm/lockfile.types": "1002.1.0", "@pnpm/types": "1001.3.0", "comver-to-semver": "^1.0.0", "ramda": "npm:@pnpm/ramda@0.28.1", "semver": "^7.7.4" } }, "sha512-93MKB5fObr49PMRoDZVcUewe2uuR6TRj8In0y1CeXeDzXY1SPVKZsODCVvAA2z2UxZ1YXKcw9Oaak31E9ln5CQ=="],
 
     "@pnpm/reviewing.dependencies-hierarchy/@pnpm/lockfile.fs/@pnpm/lockfile.types": ["@pnpm/lockfile.types@1002.1.0", "", { "dependencies": { "@pnpm/patching.types": "1000.1.0", "@pnpm/resolver-base": "1005.4.1", "@pnpm/types": "1001.3.0" } }, "sha512-Oa9Fhwo4Ipodj3hyUPC5wUt5ucVkuttyct2DbFUkB79Fq5HL9MHHQ+JFYh03eajmLqWrN1t8+6DbmcKqRtNjNg=="],
+
+    "@pnpm/reviewing.dependencies-hierarchy/@pnpm/lockfile.fs/@pnpm/logger": ["@pnpm/logger@1001.0.1", "", { "dependencies": { "bole": "^5.0.17", "split2": "^4.2.0" } }, "sha512-gdwlAMXC4Wc0s7Dmg/4wNybMEd/4lSd9LsXQxeg/piWY0PPXjgz1IXJWnVScx6dZRaaodWP3c1ornrw8mZdFZw=="],
 
     "@pnpm/reviewing.dependencies-hierarchy/@pnpm/lockfile.fs/@pnpm/object.key-sorting": ["@pnpm/object.key-sorting@1000.0.1", "", { "dependencies": { "@pnpm/util.lex-comparator": "^3.0.2", "sort-keys": "^4.2.0" } }, "sha512-YTJCXyUGOrJuj4QqhSKqZa1vlVAm82h1/uw00ZmD/kL2OViggtyUwWyIe62kpwWVPwEYixfGjfvaFKVJy2mjzA=="],
 
