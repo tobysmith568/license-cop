@@ -106,7 +106,7 @@
         "@license-cop/mit-test-package": "workspace:*",
         "@license-cop/test-utils": "workspace:*",
         "@license-cop/uses-isc-test-package": "workspace:*",
-        "pnpm-10": "npm:pnpm@10.34.5",
+        "pnpm-10": "npm:pnpm@12.7.0",
         "pnpm-11": "npm:pnpm@11.28.0",
         "pnpm-12": "npm:pnpm@12.7.0",
         "yarn-1": "npm:yarn@1.22.22",
@@ -2088,7 +2088,7 @@
 
     "playwright-core": ["playwright-core@1.63.0", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg=="],
 
-    "pnpm-10": ["pnpm@10.34.5", "", { "bin": { "pnpm": "bin/pnpm.cjs", "pnpx": "bin/pnpx.cjs" } }, "sha512-pO4F8vc2WCVb1qiYWcBlpFwopX2u+uLIk6Fo7itzFow3uR6D5X6mdlStA/AwMXRkMOi84442LgQmBfuKvIAZLg=="],
+    "pnpm-10": ["pnpm@12.7.0", "", { "optionalDependencies": { "@pnpm/exe.android-arm64": "12.7.0", "@pnpm/exe.android-x64": "12.7.0", "@pnpm/exe.darwin-arm64": "12.7.0", "@pnpm/exe.darwin-x64": "12.7.0", "@pnpm/exe.freebsd-x64": "12.7.0", "@pnpm/exe.linux-arm64": "12.7.0", "@pnpm/exe.linux-arm64-musl": "12.7.0", "@pnpm/exe.linux-ppc64": "12.7.0", "@pnpm/exe.linux-riscv64": "12.7.0", "@pnpm/exe.linux-s390x": "12.7.0", "@pnpm/exe.linux-x64": "12.7.0", "@pnpm/exe.linux-x64-musl": "12.7.0", "@pnpm/exe.win32-arm64": "12.7.0", "@pnpm/exe.win32-x64": "12.7.0" }, "bin": { "pn": "pn", "pnx": "pnx", "pnpm": "pnpm", "pnpx": "pnpx" } }, "sha512-nFZHfjYAaNbp3KapLvtORrPcWlL86/PYTXi5c2wN7ViaVhYhpS9oIZp6OfrMY83AecMibvnJ1fArefdOaagHtg=="],
 
     "pnpm-11": ["pnpm@11.28.0", "", { "bin": { "pn": "bin/pnpm.mjs", "pnx": "bin/pnpx.mjs", "pnpm": "bin/pnpm.mjs", "pnpx": "bin/pnpx.mjs" } }, "sha512-jtI5Nx3oIkS2zM+eICPBjqhDmWHy7D/omJE7n37i52ygpFcXWArKPHmXwTX21PXeRSTL7uGizKxDDAPRNOKkjA=="],
 
