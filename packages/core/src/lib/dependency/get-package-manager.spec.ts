@@ -20,7 +20,8 @@ describe("getPackageManager", () => {
       ["npm@10.0.0", "npm"],
       ["yarn@1.22.19", "yarn"],
       ["yarn@3.8.7", "yarn"],
-      ["pnpm@10.28.1", "pnpm"]
+      ["pnpm@10.28.1", "pnpm"],
+      ["bun@1.1.42", "bun"]
     ])("should resolve %s to %s", async (packageManager, expected) => {
       await dir.write({ "package.json": packageJson({ packageManager }) });
 
@@ -42,7 +43,7 @@ describe("getPackageManager", () => {
 
     it("should fall back to lock file discovery for an unrecognised package manager", async () => {
       await dir.write({
-        "package.json": packageJson({ packageManager: "bun@1.0.0" }),
+        "package.json": packageJson({ packageManager: "foo@1.0.0" }),
         "pnpm-lock.yaml": ""
       });
 
@@ -69,12 +70,36 @@ describe("getPackageManager", () => {
       expect(result).toBe("pnpm");
     });
 
+    it("should resolve bun from bun.lock", async () => {
+      await dir.write({ "package.json": packageJson(), "bun.lock": "" });
+
+      const result = await getPackageManager(dir.path);
+
+      expect(result).toBe("bun");
+    });
+
+    it("should resolve bun from bun.lockb", async () => {
+      await dir.write({ "package.json": packageJson(), "bun.lockb": "" });
+
+      const result = await getPackageManager(dir.path);
+
+      expect(result).toBe("bun");
+    });
+
     it("should prefer yarn when there are multiple lock files", async () => {
       await dir.write({ "package.json": packageJson(), "yarn.lock": "", "pnpm-lock.yaml": "" });
 
       const result = await getPackageManager(dir.path);
 
       expect(result).toBe("yarn");
+    });
+
+    it("should prefer pnpm over bun.lock", async () => {
+      await dir.write({ "package.json": packageJson(), "pnpm-lock.yaml": "", "bun.lock": "" });
+
+      const result = await getPackageManager(dir.path);
+
+      expect(result).toBe("pnpm");
     });
 
     it("should default to npm when there is no other information", async () => {

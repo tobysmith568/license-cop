@@ -13,7 +13,8 @@ export type InstalledScope = {
 const installCommands: Record<PackageManager, string> = {
   npm: "npm install",
   yarn: "yarn install",
-  pnpm: "pnpm install"
+  pnpm: "pnpm install",
+  bun: "bun install"
 };
 
 /**

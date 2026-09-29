@@ -3,7 +3,7 @@ import { noopOnVerbose, type OnVerbose } from "../on-verbose";
 import { fileExists } from "../utils/file-exists";
 import { readPackageManagerField } from "./package-json";
 
-export type PackageManager = "npm" | "yarn" | "pnpm";
+export type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
 
 export const getPackageManager = async (
   workingDirectory: string,
@@ -35,6 +35,10 @@ const tryResolveFromPackageManager = (packageManager: string): PackageManager | 
     return "pnpm";
   }
 
+  if (packageManager.startsWith("bun")) {
+    return "bun";
+  }
+
   return undefined;
 };
 
@@ -45,6 +49,14 @@ const resolveFromLockFileDiscovery = async (workingDirectory: string): Promise<P
 
   if (await fileExists(join(workingDirectory, "pnpm-lock.yaml"))) {
     return "pnpm";
+  }
+
+  if (await fileExists(join(workingDirectory, "bun.lock"))) {
+    return "bun";
+  }
+
+  if (await fileExists(join(workingDirectory, "bun.lockb"))) {
+    return "bun";
   }
 
   return "npm";
