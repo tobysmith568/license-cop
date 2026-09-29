@@ -107,7 +107,7 @@
         "@license-cop/test-utils": "workspace:*",
         "@license-cop/uses-isc-test-package": "workspace:*",
         "pnpm-10": "npm:pnpm@10.34.5",
-        "pnpm-11": "npm:pnpm@11.27.0",
+        "pnpm-11": "npm:pnpm@11.28.0",
         "pnpm-12": "npm:pnpm@12.6.0",
         "yarn-1": "npm:yarn@1.22.22",
         "yarn-3": "npm:@yarnpkg/cli-dist@3.8.7",
@@ -2062,7 +2062,7 @@
 
     "pnpm-10": ["pnpm@10.34.5", "", { "bin": { "pnpm": "bin/pnpm.cjs", "pnpx": "bin/pnpx.cjs" } }, "sha512-pO4F8vc2WCVb1qiYWcBlpFwopX2u+uLIk6Fo7itzFow3uR6D5X6mdlStA/AwMXRkMOi84442LgQmBfuKvIAZLg=="],
 
-    "pnpm-11": ["pnpm@11.27.0", "", { "bin": { "pn": "bin/pnpm.mjs", "pnx": "bin/pnpx.mjs", "pnpm": "bin/pnpm.mjs", "pnpx": "bin/pnpx.mjs" } }, "sha512-rRKCFGO7FDKV8fo+zed6a5uXp5kDhtqAD/V7/8OWTcZLexx1WdXb5cM3rqZZ7ZyJN9Q3C9GYyiAJvG+gJJgI5w=="],
+    "pnpm-11": ["pnpm@11.28.0", "", { "bin": { "pn": "bin/pnpm.mjs", "pnx": "bin/pnpx.mjs", "pnpm": "bin/pnpm.mjs", "pnpx": "bin/pnpx.mjs" } }, "sha512-jtI5Nx3oIkS2zM+eICPBjqhDmWHy7D/omJE7n37i52ygpFcXWArKPHmXwTX21PXeRSTL7uGizKxDDAPRNOKkjA=="],
 
     "pnpm-12": ["pnpm@12.6.0", "", { "optionalDependencies": { "@pnpm/exe.android-arm64": "12.6.0", "@pnpm/exe.android-x64": "12.6.0", "@pnpm/exe.darwin-arm64": "12.6.0", "@pnpm/exe.darwin-x64": "12.6.0", "@pnpm/exe.freebsd-x64": "12.6.0", "@pnpm/exe.linux-arm64": "12.6.0", "@pnpm/exe.linux-arm64-musl": "12.6.0", "@pnpm/exe.linux-ppc64": "12.6.0", "@pnpm/exe.linux-riscv64": "12.6.0", "@pnpm/exe.linux-s390x": "12.6.0", "@pnpm/exe.linux-x64": "12.6.0", "@pnpm/exe.linux-x64-musl": "12.6.0", "@pnpm/exe.win32-arm64": "12.6.0", "@pnpm/exe.win32-x64": "12.6.0" }, "bin": { "pn": "pn", "pnx": "pnx", "pnpm": "pnpm", "pnpx": "pnpx" } }, "sha512-PvaPlRyxEawgS0paFvCy3fDaVqluBBPoHYVdnwtV75JnFHCQKOHNAMQFwsX7e56OxNxGd3yAXQNzwvL/AP0g7A=="],
 
