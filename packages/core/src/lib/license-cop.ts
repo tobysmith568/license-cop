@@ -1,4 +1,5 @@
 import { isAbsolute, join } from "path";
+import { bunDependencyScanning } from "./dependency-scanning/bun";
 import { npmDependencyScanning } from "./dependency-scanning/npm";
 import type { DependencyScanner, DependencyScanningOptions } from "./dependency-scanning/options";
 import { pnpmDependencyScanning } from "./dependency-scanning/pnpm";
@@ -22,7 +23,8 @@ export type LicenseCopOptions = {
 const scanners: Record<PackageManager, DependencyScanner> = {
   npm: npmDependencyScanning,
   yarn: npmDependencyScanning,
-  pnpm: pnpmDependencyScanning
+  pnpm: pnpmDependencyScanning,
+  bun: bunDependencyScanning
 };
 
 export const checkLicenses = async (options: LicenseCopOptions): Promise<CheckLicensesResult> => {

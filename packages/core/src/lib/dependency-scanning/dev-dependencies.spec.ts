@@ -2,6 +2,7 @@ import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils"
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { mkdir, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
+import { bunIsolatedDependencyScanning } from "./bun-isolated";
 import { npmDependencyScanning } from "./npm";
 import type { DependencyScanner } from "./options";
 import { pnpmDependencyScanning } from "./pnpm";
@@ -14,20 +15,24 @@ import { pnpmDependencyScanning } from "./pnpm";
 
 const engines: [string, () => string, DependencyScanner][] = [
   ["npm", () => npmDir, npmDependencyScanning],
-  ["pnpm", () => pnpmDir, pnpmDependencyScanning]
+  ["pnpm", () => pnpmDir, pnpmDependencyScanning],
+  ["bun-isolated", () => bunIsolatedDir, bunIsolatedDependencyScanning]
 ];
 
 let tempDir: TempDir;
 let npmDir: string;
 let pnpmDir: string;
+let bunIsolatedDir: string;
 
 beforeAll(async () => {
   tempDir = await createTempDir({ prefix: "license-cop-dev-deps-" });
   npmDir = join(tempDir.path, "npm");
   pnpmDir = join(tempDir.path, "pnpm");
+  bunIsolatedDir = join(tempDir.path, "bun-isolated");
 
   await createNpmFixture(npmDir);
   await createPnpmFixture(pnpmDir);
+  await createBunIsolatedFixture(bunIsolatedDir);
 });
 
 afterAll(async () => {
@@ -199,6 +204,44 @@ virtualStoreDirMaxLength: 120
   await link(join(modulesDir, "prod"), join(virtualStore("prod"), "prod"));
   await link(join(modulesDir, "dev"), join(virtualStore("dev"), "dev"));
   await link(join(modulesDir, "optional"), join(virtualStore("optional"), "optional"));
+};
+
+const createBunIsolatedFixture = async (dir: string) => {
+  await writeJson(join(dir, "package.json"), {
+    name: "fixture",
+    version: "0.0.0",
+    dependencies: { prod: "1.0.0" },
+    devDependencies: { dev: "1.0.0" },
+    optionalDependencies: { optional: "1.0.0" }
+  });
+
+  await writeJson(join(dir, "bun.lock"), {
+    lockfileVersion: 2,
+    configVersion: 1,
+    workspaces: {
+      "": {
+        name: "fixture",
+        dependencies: { prod: "1.0.0" },
+        devDependencies: { dev: "1.0.0" },
+        optionalDependencies: { optional: "1.0.0" }
+      }
+    },
+    packages: {
+      prod: ["prod@1.0.0", "", { dependencies: { "prod-child": "1.0.0" } }, "sha512-x"],
+      "prod-child": ["prod-child@1.0.0", "", {}, "sha512-x"],
+      dev: ["dev@1.0.0", "", { dependencies: { "dev-child": "1.0.0" } }, "sha512-x"],
+      "dev-child": ["dev-child@1.0.0", "", {}, "sha512-x"],
+      optional: ["optional@1.0.0", "", {}, "sha512-x"]
+    }
+  });
+
+  const store = (name: string) => join(dir, "node_modules", ".bun", `${name}@1.0.0`, "node_modules", name);
+
+  await writePackage(store("prod"), "prod");
+  await writePackage(store("prod-child"), "prod-child");
+  await writePackage(store("dev"), "dev");
+  await writePackage(store("dev-child"), "dev-child");
+  await writePackage(store("optional"), "optional");
 };
 
 const writePackage = async (dir: string, name: string, dependencies?: Record<string, string>) => {
