@@ -3,7 +3,7 @@
   "extends": ["local>tobysmith568/renovate-config"],
   "packageRules": [
     {
-      "//description": "Each package manager under test is an aliased devDependency for one major. They're named after their alias, so match on that; the shared config's pnpm rule (^10) would otherwise apply to every pnpm alias.",
+      "description": "Each package manager under test is an aliased devDependency for one major. They're named after their alias, so match on that; the shared config's pnpm rule (^10) would otherwise apply to every pnpm alias.",
       "matchFileNames": ["packages/e2e-fixtures/package.json"],
       "matchDepNames": ["pnpm-10"],
       "allowedVersions": "^10"
