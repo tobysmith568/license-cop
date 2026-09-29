@@ -10,5 +10,17 @@
     "CC-BY-3.0",
     "CC0-1.0",
     "Python-2.0"
+  ],
+  // Pulled in by apps/website's astro dependency (lightningcss via vite, the libvips
+  // native bindings via astro's own optional sharp dependency): MPL-2.0 and
+  // LGPL-3.0-or-later respectively, neither in the allowed licenses above. Only the
+  // linux-x64 variants are listed since that's all `ubuntu-latest` (what CI runs
+  // local-licenses on) ever resolves.
+  "packages": [
+    "lightningcss",
+    "lightningcss-linux-x64-gnu",
+    "lightningcss-linux-x64-musl",
+    "@img/sharp-libvips-linux-x64",
+    "@img/sharp-libvips-linuxmusl-x64"
   ]
 }

@@ -12,7 +12,7 @@
   ],
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb", "fullstack", "css", "html", "typescript", "npm"],
-  "words": ["deepmerge"],
+  "words": ["deepmerge", "lightningcss", "libvips"],
   "ignoreWords": [
     "tobysmith",
     "nrwl",

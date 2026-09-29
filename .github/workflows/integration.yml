@@ -135,10 +135,6 @@ jobs:
   local-licenses:
     name: Check Licenses using Build
 
-    # Skipped until Part 3 (bun.lock support, see migration.md) lands: this repo's own
-    # dependencies are now installed by bun, which license-cop can't scan yet.
-    if: false
-
     needs:
       - build
 
@@ -162,10 +158,11 @@ jobs:
   published-licenses:
     name: Check Licenses using the Published Version
 
-    # Also skipped until Part 3 (bun.lock support, see migration.md) lands, for the same
-    # reason as local-licenses above. The is_release condition it had before that
-    # (skip on release, so a broken published version doesn't block fixes) still applies once
-    # this is re-enabled: `if: inputs.is_release == false`
+    # `bunx license-cop` resolves the currently-published npm package, not this branch's code, and
+    # bun support (see plan.md's Part 3) won't exist in a published release until this branch merges
+    # and a new version ships. Gets flipped back on in a follow-up PR once that release is out,
+    # restoring its original condition at that point: `if: inputs.is_release == false` (skip on
+    # release, so a broken published version doesn't block fixes).
     if: false
 
     needs:
