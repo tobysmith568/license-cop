@@ -31,7 +31,7 @@ classifier already covers scenarios package-manager-agnostically.
 **Both of bun's linker modes are in scope from day one**, not just the default. Bun has two
 structurally different install shapes: **hoisted** (npm-compatible flat `node_modules`, bun's
 historical default for a single-package project) and **isolated** (`[install] linker = "isolated"`
-in `bunfig.toml`, or the default for a *workspace* project since lockfile `configVersion: 1`,
+in `bunfig.toml`, or the default for a _workspace_ project since lockfile `configVersion: 1`,
 explicitly modeled on pnpm: root `node_modules` holds only symlinks into a central store at
 `node_modules/.bun/<name>@<version>/...`). This repo's own `bunfig.toml` already sets
 `linker = "isolated"`, so isolated support isn't optional scope, it's required for `local-licenses`
@@ -54,7 +54,7 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
 - [x] **Engine dispatch, both linkers.** `PackageManager` stays a single `"bun"` value (linker isn't
       a package-manager identity, the same way yarn PnP vs. node-modules doesn't get its own
       `PackageManager` value either). Which linker an already-installed project used is detected at
-      *scan* time, inside a single `bun` entry in `lib/license-cop.ts`'s `scanners` record, once
+      _scan_ time, inside a single `bun` entry in `lib/license-cop.ts`'s `scanners` record, once
       `assertInstalled` has already confirmed `node_modules` exists: check for `node_modules/.bun/`
       on disk (robust, no config-parsing needed, and only meaningful post-install anyway) and
       dispatch internally to whichever engine matches. This keeps the existing "exhaustive `Record`,
@@ -82,7 +82,7 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
       the npm registry with `bun`/`bunx` bins, so `"bun-1": "npm:bun@^1"` slots into
       `e2e-fixtures/package.json`'s devDependencies next to `pnpm-10`/`yarn-1`, with a matching
       `entryPoints` line in `fixtures.ts`). `createProject` must write its own `bunfig.toml` forcing
-      the matching linker for *both* entries explicitly, never relying on bun's own default (which
+      the matching linker for _both_ entries explicitly, never relying on bun's own default (which
       differs between a single-package project and a workspace one, so leaving it implicit would mean
       `contract.spec.ts`'s single-package fixtures and `workspaces.spec.ts`'s workspace fixtures
       silently exercised different engines for the same nominal entry). Because both spec files
@@ -103,7 +103,7 @@ explicitly modeled on pnpm: root `node_modules` holds only symlinks into a centr
 - [x] CI: re-enable `local-licenses` (it runs this branch's own build,
       `node ./packages/cli/dist/bin.js`) once bun support actually works end to end against this
       repo's own isolated-linker install. **Leave `published-licenses` disabled** — it runs
-      `bunx license-cop`, which resolves the *currently-published* npm package, not this branch's
+      `bunx license-cop`, which resolves the _currently-published_ npm package, not this branch's
       code, so it can't pass until a release containing bun support has actually shipped; flip it in
       a follow-up PR at that point, restoring its original `if: inputs.is_release == false` condition.
       No change needed to the `e2e` job's OS/Node matrix itself, it varies OS/Node, not package
@@ -120,7 +120,7 @@ prompted directly by what building bun exposed. `@license-cop/core` currently sp
 package manager's per-identity concerns across several independent, exhaustively-typed structures
 (`license-cop.ts`'s `scanners` record, `assert-installed.ts`'s `installCommands` record, and a
 one-off `if (packageManager === "yarn") { await assertNotPlugAndPlay(...) }` special case in
-`checkLicenses` that sits *outside* that exhaustiveness guarantee) rather than one cohesive
+`checkLicenses` that sits _outside_ that exhaustiveness guarantee) rather than one cohesive
 structure per package manager. `packages/e2e-fixtures` has the same problem worse: `project.ts`'s
 `getInstallCommand` switch, `package-json-builder.ts`'s overrides/resolutions switch, and
 `fixtures.ts`'s `entryPoints` map are three separate exhaustive switches over the same
@@ -142,7 +142,7 @@ invisible in the types, bun's two-shape-ness is expressed entirely inside `bun.t
 **Not in scope: `classify-dependencies.ts` and `NormalizedNode`.** They're already the one part of
 this design that works well: a single package-manager-agnostic classifier, and a shared interchange
 shape every engine already produces regardless of how it walks its own tree. This part only touches
-how a package manager is *identified* and *dispatched* to an engine, not what an engine hands off
+how a package manager is _identified_ and _dispatched_ to an engine, not what an engine hands off
 once it's found one.
 
 - [ ] **Settle the design with a spike against the real code before committing to it** (the same
