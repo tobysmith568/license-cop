@@ -1,7 +1,7 @@
 import { createTempDir, writeJson } from "@license-cop/test-utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { getPackageManagerEntryPoint } from "./fixtures";
+import { getBunEntryPoint, getPackageManagerEntryPoint } from "./fixtures";
 import type { LicenseFileBuilder } from "./license-file-builder";
 import type { PackageJsonBuilder } from "./package-json-builder";
 import type { PackageManager } from "./package-managers";
@@ -79,6 +79,14 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
     await writeFile(join(path, ".yarnrc.yml"), "nodeLinker: node-modules\n");
   }
 
+  // bun's own ambient default varies by project shape (hoisted for a single package, isolated for a
+  // workspace), so each entry forces its own linker explicitly rather than relying on that default,
+  // which would otherwise make the same nominal entry run a different engine in different fixtures.
+  if (packageManager === "bun-1-hoisted" || packageManager === "bun-1-isolated") {
+    const bunLinker = packageManager === "bun-1-hoisted" ? "hoisted" : "isolated";
+    await writeFile(join(path, "bunfig.toml"), `[install]\nlinker = "${bunLinker}"\n`);
+  }
+
   await install(packageManager, path);
 
   const remove = () => tempDir.remove();
@@ -127,6 +135,11 @@ const getInstallCommand = (packageManager: PackageManager): InstallCommand => {
         args: [getPackageManagerEntryPoint(packageManager), "install"],
         env: { YARN_ENABLE_IMMUTABLE_INSTALLS: "false" }
       };
+    // bun happily writes a fresh lockfile with no extra flag, even under CI, since these are
+    // installed into a fresh temp dir with no existing lockfile to conflict with.
+    case "bun-1-hoisted":
+    case "bun-1-isolated":
+      return { command: getBunEntryPoint(), args: ["install"] };
     default: {
       const _exhaustiveCheck: never = packageManager;
       throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);

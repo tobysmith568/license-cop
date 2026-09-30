@@ -74,6 +74,9 @@ export class PackageJsonBuilder {
       case "yarn-3":
       case "yarn-4":
         return { ...packageJson, resolutions: overrides };
+      case "bun-1-hoisted":
+      case "bun-1-isolated":
+        return { ...packageJson, overrides };
       default: {
         const _exhaustiveCheck: never = packageManager;
         throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);

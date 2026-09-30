@@ -4,6 +4,12 @@ All notable changes to `license-cop` and `@license-cop/core` are documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Added
+
+- **bun support.** license-cop can now scan a project installed with bun, both of its linker modes: the default flat, npm-compatible `node_modules` for a single-package project, and the isolated linker (bun's default for a workspace, or set explicitly via `bunfig.toml`'s `[install] linker = "isolated"`), which it reads the same way it already reads a pnpm install.
+
 ## [2.0.0]
 
 ### Breaking Changes

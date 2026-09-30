@@ -25,7 +25,11 @@ const createWorkspace = (packageManager: PackageManager) =>
     }
   });
 
-const isPnpm = (packageManager: PackageManager) => packageManager.startsWith("pnpm");
+// pnpm and bun's isolated linker give each member its own node_modules (a symlink farm into a
+// central store), so scanning one on its own works; npm, yarn and bun's hoisted linker hoist
+// everything to the root instead, leaving a member with nothing installed to scan on its own.
+const givesEachMemberOwnNodeModules = (packageManager: PackageManager) =>
+  packageManager.startsWith("pnpm") || packageManager === "bun-1-isolated";
 
 const check = (workingDirectory: string) =>
   checkLicenses({ allowedLicenses: ["MIT"], allowedPackages: [], workingDirectory });
@@ -60,30 +64,30 @@ describe.each(packageManagers)("%s workspace root", packageManager => {
   });
 });
 
-// pnpm gives each member its own node_modules, so scanning one on its own works
-describe.each(packageManagers.filter(isPnpm))("%s workspace member", packageManager => {
-  let project: Project;
+describe.each(packageManagers.filter(givesEachMemberOwnNodeModules))(
+  "%s workspace member",
+  packageManager => {
+    let project: Project;
 
-  beforeAll(async () => {
-    project = await createWorkspace(packageManager);
-  });
+    beforeAll(async () => {
+      project = await createWorkspace(packageManager);
+    });
 
-  afterAll(async () => {
-    await project.remove();
-  });
+    afterAll(async () => {
+      await project.remove();
+    });
 
-  it("should find the member's dependencies", async () => {
-    const result = await check(project.memberPath("a"));
+    it("should find the member's dependencies", async () => {
+      const result = await check(project.memberPath("a"));
 
-    expect(namesAndVersions(result.allowedLicenses)).toEqual([
-      "@license-cop/mit-test-package@4.5.6"
-    ]);
-  });
-});
+      expect(namesAndVersions(result.allowedLicenses)).toEqual([
+        "@license-cop/mit-test-package@4.5.6"
+      ]);
+    });
+  }
+);
 
-// npm and yarn hoist everything to the root, leaving a member with nothing installed to scan, which
-// has to be refused rather than passed
-describe.each(packageManagers.filter(name => !isPnpm(name)))(
+describe.each(packageManagers.filter(name => !givesEachMemberOwnNodeModules(name)))(
   "%s workspace member",
   packageManager => {
     let project: Project;

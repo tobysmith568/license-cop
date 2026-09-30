@@ -28,7 +28,10 @@
     "hastscript",
     "shiki",
     "Fira",
-    "Codecov"
+    "Codecov",
+    "lightningcss",
+    "libvips",
+    "bunfig"
   ],
   "import": [],
   "ignoreRegExpList": [],
