@@ -44,7 +44,7 @@
   ],
   "dependencies": {
     "@license-cop/core": "workspace:*",
-    "cosmiconfig": "^9.0.0",
+    "cosmiconfig": "^10.0.0",
     "deepmerge": "^4.3.1",
     "json5": "^2.2.3",
     "zod": "^4.0.0"
