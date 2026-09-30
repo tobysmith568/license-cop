@@ -51,6 +51,9 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
 
+      - name: Re-resolve workspace dependencies
+        run: bun install
+
       - name: Pack
         run: bunx turbo run pack
 
@@ -110,6 +113,9 @@ jobs:
         run: bunx turbo run version
         env:
           VERSION: ${{ inputs.version }}
+
+      - name: Re-resolve workspace dependencies
+        run: bun install
 
       - name: Pack assets
         run: bunx turbo run pack
