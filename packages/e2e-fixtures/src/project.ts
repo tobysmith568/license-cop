@@ -1,7 +1,7 @@
 import { createTempDir, writeJson } from "@license-cop/test-utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { getBunEntryPoint, getPackageManagerEntryPoint } from "./fixtures";
+import { fixtureAdapters, type FixtureAdapter, type Linker } from "./fixture-adapters";
 import type { LicenseFileBuilder } from "./license-file-builder";
 import type { PackageJsonBuilder } from "./package-json-builder";
 import type { PackageManager } from "./package-managers";
@@ -15,7 +15,7 @@ export interface ProjectOptions {
    * Which linker yarn 2+ installs with. License-cop reads `node_modules`, so that's the default;
    * `pnp` is only for testing that it's refused.
    */
-  linker?: "node-modules" | "pnp";
+  linker?: Linker;
   /**
    * Makes the project a workspace root, with one member per entry (keyed by its directory name,
    * under `packages/`). The members are named after their directory and, like most real ones,
@@ -48,14 +48,16 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
   const builtPackageJson = await packageJson.build(packageManager);
   const isWorkspace = members !== undefined;
 
+  const adapter = fixtureAdapters[packageManager];
+
   // pnpm keeps its workspace globs in its own file; npm and yarn keep them in the package.json
-  const usesWorkspacesField = isWorkspace && !packageManager.startsWith("pnpm");
+  const usesWorkspacesField = isWorkspace && adapter.workspaceGlobsIn === "package.json";
   const rootPackageJson = usesWorkspacesField
     ? { ...builtPackageJson, workspaces: [`${membersDirectory}/*`] }
     : builtPackageJson;
   await writeJson(join(path, "package.json"), rootPackageJson);
 
-  if (isWorkspace && packageManager.startsWith("pnpm")) {
+  if (isWorkspace && adapter.workspaceGlobsIn === "pnpm-workspace.yaml") {
     await writeFile(join(path, "pnpm-workspace.yaml"), `packages:\n  - "${membersDirectory}/*"\n`);
   }
 
@@ -74,20 +76,9 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
     await writeLicenseFile(licenseFile);
   }
 
-  // Yarn 2+ defaults to Plug'n'Play, which license-cop doesn't support, so it has to be told not to
-  if ((packageManager === "yarn-3" || packageManager === "yarn-4") && linker === "node-modules") {
-    await writeFile(join(path, ".yarnrc.yml"), "nodeLinker: node-modules\n");
-  }
+  await adapter.writeConfig?.(path, linker);
 
-  // bun's own ambient default varies by project shape (hoisted for a single package, isolated for a
-  // workspace), so each entry forces its own linker explicitly rather than relying on that default,
-  // which would otherwise make the same nominal entry run a different engine in different fixtures.
-  if (packageManager === "bun-1-hoisted" || packageManager === "bun-1-isolated") {
-    const bunLinker = packageManager === "bun-1-hoisted" ? "hoisted" : "isolated";
-    await writeFile(join(path, "bunfig.toml"), `[install]\nlinker = "${bunLinker}"\n`);
-  }
-
-  await install(packageManager, path);
+  await install(adapter, path);
 
   const remove = () => tempDir.remove();
 
@@ -96,53 +87,14 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
   return { path, memberPath, writeLicenseFile, remove };
 };
 
-const install = async (packageManager: PackageManager, cwd: string) => {
-  const { command, args, env, shell } = getInstallCommand(packageManager);
+const install = async (adapter: FixtureAdapter, cwd: string) => {
+  const { invocation, installArgs, installEnv } = adapter;
+  const { command, shell } = invocation;
+  const args = [...invocation.args, ...installArgs];
 
-  const result = await runProcess(command, args, { cwd, env, shell });
+  const result = await runProcess(command, args, { cwd, env: installEnv, shell });
 
   if (result.exitCode !== 0) {
     throw new Error(`\`${command} ${args.join(" ")}\` failed in ${cwd}:\n${result.output}`);
-  }
-};
-
-interface InstallCommand {
-  command: string;
-  args: string[];
-  env?: Record<string, string>;
-  shell?: boolean;
-}
-
-// Each project is installed fresh, so CI's default of refusing to write a lockfile has to be off
-const getInstallCommand = (packageManager: PackageManager): InstallCommand => {
-  switch (packageManager) {
-    // npm is the one that comes with the Node.js under test; shell so that Windows resolves its .cmd shim
-    case "npm":
-      return { command: "npm", args: ["install", "--no-audit", "--no-fund"], shell: true };
-    case "pnpm-10":
-    case "pnpm-11":
-    case "pnpm-12":
-      return {
-        command: "node",
-        args: [getPackageManagerEntryPoint(packageManager), "install", "--no-frozen-lockfile"]
-      };
-    case "yarn-1":
-      return { command: "node", args: [getPackageManagerEntryPoint(packageManager), "install"] };
-    case "yarn-3":
-    case "yarn-4":
-      return {
-        command: "node",
-        args: [getPackageManagerEntryPoint(packageManager), "install"],
-        env: { YARN_ENABLE_IMMUTABLE_INSTALLS: "false" }
-      };
-    // bun happily writes a fresh lockfile with no extra flag, even under CI, since these are
-    // installed into a fresh temp dir with no existing lockfile to conflict with.
-    case "bun-1-hoisted":
-    case "bun-1-isolated":
-      return { command: getBunEntryPoint(), args: ["install"] };
-    default: {
-      const _exhaustiveCheck: never = packageManager;
-      throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
-    }
   }
 };

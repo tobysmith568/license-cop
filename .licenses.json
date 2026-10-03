@@ -1,4 +1,5 @@
 {
+  "$schema": "https://license-cop.js.org/schema.json",
   "licenses": [
     "Apache-2.0",
     "MIT",

@@ -20,5 +20,3 @@ export const packageManagers: PackageManager[] = [
   "bun-1-hoisted",
   "bun-1-isolated"
 ];
-
-export type PinnedPackageManager = Exclude<PackageManager, "npm">;
