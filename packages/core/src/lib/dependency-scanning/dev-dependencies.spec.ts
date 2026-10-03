@@ -1,4 +1,3 @@
-import type { DependencyNode } from "@pnpm/reviewing.dependencies-hierarchy";
 import { describe, expect, it } from "bun:test";
 import { dirname, join } from "node:path";
 import { compose, type Gateways } from "../composition-root";
@@ -10,6 +9,7 @@ import {
   FakePnpmProjectLocator,
   fakeDependencyNode
 } from "./pnpm/fake-pnpm-gateways";
+import type { PnpmDependencyNode } from "./pnpm/pnpm-hierarchy-reader";
 
 // Pins down how each engine treats dev-dependencies from the caller's perspective, so that the
 // engines can be refactored onto a shared classifier without changing behaviour.
@@ -74,7 +74,7 @@ const createPnpmProject = (dir: MemoryDir): Gateways => {
 
   const virtualStore = join(dir.path, "node_modules", ".pnpm");
 
-  const node = (name: string, dependencies?: DependencyNode[]) => {
+  const node = (name: string, dependencies?: PnpmDependencyNode[]) => {
     const path = join(virtualStore, `${name}@1.0.0`, "node_modules", name);
     writePackage(
       dir,

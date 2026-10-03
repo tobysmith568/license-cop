@@ -1,15 +1,15 @@
 import { createTempDir, type TempDir } from "@license-cop/test-utils";
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { mkdir, symlink } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { toInclusion } from "../inclusion";
-import { LibraryPnpmHierarchyReader } from "./pnpm-hierarchy-reader";
+import { LockfilePnpmHierarchyReader } from "./pnpm-hierarchy-reader";
 
 // A real (hand-built) pnpm install, since the point of this class is how it drives pnpm's own
 // library. The project has two prod packages (`prod` -> `prod-child`), a dev one and an optional
 // one.
-describe("LibraryPnpmHierarchyReader", () => {
-  const reader = new LibraryPnpmHierarchyReader();
+describe("LockfilePnpmHierarchyReader", () => {
+  const reader = new LockfilePnpmHierarchyReader();
 
   let dir: TempDir;
 
@@ -74,6 +74,137 @@ describe("LibraryPnpmHierarchyReader", () => {
     const prod = hierarchies[dir.path]?.dependencies?.[0];
     expect(prod?.dependencies?.map(child => child.name)).toEqual(["prod-child"]);
     expect(prod?.path).toContain(join(".pnpm", "prod@1.0.0"));
+  });
+});
+
+// A lockfile alone is enough to walk, so these only write the part of an install that matters to
+// each case: the current lockfile, and what pnpm recorded as skipped
+describe("LockfilePnpmHierarchyReader, walking the lockfile", () => {
+  const reader = new LockfilePnpmHierarchyReader();
+  const inclusion = toInclusion({ includeDevDependencies: false, devDependenciesOnly: false });
+
+  let dir: TempDir;
+
+  beforeEach(async () => {
+    dir = await createTempDir();
+  });
+
+  afterEach(async () => {
+    await dir.remove();
+  });
+
+  const install = async (lockfile: string, skipped: string[] = []) => {
+    await dir.write({
+      "node_modules/.modules.yaml": `layoutVersion: 5
+nodeLinker: isolated
+skipped: [${skipped.join(", ")}]
+virtualStoreDir: .pnpm
+virtualStoreDirMaxLength: 120
+`,
+      "node_modules/.pnpm/lock.yaml": lockfile
+    });
+  };
+
+  const lockfileOf = (importer: string, snapshots: string) => `lockfileVersion: '9.0'
+
+importers:
+
+  .:
+${importer}
+
+packages:
+${snapshots
+  .split("\n")
+  .filter(line => /^ {2}\S/.test(line))
+  .map(line => `${line.replace(/:.*$/, "")}:\n    resolution: {integrity: sha512-AAAA}\n`)
+  .join("\n")}
+snapshots:
+${snapshots}
+`;
+
+  it("should name a package that is shared, or part of a cycle, only after it has been expanded", async () => {
+    await install(
+      lockfileOf(
+        `    dependencies:
+      a:
+        specifier: 1.0.0
+        version: 1.0.0
+      c:
+        specifier: 1.0.0
+        version: 1.0.0`,
+        `
+  a@1.0.0:
+    dependencies:
+      b: 1.0.0
+
+  b@1.0.0:
+    dependencies:
+      a: 1.0.0
+
+  c@1.0.0:
+    dependencies:
+      b: 1.0.0
+`
+      )
+    );
+
+    const hierarchies = await reader.read([dir.path], dir.path, inclusion);
+
+    const [a, c] = hierarchies[dir.path]?.dependencies ?? [];
+    expect(a?.dependencies?.map(node => node.name)).toEqual(["b"]);
+    expect(a?.dependencies?.[0]?.dependencies?.map(node => node.name)).toEqual(["a"]);
+    expect(a?.dependencies?.[0]?.dependencies?.[0]?.dependencies).toBeUndefined();
+    expect(c?.dependencies?.map(node => node.name)).toEqual(["b"]);
+    expect(c?.dependencies?.[0]?.dependencies).toBeUndefined();
+  });
+
+  it("should leave out an optional dependency that pnpm skipped installing", async () => {
+    await install(
+      lockfileOf(
+        `    dependencies:
+      a:
+        specifier: 1.0.0
+        version: 1.0.0`,
+        `
+  a@1.0.0:
+    optionalDependencies:
+      other-platform: 1.0.0
+
+  other-platform@1.0.0:
+    optional: true
+`
+      ),
+      ["other-platform@1.0.0"]
+    );
+
+    const hierarchies = await reader.read([dir.path], dir.path, inclusion);
+
+    const a = hierarchies[dir.path]?.dependencies?.[0];
+    expect(a?.dependencies).toEqual([]);
+  });
+
+  it("should keep a link to another directory, where it points", async () => {
+    await install(
+      lockfileOf(
+        `    dependencies:
+      member:
+        specifier: workspace:*
+        version: link:../member`,
+        ""
+      )
+    );
+
+    const hierarchies = await reader.read([dir.path], dir.path, inclusion);
+
+    const member = hierarchies[dir.path]?.dependencies?.[0];
+    expect(member?.path).toBe(join(dir.path, "..", "member"));
+    expect(member?.version).toBe("link:../member");
+  });
+
+  it("should find nothing for a project with no current lockfile", async () => {
+    const hierarchies = await reader.read([dir.path], dir.path, inclusion);
+
+    expect(hierarchies).toEqual({ [dir.path]: {} });
   });
 });
 

@@ -1,11 +1,10 @@
-import type { DependencyNode } from "@pnpm/reviewing.dependencies-hierarchy";
 import { join, resolve } from "node:path";
 import type { PackageJsonReader } from "../../dependency/package-json-reader";
 import type { Logger } from "../../logging/logger";
 import type { DependencyClassifier } from "../dependency-classifier";
 import { WalkingDependencyScanningEngine, type ScanContext } from "../dependency-scanning-engine";
 import type { NormalizedNode } from "../normalized-node";
-import type { PnpmHierarchyReader } from "./pnpm-hierarchy-reader";
+import type { PnpmDependencyNode, PnpmHierarchyReader } from "./pnpm-hierarchy-reader";
 import type { PnpmProjectLocator } from "./pnpm-project-locator";
 
 /** pnpm's virtual store. */
@@ -51,7 +50,7 @@ class PnpmWalker {
     private readonly logger: Logger
   ) {}
 
-  async normalizeNodes(nodes: DependencyNode[] | undefined): Promise<NormalizedNode[]> {
+  async normalizeNodes(nodes: PnpmDependencyNode[] | undefined): Promise<NormalizedNode[]> {
     const normalized: NormalizedNode[] = [];
 
     for (const node of nodes ?? []) {
@@ -62,7 +61,7 @@ class PnpmWalker {
     return normalized;
   }
 
-  private async normalizeNode(node: DependencyNode): Promise<NormalizedNode[]> {
+  private async normalizeNode(node: PnpmDependencyNode): Promise<NormalizedNode[]> {
     this.logger.verbose(`Parsing node: ${node.name}`);
 
     // A workspace member that another one depends on shows up as a linked dependency. It's the

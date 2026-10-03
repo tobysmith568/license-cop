@@ -3,6 +3,12 @@
   "extends": ["local>tobysmith568/renovate-config"],
   "packageRules": [
     {
+      "description": "The pnpm libraries pin each other's versions and peer on @pnpm/logger, so bumping one on its own can leave the installed set inconsistent (which pnpm 11 rejects at install time). Bump them together.",
+      "matchFileNames": ["packages/core/package.json"],
+      "matchPackageNames": ["@pnpm/*"],
+      "groupName": "npm: pnpm Libraries"
+    },
+    {
       "description": "Each package manager under test is an aliased devDependency for one major. They're named after their alias, so match on that; the shared config's pnpm rule (^10) would otherwise apply to every pnpm alias.",
       "matchFileNames": ["packages/e2e-fixtures/package.json"],
       "matchDepNames": ["pnpm-10"],

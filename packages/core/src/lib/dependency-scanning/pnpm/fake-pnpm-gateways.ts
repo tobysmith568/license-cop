@@ -1,6 +1,10 @@
-import type { DependencyNode } from "@pnpm/reviewing.dependencies-hierarchy";
 import type { Inclusion } from "../inclusion";
-import type { PnpmHierarchies, PnpmHierarchyReader } from "./pnpm-hierarchy-reader";
+import type {
+  PnpmDependencyNode,
+  PnpmHierarchies,
+  PnpmHierarchy,
+  PnpmHierarchyReader
+} from "./pnpm-hierarchy-reader";
 import type { PnpmProjectLocator } from "./pnpm-project-locator";
 
 /** Finds the projects it was given, for a test that has no lockfile. */
@@ -12,21 +16,14 @@ export class FakePnpmProjectLocator implements PnpmProjectLocator {
   }
 }
 
-/** What one project depends on, split the way pnpm's own hierarchy is. */
-export type FakeHierarchy = {
-  dependencies?: DependencyNode[];
-  devDependencies?: DependencyNode[];
-  optionalDependencies?: DependencyNode[];
-};
-
 /**
- * A hierarchy reader that answers from what it was given, and, as pnpm's library does, leaves out
+ * A hierarchy reader that answers from what it was given, and, as the real reader does, leaves out
  * the kinds of dependency the inclusion it is asked for doesn't cover.
  */
 export class FakePnpmHierarchyReader implements PnpmHierarchyReader {
   readonly inclusions: Inclusion[] = [];
 
-  constructor(private readonly hierarchies: Record<string, FakeHierarchy>) {}
+  constructor(private readonly hierarchies: Record<string, PnpmHierarchy>) {}
 
   async read(
     _projectPaths: string[],
@@ -49,19 +46,16 @@ export class FakePnpmHierarchyReader implements PnpmHierarchyReader {
   }
 }
 
-/** A dependency node with the fields the engine doesn't read filled in. */
+/** A dependency node, with its alias the same as its name. */
 export const fakeDependencyNode = (
   name: string,
   version: string,
   path: string,
-  dependencies?: DependencyNode[]
-): DependencyNode => ({
+  dependencies?: PnpmDependencyNode[]
+): PnpmDependencyNode => ({
   alias: name,
   name,
   version,
   path,
-  isPeer: false,
-  isSkipped: false,
-  isMissing: false,
   dependencies
 });

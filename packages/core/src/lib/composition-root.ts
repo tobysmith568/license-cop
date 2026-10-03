@@ -8,7 +8,7 @@ import {
 } from "./dependency-scanning/node-modules/arborist-tree-loader";
 import { NodeModulesEngine } from "./dependency-scanning/node-modules/node-modules-engine";
 import {
-  LibraryPnpmHierarchyReader,
+  LockfilePnpmHierarchyReader,
   type PnpmHierarchyReader
 } from "./dependency-scanning/pnpm/pnpm-hierarchy-reader";
 import {
@@ -97,7 +97,7 @@ export const compose = (logger: Logger = new NullLogger(), gateways: Gateways = 
   const nodeModules = new NodeModulesEngine(classifier, treeLoader, packageJsonReader, logger);
 
   const projectLocator = gateways.pnpmProjectLocator ?? new LockfilePnpmProjectLocator();
-  const hierarchyReader = gateways.pnpmHierarchyReader ?? new LibraryPnpmHierarchyReader();
+  const hierarchyReader = gateways.pnpmHierarchyReader ?? new LockfilePnpmHierarchyReader();
   const pnpmStore = new PnpmStoreEngine(
     classifier,
     projectLocator,
