@@ -1,3 +1,4 @@
+import { fixtureAdapters } from "./fixture-adapters";
 import type { FixturePackage } from "./fixtures";
 import { fixturePackages, getTarballPath } from "./fixtures";
 import type { PackageManager } from "./package-managers";
@@ -63,25 +64,7 @@ export class PackageJsonBuilder {
       return packageJson;
     }
 
-    switch (packageManager) {
-      case "npm":
-        return { ...packageJson, overrides };
-      case "pnpm-10":
-      case "pnpm-11":
-      case "pnpm-12":
-        return { ...packageJson, pnpm: { overrides } };
-      case "yarn-1":
-      case "yarn-3":
-      case "yarn-4":
-        return { ...packageJson, resolutions: overrides };
-      case "bun-1-hoisted":
-      case "bun-1-isolated":
-        return { ...packageJson, overrides };
-      default: {
-        const _exhaustiveCheck: never = packageManager;
-        throw new Error(`Unknown package manager: ${_exhaustiveCheck}`);
-      }
-    }
+    return fixtureAdapters[packageManager].withOverrides(packageJson, overrides);
   }
 }
 
@@ -101,8 +84,7 @@ const toFileSpecifiers = async (fixtures: FixturePackage[]) => {
 // Members are named `member-<directory>` (see `createProject`). npm and yarn 1 resolve a plain range
 // to a workspace member that satisfies it; pnpm and yarn 2+ need the explicit protocol.
 const toMemberSpecifiers = (names: string[], packageManager: PackageManager) => {
-  const usesWorkspaceProtocol = packageManager !== "npm" && packageManager !== "yarn-1";
-  const specifier = usesWorkspaceProtocol ? "workspace:*" : "*";
+  const specifier = fixtureAdapters[packageManager].memberSpecifier;
 
   return Object.fromEntries(names.map(name => [`member-${name}`, specifier]));
 };

@@ -1,12 +1,19 @@
 import { describe, expect, it } from "bun:test";
-import { classifyDependencies, type NormalizedNode } from "./classify-dependencies";
+import { PackageJson } from "../dependency/package-json";
+import { NullLogger, type Logger } from "../logging/logger";
+import { RecordingLogger } from "../logging/recording-logger";
+import { LicenseDependencyClassifier } from "./dependency-classifier";
+import type { NormalizedNode } from "./normalized-node";
 
-describe("classifyDependencies", () => {
+describe("LicenseDependencyClassifier", () => {
+  const classifierWith = (logger: Logger) => new LicenseDependencyClassifier(logger);
+  const classifier = classifierWith(new NullLogger());
+
   const classify = (
     nodes: NormalizedNode[],
     allowedLicenses: string[] = ["MIT"],
     allowedPackages: string[] = []
-  ) => classifyDependencies(nodes, { allowedLicenses, allowedPackages, onVerbose: () => {} });
+  ) => classifier.classify(nodes, { allowedLicenses, allowedPackages });
 
   const node = (
     name: string,
@@ -16,7 +23,7 @@ describe("classifyDependencies", () => {
   ): NormalizedNode => ({
     id: `${name}@${version}`,
     name,
-    packageJson: { name, version, ...(license ? { license } : {}) },
+    packageJson: new PackageJson({ name, version, ...(license ? { license } : {}) }),
     children
   });
 
@@ -57,7 +64,7 @@ describe("classifyDependencies", () => {
     const emptyLicenses: NormalizedNode = {
       id: "a@1.0.0",
       name: "a",
-      packageJson: { name: "a", version: "1.0.0", licenses: [] },
+      packageJson: new PackageJson({ name: "a", version: "1.0.0", licenses: [] }),
       children: []
     };
 
@@ -132,5 +139,20 @@ describe("classifyDependencies", () => {
     const result = classify([node("a", "(MIT AND ISC)")], ["MIT", "ISC"]);
 
     expect(result.allowedLicenses.size).toBe(1);
+  });
+
+  it("should report what it decides about each package to the logger", () => {
+    const logger = new RecordingLogger();
+    const loggingClassifier = classifierWith(logger);
+
+    loggingClassifier.classify([node("a", "MIT"), node("b", "GPL-3.0")], {
+      allowedLicenses: ["MIT"],
+      allowedPackages: []
+    });
+
+    expect(logger.messages).toEqual([
+      "Package a has the allowed license: MIT",
+      "Package b has the forbidden license: GPL-3.0"
+    ]);
   });
 });

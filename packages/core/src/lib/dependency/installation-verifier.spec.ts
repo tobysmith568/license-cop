@@ -1,19 +1,20 @@
-import { createTempDir, type TempDir } from "@license-cop/test-utils";
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { compose, type Services } from "../composition-root";
 import { NotInstalledError } from "../not-installed-error";
-import { assertInstalled, type InstalledScope } from "./assert-installed";
+import { createMemoryDir, type MemoryDir } from "../utils/in-memory-file-system";
+import { type InstallationVerifier, type InstalledScope } from "./installation-verifier";
 
-describe("assertInstalled", () => {
-  let dir: TempDir;
+describe("InstallationVerifier", () => {
+  let dir: MemoryDir;
+  let installationVerifier: InstallationVerifier;
+  let packageManagers: Services["packageManagers"];
 
-  beforeEach(async () => {
-    dir = await createTempDir();
-  });
+  beforeEach(() => {
+    dir = createMemoryDir();
 
-  afterEach(async () => {
-    await dir.remove();
+    const services = compose(undefined, { fileSystem: dir.fileSystem });
+    installationVerifier = services.installationVerifier;
+    packageManagers = services.packageManagers;
   });
 
   const production: InstalledScope = { includeDevDependencies: false, devDependenciesOnly: false };
@@ -23,56 +24,56 @@ describe("assertInstalled", () => {
   const writePackageJson = (extra: object) =>
     dir.write({ "package.json": { name: "test", version: "1.0.0", ...extra } });
 
-  const install = () => mkdir(join(dir.path, "node_modules"));
+  const install = () => dir.mkdir("node_modules");
 
   describe("when nothing is installed", () => {
     it.each([
       ["dependencies", { dependencies: { a: "1.0.0" } }],
       ["optionalDependencies", { optionalDependencies: { a: "1.0.0" } }]
     ])("should fail when there are %s to scan", async (_name, declared) => {
-      await writePackageJson(declared);
+      writePackageJson(declared);
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
 
     it("should pass when nothing is declared", async () => {
-      await writePackageJson({});
+      writePackageJson({});
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).resolves.toBeUndefined();
     });
 
     it("should not count dev dependencies unless they're being scanned", async () => {
-      await writePackageJson({ devDependencies: { a: "1.0.0" } });
+      writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).resolves.toBeUndefined();
     });
 
     it("should count dev dependencies when including them", async () => {
-      await writePackageJson({ devDependencies: { a: "1.0.0" } });
+      writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, "npm", withDev);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, withDev);
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
 
     it("should count dev dependencies when scanning only them", async () => {
-      await writePackageJson({ devDependencies: { a: "1.0.0" } });
+      writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, "npm", devOnly);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, devOnly);
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
 
     it("should pass a dev-only scan of a project that has no dev dependencies", async () => {
-      await writePackageJson({ dependencies: { a: "1.0.0" } });
+      writePackageJson({ dependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, "npm", devOnly);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, devOnly);
 
       await expect(act).resolves.toBeUndefined();
     });
@@ -80,19 +81,19 @@ describe("assertInstalled", () => {
 
   describe("when node_modules exists", () => {
     it("should pass", async () => {
-      await writePackageJson({ dependencies: { a: "1.0.0" } });
-      await install();
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      install();
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).resolves.toBeUndefined();
     });
 
     it("should not accept a file called node_modules", async () => {
-      await writePackageJson({ dependencies: { a: "1.0.0" } });
-      await dir.write({ node_modules: "" });
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      dir.write({ node_modules: "" });
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
@@ -104,17 +105,21 @@ describe("assertInstalled", () => {
       ["yarn", "yarn install"],
       ["pnpm", "pnpm install"]
     ] as const)("should name the install command of %s", async (packageManager, command) => {
-      await writePackageJson({ dependencies: { a: "1.0.0" } });
+      writePackageJson({ dependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, packageManager, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers[packageManager],
+        production
+      );
 
       await expect(act).rejects.toThrow(`Run '${command}' first`);
     });
 
     it("should suggest the workspace root, for a workspace member", async () => {
-      await writePackageJson({ dependencies: { a: "1.0.0" } });
+      writePackageJson({ dependencies: { a: "1.0.0" } });
 
-      const act = assertInstalled(dir.path, "npm", production);
+      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
 
       await expect(act).rejects.toThrow("workspace root");
     });

@@ -1,35 +1,18 @@
 import { readdir } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import type { PinnedPackageManager } from "./package-managers";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const workspaceRoot = join(__dirname, "../../..");
-
-export type NodeEntryPointPackageManager = Exclude<
-  PinnedPackageManager,
-  "bun-1-hoisted" | "bun-1-isolated"
->;
 
 // Every package manager except npm (which is whatever comes with the Node.js under test) is a
 // pinned devDependency of this package, aliased by its package manager key, rather than a global
 // install, so the versions under test are the same on every machine. `bun install` puts them in
 // this package's own node_modules, and (bun itself aside, see `getBunEntryPoint`) each is run
 // straight with `node`.
-const entryPoints = {
-  "pnpm-10": "bin/pnpm.cjs",
-  // pnpm 12 ships as a native binary and only keeps a Node entry point at bin/pnpm.mjs (the path
-  // corepack uses); 11 has both
-  "pnpm-11": "bin/pnpm.mjs",
-  "pnpm-12": "bin/pnpm.mjs",
-  "yarn-1": "bin/yarn.js",
-  "yarn-3": "bin/yarn.js",
-  "yarn-4": "bin/yarn.js"
-} as const satisfies Record<NodeEntryPointPackageManager, string>;
-
-export const getPackageManagerEntryPoint = (packageManager: NodeEntryPointPackageManager): string =>
-  join(__dirname, "../node_modules", packageManager, entryPoints[packageManager]);
+export const getNodeEntryPoint = (alias: string, entryPoint: string): string =>
+  join(__dirname, "../node_modules", alias, entryPoint);
 
 // bun ships a native binary (bin/bun.exe, regardless of OS) rather than a Node script, so it's run
 // directly instead of through `node`. Both bun-1-hoisted and bun-1-isolated share this one pinned

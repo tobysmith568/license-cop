@@ -11,7 +11,7 @@ The e2e suite installs its test projects with the real package managers license-
 | `yarn-3`            | `"npm:@yarnpkg/cli-dist@3.x.y"` | `bin/yarn.js`  |
 | `yarn-4`            | `"npm:@yarnpkg/cli-dist@4.x.y"` | `bin/yarn.js`  |
 
-`bun install` puts each in `packages/e2e-fixtures/node_modules/<key>` and `project.ts` runs its entry point straight with `node`, so nothing needs to be installed on the machine and the exact versions under test are recorded, with an integrity hash, in `bun.lock`. The entry points are mapped in `entryPoints` in `packages/e2e-fixtures/src/fixtures.ts`. pnpm 12 ships as a native binary and only keeps a Node entry point at `bin/pnpm.mjs`, which is why it isn't `.cjs` like pnpm 10.
+`bun install` puts each in `packages/e2e-fixtures/node_modules/<key>` and its adapter in `fixture-adapters.ts` runs its entry point straight with `node`, so nothing needs to be installed on the machine and the exact versions under test are recorded, with an integrity hash, in `bun.lock`. Each adapter is given its entry point through `getNodeEntryPoint` in `packages/e2e-fixtures/src/fixtures.ts`. pnpm 12 ships as a native binary and only keeps a Node entry point at `bin/pnpm.mjs`, which is why it isn't `.cjs` like pnpm 10.
 
 npm is the only one that isn't pinned: it's whatever comes with the Node.js version of the CI matrix leg, which is deliberate.
 
@@ -24,8 +24,8 @@ Change the version in `packages/e2e-fixtures/package.json` (keeping it exact), r
 A new major means a new package manager key rather than a bump:
 
 1. Add the key to `PackageManager` and `packageManagers` in `packages/e2e-fixtures/src/package-managers.ts`, and its alias to `packages/e2e-fixtures/package.json`.
-2. Add its entry point to `entryPoints` in `fixtures.ts`.
-3. Add the key to `getInstallCommand` in `project.ts` and to the `overrides` case in `package-json-builder.ts`. Yarn 2 and later need `nodeLinker: node-modules` (and so a check in `createProject`) because license-cop reads `node_modules`, and `YARN_ENABLE_IMMUTABLE_INSTALLS=false` because yarn enables immutable installs on CI by default and each project is installed fresh.
+2. Add an entry for the key to `fixtureAdapters` in `packages/e2e-fixtures/src/fixture-adapters.ts`, built from the factory for its package manager (`pnpmAdapter`, `yarnClassicAdapter`, `yarnModernAdapter` and so on), passing the key and, where the factory takes one, the entry point of its pinned alias. The adapter holds everything that differs per package manager: how it is run and installed, where it spells overrides, how a workspace member is depended on, where workspace globs live and any config file to write first. Yarn 2 and later need `nodeLinker: node-modules` because license-cop reads `node_modules`, and `YARN_ENABLE_IMMUTABLE_INSTALLS=false` because yarn enables immutable installs on CI by default and each project is installed fresh; `yarnModernAdapter` already does both.
+3. If the new package manager differs in a way no existing factory covers, add a factory for it above the registry.
 4. Add a `matchDepNames` rule for the new key to `.renovaterc.json`, allowing only its own major.
 5. Run the suite. `packages/core-e2e/src/contract.spec.ts` runs every key in `packageManagers`, so the new one is covered automatically.
 
