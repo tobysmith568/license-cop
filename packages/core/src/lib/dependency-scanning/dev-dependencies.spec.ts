@@ -1,53 +1,186 @@
-import { createTempDir, writeJson, type TempDir } from "@license-cop/test-utils";
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdir, symlink, writeFile } from "node:fs/promises";
-import { dirname, join, relative } from "node:path";
-import { bunIsolatedDependencyScanning } from "./bun-isolated";
-import { npmDependencyScanning } from "./npm";
-import type { DependencyScanner } from "./options";
-import { pnpmDependencyScanning } from "./pnpm";
+import type { DependencyNode } from "@pnpm/reviewing.dependencies-hierarchy";
+import { describe, expect, it } from "bun:test";
+import { dirname, join } from "node:path";
+import { compose, type Gateways } from "../composition-root";
+import { createMemoryDir, type MemoryDir } from "../utils/in-memory-file-system";
+import type { DependencyScanningEngine } from "./dependency-scanning-engine";
+import { FakeTreeLoader, type FakeNode } from "./node-modules/fake-tree-loader";
+import {
+  FakePnpmHierarchyReader,
+  FakePnpmProjectLocator,
+  fakeDependencyNode
+} from "./pnpm/fake-pnpm-gateways";
 
 // Pins down how each engine treats dev-dependencies from the caller's perspective, so that the
 // engines can be refactored onto a shared classifier without changing behaviour.
 //
 // The fixture project has two prod packages (`prod` -> `prod-child`), two dev packages
 // (`dev` -> `dev-child`) and an optional one (`optional`), all MIT licensed.
+//
+// Nothing here touches the disk: the project's files are in memory, and arborist's and pnpm's
+// libraries, which can only read a real install, are swapped for fakes that answer what they would
+// for this project. What those libraries actually read is covered by the real-install comparison
+// (compare-core.ts) and the contract tests, not here.
 
-const engines: [string, () => string, DependencyScanner][] = [
-  ["npm", () => npmDir, npmDependencyScanning],
-  ["pnpm", () => pnpmDir, pnpmDependencyScanning],
-  ["bun-isolated", () => bunIsolatedDir, bunIsolatedDependencyScanning]
+const writeProjectPackageJson = (dir: MemoryDir) => {
+  dir.write({
+    "package.json": {
+      name: "fixture",
+      version: "0.0.0",
+      dependencies: { prod: "1.0.0" },
+      devDependencies: { dev: "1.0.0" },
+      optionalDependencies: { optional: "1.0.0" }
+    }
+  });
+};
+
+const writePackage = (dir: MemoryDir, path: string, name: string, dependencies?: string[]) => {
+  const dependencyVersions = Object.fromEntries(
+    (dependencies ?? []).map(dependency => [dependency, "1.0.0"])
+  );
+
+  dir.fileSystem.addFile(join(path, "package.json"), {
+    name,
+    version: "1.0.0",
+    license: "MIT",
+    ...(dependencies ? { dependencies: dependencyVersions } : {})
+  });
+};
+
+const createNpmProject = (dir: MemoryDir): Gateways => {
+  writeProjectPackageJson(dir);
+
+  const node = (name: string, dev = false): FakeNode => {
+    const path = join(dir.path, "node_modules", name);
+    writePackage(dir, path, name);
+
+    return { name, version: "1.0.0", path, dev };
+  };
+
+  // arborist hoists: every package is a child of the top node, none nested inside another
+  const hoisted = [
+    node("optional"),
+    node("prod"),
+    node("prod-child"),
+    node("dev", true),
+    node("dev-child", true)
+  ];
+
+  return { treeLoader: new FakeTreeLoader(hoisted) };
+};
+
+const createPnpmProject = (dir: MemoryDir): Gateways => {
+  writeProjectPackageJson(dir);
+
+  const virtualStore = join(dir.path, "node_modules", ".pnpm");
+
+  const node = (name: string, dependencies?: DependencyNode[]) => {
+    const path = join(virtualStore, `${name}@1.0.0`, "node_modules", name);
+    writePackage(
+      dir,
+      path,
+      name,
+      dependencies?.map(dependency => dependency.name)
+    );
+
+    return fakeDependencyNode(name, "1.0.0", path, dependencies);
+  };
+
+  const hierarchy = {
+    dependencies: [node("prod", [node("prod-child")])],
+    devDependencies: [node("dev", [node("dev-child")])],
+    optionalDependencies: [node("optional")]
+  };
+
+  return {
+    pnpmProjectLocator: new FakePnpmProjectLocator([dir.path]),
+    pnpmHierarchyReader: new FakePnpmHierarchyReader({ [dir.path]: hierarchy })
+  };
+};
+
+const createBunIsolatedProject = (dir: MemoryDir): Gateways => {
+  writeProjectPackageJson(dir);
+
+  dir.write({
+    "bun.lock": {
+      lockfileVersion: 2,
+      configVersion: 1,
+      workspaces: {
+        "": {
+          name: "fixture",
+          dependencies: { prod: "1.0.0" },
+          devDependencies: { dev: "1.0.0" },
+          optionalDependencies: { optional: "1.0.0" }
+        }
+      }
+    }
+  });
+
+  const modulesDir = join(dir.path, "node_modules");
+  // bun's isolated store: each package's real files under .bun/<name>@<version>/node_modules/<name>,
+  // with its own dependency edges symlinked as siblings inside that same node_modules.
+  const store = (name: string) => join(modulesDir, ".bun", `${name}@1.0.0`, "node_modules", name);
+
+  const link = (linkPath: string, target: string) => dir.fileSystem.addSymlink(linkPath, target);
+
+  writePackage(dir, store("prod"), "prod", ["prod-child"]);
+  writePackage(dir, store("prod-child"), "prod-child");
+  writePackage(dir, store("dev"), "dev", ["dev-child"]);
+  writePackage(dir, store("dev-child"), "dev-child");
+  writePackage(dir, store("optional"), "optional");
+
+  link(join(modulesDir, "prod"), store("prod"));
+  link(join(modulesDir, "dev"), store("dev"));
+  link(join(modulesDir, "optional"), store("optional"));
+  link(join(dirname(store("prod")), "prod-child"), store("prod-child"));
+  link(join(dirname(store("dev")), "dev-child"), store("dev-child"));
+
+  return {};
+};
+
+type Setup = {
+  /** Writes the project and returns the gateways that stand in for the libraries it needs. */
+  create: (dir: MemoryDir) => Gateways;
+  engine: (services: ReturnType<typeof compose>) => DependencyScanningEngine;
+};
+
+const setups: [string, Setup][] = [
+  [
+    "npm",
+    {
+      create: createNpmProject,
+      engine: services => services.engines.nodeModules
+    }
+  ],
+  [
+    "pnpm",
+    {
+      create: createPnpmProject,
+      engine: services => services.engines.pnpmStore
+    }
+  ],
+  [
+    "bun-isolated",
+    {
+      create: createBunIsolatedProject,
+      engine: services => services.engines.bunIsolated
+    }
+  ]
 ];
 
-let tempDir: TempDir;
-let npmDir: string;
-let pnpmDir: string;
-let bunIsolatedDir: string;
-
-beforeAll(async () => {
-  tempDir = await createTempDir({ prefix: "license-cop-dev-deps-" });
-  npmDir = join(tempDir.path, "npm");
-  pnpmDir = join(tempDir.path, "pnpm");
-  bunIsolatedDir = join(tempDir.path, "bun-isolated");
-
-  await createNpmFixture(npmDir);
-  await createPnpmFixture(pnpmDir);
-  await createBunIsolatedFixture(bunIsolatedDir);
-});
-
-afterAll(async () => {
-  await tempDir.remove();
-});
-
-describe.each(engines)("%s dev-dependency handling", (_name, getDir, scan) => {
+describe.each(setups)("%s dev-dependency handling", (_name, setup) => {
   const run = async (includeDevDependencies: boolean, devDependenciesOnly: boolean) => {
-    const result = await scan({
-      workingDirectory: getDir(),
+    const dir = createMemoryDir();
+    const gateways = setup.create(dir);
+    const services = compose(undefined, { ...gateways, fileSystem: dir.fileSystem });
+    const engine = setup.engine(services);
+
+    const result = await engine.scan({
+      workingDirectory: dir.path,
       allowedLicenses: ["MIT"],
       allowedPackages: [],
       includeDevDependencies,
-      devDependenciesOnly,
-      onVerbose: () => {}
+      devDependenciesOnly
     });
 
     return [...result.allowedLicenses].map(pkg => pkg.name).sort();
@@ -77,185 +210,3 @@ describe.each(engines)("%s dev-dependency handling", (_name, getDir, scan) => {
     expect(found).toEqual(["dev", "dev-child"]);
   });
 });
-
-const createNpmFixture = async (dir: string) => {
-  await writeJson(join(dir, "package.json"), {
-    name: "fixture",
-    version: "0.0.0",
-    dependencies: { prod: "1.0.0" },
-    devDependencies: { dev: "1.0.0" },
-    optionalDependencies: { optional: "1.0.0" }
-  });
-
-  await writePackage(join(dir, "node_modules", "optional"), "optional");
-  await writePackage(join(dir, "node_modules", "prod"), "prod", { "prod-child": "1.0.0" });
-  await writePackage(join(dir, "node_modules", "prod-child"), "prod-child");
-  await writePackage(join(dir, "node_modules", "dev"), "dev", { "dev-child": "1.0.0" });
-  await writePackage(join(dir, "node_modules", "dev-child"), "dev-child");
-};
-
-const createPnpmFixture = async (dir: string) => {
-  await writeJson(join(dir, "package.json"), {
-    name: "fixture",
-    version: "0.0.0",
-    dependencies: { prod: "1.0.0" },
-    devDependencies: { dev: "1.0.0" },
-    optionalDependencies: { optional: "1.0.0" }
-  });
-
-  const lockfile = `lockfileVersion: '9.0'
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
-importers:
-
-  .:
-    dependencies:
-      prod:
-        specifier: 1.0.0
-        version: 1.0.0
-    devDependencies:
-      dev:
-        specifier: 1.0.0
-        version: 1.0.0
-    optionalDependencies:
-      optional:
-        specifier: 1.0.0
-        version: 1.0.0
-
-packages:
-
-  dev-child@1.0.0:
-    resolution: {integrity: sha512-AAAA}
-
-  dev@1.0.0:
-    resolution: {integrity: sha512-AAAA}
-
-  optional@1.0.0:
-    resolution: {integrity: sha512-AAAA}
-
-  prod-child@1.0.0:
-    resolution: {integrity: sha512-AAAA}
-
-  prod@1.0.0:
-    resolution: {integrity: sha512-AAAA}
-
-snapshots:
-
-  dev-child@1.0.0: {}
-
-  dev@1.0.0:
-    dependencies:
-      dev-child: 1.0.0
-
-  optional@1.0.0:
-    optional: true
-
-  prod-child@1.0.0: {}
-
-  prod@1.0.0:
-    dependencies:
-      prod-child: 1.0.0
-`;
-  await writeFile(join(dir, "pnpm-lock.yaml"), lockfile);
-
-  const modulesYaml = `hoistPattern:
-  - '*'
-hoistedDependencies: {}
-included:
-  dependencies: true
-  devDependencies: true
-  optionalDependencies: true
-injectedDeps: {}
-layoutVersion: 5
-nodeLinker: isolated
-packageManager: pnpm@10.28.1
-pendingBuilds: []
-prunedAt: Mon, 01 Jan 2026 00:00:00 GMT
-publicHoistPattern: []
-registries:
-  default: https://registry.npmjs.org/
-skipped: []
-storeDir: /tmp/store
-virtualStoreDir: .pnpm
-virtualStoreDirMaxLength: 120
-`;
-  const modulesDir = join(dir, "node_modules");
-  await mkdir(modulesDir, { recursive: true });
-  await writeFile(join(modulesDir, ".modules.yaml"), modulesYaml);
-  await mkdir(join(modulesDir, ".pnpm"), { recursive: true });
-  await writeFile(join(modulesDir, ".pnpm", "lock.yaml"), lockfile);
-
-  const virtualStore = (name: string) => join(modulesDir, ".pnpm", `${name}@1.0.0`, "node_modules");
-
-  await writePackage(join(virtualStore("prod"), "prod"), "prod");
-  await writePackage(join(virtualStore("prod-child"), "prod-child"), "prod-child");
-  await writePackage(join(virtualStore("dev"), "dev"), "dev");
-  await writePackage(join(virtualStore("dev-child"), "dev-child"), "dev-child");
-  await writePackage(join(virtualStore("optional"), "optional"), "optional");
-
-  await link(
-    join(virtualStore("prod"), "prod-child"),
-    join(virtualStore("prod-child"), "prod-child")
-  );
-  await link(join(virtualStore("dev"), "dev-child"), join(virtualStore("dev-child"), "dev-child"));
-  await link(join(modulesDir, "prod"), join(virtualStore("prod"), "prod"));
-  await link(join(modulesDir, "dev"), join(virtualStore("dev"), "dev"));
-  await link(join(modulesDir, "optional"), join(virtualStore("optional"), "optional"));
-};
-
-const createBunIsolatedFixture = async (dir: string) => {
-  await writeJson(join(dir, "package.json"), {
-    name: "fixture",
-    version: "0.0.0",
-    dependencies: { prod: "1.0.0" },
-    devDependencies: { dev: "1.0.0" },
-    optionalDependencies: { optional: "1.0.0" }
-  });
-
-  await writeJson(join(dir, "bun.lock"), {
-    lockfileVersion: 2,
-    configVersion: 1,
-    workspaces: {
-      "": {
-        name: "fixture",
-        dependencies: { prod: "1.0.0" },
-        devDependencies: { dev: "1.0.0" },
-        optionalDependencies: { optional: "1.0.0" }
-      }
-    }
-  });
-
-  const modulesDir = join(dir, "node_modules");
-  // bun's isolated store: each package's real files under .bun/<name>@<version>/node_modules/<name>,
-  // with its own dependency edges symlinked as siblings inside that same node_modules.
-  const store = (name: string) => join(modulesDir, ".bun", `${name}@1.0.0`, "node_modules", name);
-
-  await writePackage(store("prod"), "prod", { "prod-child": "1.0.0" });
-  await writePackage(store("prod-child"), "prod-child");
-  await writePackage(store("dev"), "dev", { "dev-child": "1.0.0" });
-  await writePackage(store("dev-child"), "dev-child");
-  await writePackage(store("optional"), "optional");
-
-  await link(join(modulesDir, "prod"), store("prod"));
-  await link(join(modulesDir, "dev"), store("dev"));
-  await link(join(modulesDir, "optional"), store("optional"));
-  await link(join(dirname(store("prod")), "prod-child"), store("prod-child"));
-  await link(join(dirname(store("dev")), "dev-child"), store("dev-child"));
-};
-
-const writePackage = async (dir: string, name: string, dependencies?: Record<string, string>) => {
-  await writeJson(join(dir, "package.json"), {
-    name,
-    version: "1.0.0",
-    license: "MIT",
-    ...(dependencies ? { dependencies } : {})
-  });
-};
-
-const link = async (linkPath: string, target: string) => {
-  await mkdir(dirname(linkPath), { recursive: true });
-  await symlink(relative(dirname(linkPath), target), linkPath);
-};

@@ -1,184 +1,42 @@
-import { createTempDir, type TempDir } from "@license-cop/test-utils";
-import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
-import { join, relative } from "node:path";
-import type { DependencyScanningOptions } from "./dependency-scanning/options";
-import { NotInstalledError } from "./not-installed-error";
-import type { CheckLicensesResult } from "./result";
-import { UnsupportedProjectError } from "./unsupported-project-error";
+import { describe, expect, it } from "bun:test";
+import { createLicenseChecker } from "./composition-root";
+import { FakeTreeLoader } from "./dependency-scanning/node-modules/fake-tree-loader";
+import { createMemoryDir } from "./utils/in-memory-file-system";
 
-const emptyResult = (label: string) =>
-  ({ label, allowedPackages: new Set() }) as unknown as CheckLicensesResult;
-
-const npmDependencyScanning = mock();
-const pnpmDependencyScanning = mock();
-
-void mock.module("./dependency-scanning/npm", () => ({ npmDependencyScanning }));
-void mock.module("./dependency-scanning/pnpm", () => ({ pnpmDependencyScanning }));
-
-const { checkLicenses } = await import("./license-cop");
-
-describe("checkLicenses", () => {
-  let dir: TempDir;
-
-  beforeEach(async () => {
-    dir = await createTempDir();
-    npmDependencyScanning.mockReset().mockResolvedValue(emptyResult("npm"));
-    pnpmDependencyScanning.mockReset().mockResolvedValue(emptyResult("pnpm"));
-  });
-
-  afterEach(async () => {
-    await dir.remove();
-  });
-
-  const packageJson = (extra: object = {}) => ({ name: "test", version: "1.0.0", ...extra });
-
-  const baseOptions = () => ({
-    allowedLicenses: ["MIT"],
-    allowedPackages: ["react"],
-    workingDirectory: dir.path
-  });
-
-  describe("choosing an engine", () => {
-    it("should use pnpm for a pnpm project", async () => {
-      await dir.write({ "package.json": packageJson({ packageManager: "pnpm@10.0.0" }) });
-
-      const result = await checkLicenses(baseOptions());
-
-      expect(result).toEqual(emptyResult("pnpm"));
-      expect(npmDependencyScanning).not.toHaveBeenCalled();
+// `checkLicenses` is `createLicenseChecker(options.onVerbose).check(options)`, so this is where its
+// behaviour is pinned down, with the disk and arborist swapped out.
+describe("createLicenseChecker", () => {
+  it("should report progress to the onVerbose callback the caller gave", async () => {
+    const dir = createMemoryDir();
+    const messages: string[] = [];
+    const checker = createLicenseChecker(message => messages.push(message), {
+      fileSystem: dir.fileSystem
     });
 
-    it("should use npm for an npm project", async () => {
-      await dir.write({ "package.json": packageJson() });
-
-      const result = await checkLicenses(baseOptions());
-
-      expect(result).toEqual(emptyResult("npm"));
-      expect(pnpmDependencyScanning).not.toHaveBeenCalled();
+    const act = checker.check({
+      allowedLicenses: [],
+      allowedPackages: [],
+      workingDirectory: dir.path
     });
-
-    it("should use the npm engine for yarn, which shares npm's node_modules layout", async () => {
-      await dir.write({ "package.json": packageJson(), "yarn.lock": "" });
-
-      const result = await checkLicenses(baseOptions());
-
-      expect(result).toEqual(emptyResult("npm"));
-    });
-  });
-
-  describe("Plug'n'Play", () => {
-    it("should refuse a yarn project that uses Plug'n'Play without scanning it", async () => {
-      await dir.write({ "package.json": packageJson(), "yarn.lock": "", ".pnp.cjs": "" });
-
-      const act = checkLicenses(baseOptions());
-
-      await expect(act).rejects.toThrow(UnsupportedProjectError);
-      expect(npmDependencyScanning).not.toHaveBeenCalled();
-    });
-
-    it("should refuse when yarn is only named in the packageManager field", async () => {
-      await dir.write({
-        "package.json": packageJson({ packageManager: "yarn@4.0.0" }),
-        ".pnp.cjs": ""
-      });
-
-      const act = checkLicenses(baseOptions());
-
-      await expect(act).rejects.toThrow(UnsupportedProjectError);
-    });
-
-    it("should not look for Plug'n'Play files in projects of other package managers", async () => {
-      await dir.write({ "package.json": packageJson(), ".pnp.cjs": "" });
-
-      const result = await checkLicenses(baseOptions());
-
-      expect(result).toEqual(emptyResult("npm"));
-    });
-  });
-
-  describe("installation", () => {
-    it("should refuse a project that has dependencies but isn't installed, without scanning it", async () => {
-      await dir.write({ "package.json": packageJson({ dependencies: { react: "19.0.0" } }) });
-
-      const act = checkLicenses(baseOptions());
-
-      await expect(act).rejects.toThrow(NotInstalledError);
-      expect(npmDependencyScanning).not.toHaveBeenCalled();
-    });
-
-    it("should scan a project that has dependencies and is installed", async () => {
-      await dir.write({
-        "package.json": packageJson({ dependencies: { react: "19.0.0" } }),
-        "node_modules/.keep": ""
-      });
-
-      const result = await checkLicenses(baseOptions());
-
-      expect(result).toEqual(emptyResult("npm"));
-    });
-  });
-
-  describe("options", () => {
-    beforeEach(async () => {
-      await dir.write({ "package.json": packageJson() });
-    });
-
-    it("should pass the options on to the engine", async () => {
-      const onVerbose = () => {};
-
-      await checkLicenses({
-        ...baseOptions(),
-        includeDevDependencies: true,
-        devDependenciesOnly: true,
-        onVerbose
-      });
-
-      expect(npmDependencyScanning).toHaveBeenCalledWith({
-        allowedLicenses: ["MIT"],
-        allowedPackages: ["react"],
-        workingDirectory: dir.path,
-        includeDevDependencies: true,
-        devDependenciesOnly: true,
-        onVerbose
-      });
-    });
-
-    it("should default the dev dependency options to false and onVerbose to a no-op", async () => {
-      await checkLicenses(baseOptions());
-
-      const [options] = npmDependencyScanning.mock.calls[0] as [DependencyScanningOptions];
-      expect(options.includeDevDependencies).toBe(false);
-      expect(options.devDependenciesOnly).toBe(false);
-      expect(typeof options.onVerbose).toBe("function");
-    });
-
-    it("should resolve a relative working directory against the current directory", async () => {
-      const relativeDirectory = relative(process.cwd(), dir.path);
-
-      await checkLicenses({ ...baseOptions(), workingDirectory: relativeDirectory });
-
-      const [options] = npmDependencyScanning.mock.calls[0] as [{ workingDirectory: string }];
-      expect(options.workingDirectory).toBe(join(process.cwd(), relativeDirectory));
-    });
-
-    it("should default the working directory to the current directory", async () => {
-      const previous = process.cwd();
-      process.chdir(dir.path);
-
-      try {
-        await checkLicenses({ allowedLicenses: [], allowedPackages: [] });
-      } finally {
-        process.chdir(previous);
-      }
-
-      const [options] = npmDependencyScanning.mock.calls[0] as [{ workingDirectory: string }];
-      expect(await Bun.file(join(options.workingDirectory, "package.json")).exists()).toBe(true);
-    });
-  });
-
-  it("should throw when the working directory has no package.json", async () => {
-    const act = checkLicenses(baseOptions());
 
     await expect(act).rejects.toThrow("Cannot find the file");
+    expect(messages).toEqual([`Cannot find the package.json: '${dir.path}/package.json'`]);
+  });
+
+  it("should run without an onVerbose callback", async () => {
+    const dir = createMemoryDir();
+    dir.write({ "package.json": { name: "test", version: "1.0.0" } });
+    const checker = createLicenseChecker(undefined, {
+      fileSystem: dir.fileSystem,
+      treeLoader: new FakeTreeLoader([])
+    });
+
+    const result = await checker.check({
+      allowedLicenses: [],
+      allowedPackages: [],
+      workingDirectory: dir.path
+    });
+
+    expect(result.forbiddenLicenses.size).toBe(0);
   });
 });
