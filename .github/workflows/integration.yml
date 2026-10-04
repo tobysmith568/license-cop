@@ -158,12 +158,9 @@ jobs:
   published-licenses:
     name: Check Licenses using the Published Version
 
-    # `bunx license-cop` resolves the currently-published npm package, not this branch's code, and
-    # bun support (see plan.md's Part 3) won't exist in a published release until this branch merges
-    # and a new version ships. Gets flipped back on in a follow-up PR once that release is out,
-    # restoring its original condition at that point: `if: inputs.is_release == false` (skip on
-    # release, so a broken published version doesn't block fixes).
-    if: false
+    # We don't check this when releasing to make sure that broken released
+    # versions don't block fixes
+    if: inputs.is_release == false
 
     needs:
       - build
