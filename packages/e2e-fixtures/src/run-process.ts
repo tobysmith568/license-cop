@@ -8,13 +8,12 @@ export interface ProcessResult {
 export const runProcess = (
   command: string,
   args: string[],
-  options: { cwd: string; env?: Record<string, string>; shell?: boolean }
+  options: { cwd: string; env?: Record<string, string> }
 ): Promise<ProcessResult> =>
   new Promise((resolve, reject) => {
     const child = childProcess.spawn(command, args, {
       cwd: options.cwd,
-      env: { ...process.env, ...options.env },
-      shell: options.shell ?? false
+      env: { ...process.env, ...options.env }
     });
 
     let output = "";

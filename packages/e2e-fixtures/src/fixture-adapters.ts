@@ -11,7 +11,6 @@ export type Overrides = Record<string, string>;
 export type Invocation = {
   command: string;
   args: string[];
-  shell?: boolean;
 };
 
 /** Everything that differs between the package managers a fixture project can be installed with. */
@@ -28,10 +27,9 @@ export type FixtureAdapter = {
   writeConfig?: (projectPath: string, linker: Linker) => Promise<void>;
 };
 
-// npm is the one that comes with the Node.js under test; shell so that Windows resolves its .cmd shim
-const npmAdapter = (): FixtureAdapter => {
+const npmAdapter = (key: PackageManager): FixtureAdapter => {
   return {
-    invocation: { command: "npm", args: [], shell: true },
+    invocation: { command: "node", args: [getNodeEntryPoint(key, "bin/npm-cli.js")] },
     installArgs: ["install", "--no-audit", "--no-fund"],
     withOverrides: (packageJson, overrides) => ({ ...packageJson, overrides }),
     memberSpecifier: "*",
@@ -91,10 +89,12 @@ const bunAdapter = (bunLinker: "hoisted" | "isolated"): FixtureAdapter => {
   };
 };
 
-// A new variant (Part 5's pinned npm majors, Part 6's PnP) is one more line built from the matching
-// factory above. The factories sit above this since the registry is built eagerly.
+// A new variant (Part 6's PnP) is one more line built from the matching factory above. The
+// factories sit above this since the registry is built eagerly.
 export const fixtureAdapters: Record<PackageManager, FixtureAdapter> = {
-  npm: npmAdapter(),
+  "npm-10": npmAdapter("npm-10"),
+  "npm-11": npmAdapter("npm-11"),
+  "npm-12": npmAdapter("npm-12"),
   // pnpm 12 ships as a native binary and only keeps a Node entry point at bin/pnpm.mjs (the path
   // corepack uses); 11 has both
   "pnpm-10": pnpmAdapter("pnpm-10", "bin/pnpm.cjs"),

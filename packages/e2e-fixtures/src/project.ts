@@ -89,10 +89,10 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
 
 const install = async (adapter: FixtureAdapter, cwd: string) => {
   const { invocation, installArgs, installEnv } = adapter;
-  const { command, shell } = invocation;
+  const { command } = invocation;
   const args = [...invocation.args, ...installArgs];
 
-  const result = await runProcess(command, args, { cwd, env: installEnv, shell });
+  const result = await runProcess(command, args, { cwd, env: installEnv });
 
   if (result.exitCode !== 0) {
     throw new Error(`\`${command} ${args.join(" ")}\` failed in ${cwd}:\n${result.output}`);

@@ -1,5 +1,7 @@
 export type PackageManager =
-  | "npm"
+  | "npm-10"
+  | "npm-11"
+  | "npm-12"
   | "pnpm-10"
   | "pnpm-11"
   | "pnpm-12"
@@ -10,7 +12,9 @@ export type PackageManager =
   | "bun-1-isolated";
 
 export const packageManagers: PackageManager[] = [
-  "npm",
+  "npm-10",
+  "npm-11",
+  "npm-12",
   "pnpm-10",
   "pnpm-11",
   "pnpm-12",

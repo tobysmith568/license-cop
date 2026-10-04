@@ -17,6 +17,24 @@
     },
     {
       "matchFileNames": ["packages/e2e-fixtures/package.json"],
+      "matchDepNames": ["npm-10"],
+      "allowedVersions": "^10",
+      "automerge": true
+    },
+    {
+      "matchFileNames": ["packages/e2e-fixtures/package.json"],
+      "matchDepNames": ["npm-11"],
+      "allowedVersions": "^11",
+      "automerge": true
+    },
+    {
+      "matchFileNames": ["packages/e2e-fixtures/package.json"],
+      "matchDepNames": ["npm-12"],
+      "allowedVersions": "^12",
+      "automerge": true
+    },
+    {
+      "matchFileNames": ["packages/e2e-fixtures/package.json"],
       "matchDepNames": ["pnpm-11"],
       "allowedVersions": "^11",
       "automerge": true
