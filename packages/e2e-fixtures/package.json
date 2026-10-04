@@ -15,7 +15,7 @@
     "@license-cop/mit-test-package": "workspace:*",
     "@license-cop/test-utils": "workspace:*",
     "@license-cop/uses-isc-test-package": "workspace:*",
-    "bun-1": "npm:bun@^1",
+    "bun-1": "npm:bun@1.4.2",
     "npm-10": "npm:npm@10.9.9",
     "npm-11": "npm:npm@11.21.0",
     "npm-12": "npm:npm@12.2.0",

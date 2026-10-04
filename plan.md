@@ -72,7 +72,7 @@ Two prototypes were built against the real code and compared on real installs (9
 ## Part 5 — Broaden npm fixture coverage
 
 A separate branch, after Part 4 merges and before Part 6. Not part of bun support itself, it's a
-standalone improvement: today `"npm"` in `packages/e2e-fixtures/src/package-managers.ts` means
+standalone improvement: `"npm"` in `packages/e2e-fixtures/src/package-managers.ts` used to mean
 "whatever ships with the Node.js under test," the only package manager tested that way, unlike
 pnpm (`pnpm-10`/`11`/`12`) and yarn (`yarn-1`/`3`/`4`), which are each pinned to specific majors.
 npm should get the same treatment. Sequenced after Part 4 so each new npm variant is added to the
@@ -86,8 +86,8 @@ consolidated adapter registry rather than the old scattered switches Part 4 repl
       copy isn't tested either.
 - [x] Pin the chosen npm majors as npm-aliased devDependencies (`"npm-X": "npm:npm@^X"`) in
       `packages/e2e-fixtures/package.json`, with a matching `fixtureAdapters` entry in `fixture-adapters.ts`
-      (an `npmAdapter` that takes the key and entry point, since the bare `"npm"` entry takes neither today).
-- [x] Check that nothing is still keyed on the literal string `"npm"`. After Part 4 the facts that used to be (`memberSpecifier`, where overrides go, the install invocation) are fields of the adapter, so a pinned npm variant only needs its own adapter entry; the remaining places to look are specs and `packageManagers` consumers that special-case `"npm"` as unpinned (for example `package-managers.spec.ts`'s filter).
+      (an `npmAdapter` that takes the key, since the bare `"npm"` entry took neither it nor an entry point).
+- [x] Check that nothing is still keyed on the literal string `"npm"`. After Part 4 the facts that used to be (`memberSpecifier`, where overrides go, the install invocation) are fields of the adapter, so a pinned npm variant only needs its own adapter entry; the remaining places to look are specs and `packageManagers` consumers that special-cased `"npm"` as unpinned (`package-managers.spec.ts`'s filter and `cli.spec.ts`'s list, both updated).
 
 ## Part 6 — Yarn Plug'n'Play support
 

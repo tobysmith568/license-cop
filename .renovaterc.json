@@ -17,6 +17,12 @@
     },
     {
       "matchFileNames": ["packages/e2e-fixtures/package.json"],
+      "matchDepNames": ["bun-1"],
+      "allowedVersions": "^1",
+      "automerge": true
+    },
+    {
+      "matchFileNames": ["packages/e2e-fixtures/package.json"],
       "matchDepNames": ["npm-10"],
       "allowedVersions": "^10",
       "automerge": true

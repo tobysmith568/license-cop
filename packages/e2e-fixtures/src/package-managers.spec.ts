@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // project happened to exercise it. This checks the promise directly against the binary already in
 // node_modules, skipping the project install (temp dir, lockfile, real dependency resolution) that
 // createProject() does for the full e2e suite.
-describe.each(packageManagers)("%s", packageManager => {
+describe.each([...packageManagers])("%s", packageManager => {
   it("reports the major version its alias promises", async () => {
     const [, expectedMajor] = packageManager.split("-");
     const { command, args } = fixtureAdapters[packageManager].invocation;

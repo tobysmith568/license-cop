@@ -13,36 +13,40 @@ import { createProject, type Project } from "./project";
 
 // The built CLI binary against a real install: args parsed -> config loaded -> engine invoked ->
 // report printed -> exit code. Just confirming the pieces wire together, one project per engine
-// (npm and pnpm are the two distinct engines). Scenarios live in the unit and contract tests.
-describe.each<PackageManager>(["npm-11", "pnpm-10"])("cli with %s", packageManager => {
-  let project: Project;
+// (node_modules, pnpm's store and bun's isolated linker are the three distinct engines). Scenarios
+// live in the unit and contract tests.
+describe.each<PackageManager>(["npm-11", "pnpm-10", "bun-1-isolated"])(
+  "cli with %s",
+  packageManager => {
+    let project: Project;
 
-  beforeAll(async () => {
-    const packageJson = new PackageJsonBuilder().dependsOn("usesIsc").overriding("isc");
-    const licenseFile = new LicenseFileBuilder().allowingLicenses("MIT");
+    beforeAll(async () => {
+      const packageJson = new PackageJsonBuilder().dependsOn("usesIsc").overriding("isc");
+      const licenseFile = new LicenseFileBuilder().allowingLicenses("MIT");
 
-    project = await createProject({ packageManager, packageJson, licenseFile });
-  });
+      project = await createProject({ packageManager, packageJson, licenseFile });
+    });
 
-  afterAll(async () => {
-    await project.remove();
-  });
+    afterAll(async () => {
+      await project.remove();
+    });
 
-  it("should exit 1 and report the forbidden license when a license isn't allowed", async () => {
-    const { exitCode, output } = await project.runCli();
+    it("should exit 1 and report the forbidden license when a license isn't allowed", async () => {
+      const { exitCode, output } = await project.runCli();
 
-    expect(exitCode).toBe(1);
-    expect(output).toContain("@license-cop/isc-test-package@1.2.3");
-  });
+      expect(exitCode).toBe(1);
+      expect(output).toContain("@license-cop/isc-test-package@1.2.3");
+    });
 
-  it("should exit 0 when every license is allowed", async () => {
-    await project.writeLicenseFile(new LicenseFileBuilder().allowingLicenses("MIT", "ISC"));
+    it("should exit 0 when every license is allowed", async () => {
+      await project.writeLicenseFile(new LicenseFileBuilder().allowingLicenses("MIT", "ISC"));
 
-    const { exitCode } = await project.runCli();
+      const { exitCode } = await project.runCli();
 
-    expect(exitCode).toBe(0);
-  });
-});
+      expect(exitCode).toBe(0);
+    });
+  }
+);
 
 // Commands that need no install: they only prove the built binary starts, finds its own
 // package.json (for the version) and writes to the filesystem.
