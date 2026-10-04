@@ -72,19 +72,22 @@ Two prototypes were built against the real code and compared on real installs (9
 ## Part 5 — Broaden npm fixture coverage
 
 A separate branch, after Part 4 merges and before Part 6. Not part of bun support itself, it's a
-standalone improvement: today `"npm"` in `packages/e2e-fixtures/src/package-managers.ts` means
+standalone improvement: `"npm"` in `packages/e2e-fixtures/src/package-managers.ts` used to mean
 "whatever ships with the Node.js under test," the only package manager tested that way, unlike
 pnpm (`pnpm-10`/`11`/`12`) and yarn (`yarn-1`/`3`/`4`), which are each pinned to specific majors.
 npm should get the same treatment. Sequenced after Part 4 so each new npm variant is added to the
 consolidated adapter registry rather than the old scattered switches Part 4 replaced.
 
-- [ ] Decide which npm majors matter (mirroring how pnpm picked 10/11/12 and yarn picked 1/3/4), and
+- [x] Decide which npm majors matter (mirroring how pnpm picked 10/11/12 and yarn picked 1/3/4), and
       whether the bare `"npm"` entry ("whatever ships with the Node.js under test") stays alongside
-      the pinned ones or is replaced by them.
-- [ ] Pin the chosen npm majors as npm-aliased devDependencies (`"npm-X": "npm:npm@^X"`) in
+      the pinned ones or is replaced by them. **Decided:** `npm-10`, `npm-11` and `npm-12` (every major whose
+      `engines` range overlaps the CI Node matrix), exact-pinned and Renovate-constrained like pnpm/yarn. The bare
+      `"npm"` entry was dropped: the Node matrix tests license-cop's runtime, not npm, and bun's bundled
+      copy isn't tested either.
+- [x] Pin the chosen npm majors as npm-aliased devDependencies (`"npm-X": "npm:npm@^X"`) in
       `packages/e2e-fixtures/package.json`, with a matching `fixtureAdapters` entry in `fixture-adapters.ts`
-      (an `npmAdapter` that takes the key and entry point, since the bare `"npm"` entry takes neither today).
-- [ ] Check that nothing is still keyed on the literal string `"npm"`. After Part 4 the facts that used to be (`memberSpecifier`, where overrides go, the install invocation) are fields of the adapter, so a pinned npm variant only needs its own adapter entry; the remaining places to look are specs and `packageManagers` consumers that special-case `"npm"` as unpinned (for example `package-managers.spec.ts`'s filter).
+      (an `npmAdapter` that takes the key, since the bare `"npm"` entry took neither it nor an entry point).
+- [x] Check that nothing is still keyed on the literal string `"npm"`. After Part 4 the facts that used to be (`memberSpecifier`, where overrides go, the install invocation) are fields of the adapter, so a pinned npm variant only needs its own adapter entry; the remaining places to look are specs and `packageManagers` consumers that special-cased `"npm"` as unpinned (`package-managers.spec.ts`'s filter and `cli.spec.ts`'s list, both updated).
 
 ## Part 6 — Yarn Plug'n'Play support
 

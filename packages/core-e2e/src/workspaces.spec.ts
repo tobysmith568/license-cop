@@ -35,7 +35,7 @@ const check = (workingDirectory: string) =>
   checkLicenses({ allowedLicenses: ["MIT"], allowedPackages: [], workingDirectory });
 
 // `c` links to `a`, which must be seen as the project's own code rather than a dependency
-describe.each(packageManagers)("%s workspace root", packageManager => {
+describe.each([...packageManagers])("%s workspace root", packageManager => {
   let project: Project;
 
   beforeAll(async () => {

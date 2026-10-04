@@ -6,9 +6,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const workspaceRoot = join(__dirname, "../../..");
 
-// Every package manager except npm (which is whatever comes with the Node.js under test) is a
-// pinned devDependency of this package, aliased by its package manager key, rather than a global
-// install, so the versions under test are the same on every machine. `bun install` puts them in
+// Every package manager is a pinned devDependency of this package, aliased by its package manager
+// key, rather than a global install, so the versions under test are the same on every machine. `bun install` puts them in
 // this package's own node_modules, and (bun itself aside, see `getBunEntryPoint`) each is run
 // straight with `node`.
 export const getNodeEntryPoint = (alias: string, entryPoint: string): string =>

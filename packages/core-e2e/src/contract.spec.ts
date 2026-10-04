@@ -13,7 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 //
 //   dependencies:    uses-isc (MIT)  ->  isc (ISC, transitive)
 //   devDependencies: mit (MIT)
-describe.each(packageManagers)("%s", packageManager => {
+describe.each([...packageManagers])("%s", packageManager => {
   let project: Project;
 
   beforeAll(async () => {
@@ -79,7 +79,7 @@ const namesAndVersions = (packages: CheckLicensesResult[keyof CheckLicensesResul
 //
 //   dependencies:         mit (MIT)
 //   optionalDependencies: isc (ISC)
-describe.each(packageManagers)("%s with an optional dependency", packageManager => {
+describe.each([...packageManagers])("%s with an optional dependency", packageManager => {
   let project: Project;
 
   beforeAll(async () => {

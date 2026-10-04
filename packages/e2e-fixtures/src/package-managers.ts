@@ -1,16 +1,9 @@
-export type PackageManager =
-  | "npm"
-  | "pnpm-10"
-  | "pnpm-11"
-  | "pnpm-12"
-  | "yarn-1"
-  | "yarn-3"
-  | "yarn-4"
-  | "bun-1-hoisted"
-  | "bun-1-isolated";
+export type PackageManager = (typeof packageManagers)[number];
 
-export const packageManagers: PackageManager[] = [
-  "npm",
+export const packageManagers = [
+  "npm-10",
+  "npm-11",
+  "npm-12",
   "pnpm-10",
   "pnpm-11",
   "pnpm-12",
@@ -19,4 +12,4 @@ export const packageManagers: PackageManager[] = [
   "yarn-4",
   "bun-1-hoisted",
   "bun-1-isolated"
-];
+] as const;
