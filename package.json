@@ -35,7 +35,7 @@
     "eslint": "10.11.0",
     "eslint-plugin-astro": "^3.2.1",
     "prettier": "^3.8.1",
-    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-astro": "^1.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "ts-node": "10.9.2",
