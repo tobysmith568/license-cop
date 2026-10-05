@@ -41,7 +41,7 @@
     "ts-node": "10.9.2",
     "tsdown": "^0.23.0",
     "turbo": "^2.10.12",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "trustedDependencies": [
     "@parcel/watcher",
