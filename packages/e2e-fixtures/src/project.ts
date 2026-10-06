@@ -1,7 +1,7 @@
 import { createTempDir, writeJson } from "@license-cop/test-utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { fixtureAdapters, type FixtureAdapter, type Linker } from "./fixture-adapters";
+import { fixtureAdapters, type FixtureAdapter } from "./fixture-adapters";
 import type { LicenseFileBuilder } from "./license-file-builder";
 import type { PackageJsonBuilder } from "./package-json-builder";
 import type { PackageManager } from "./package-managers";
@@ -11,11 +11,6 @@ export interface ProjectOptions {
   packageManager: PackageManager;
   packageJson: PackageJsonBuilder;
   licenseFile?: LicenseFileBuilder;
-  /**
-   * Which linker yarn 2+ installs with. License-cop reads `node_modules`, so that's the default;
-   * `pnp` is only for testing that it's refused.
-   */
-  linker?: Linker;
   /**
    * Makes the project a workspace root, with one member per entry (keyed by its directory name,
    * under `packages/`). The members are named after their directory and, like most real ones,
@@ -40,7 +35,7 @@ const membersDirectory = "packages";
  * to leave the directory behind (its path is logged) for inspecting after a failure.
  */
 export const createProject = async (options: ProjectOptions): Promise<Project> => {
-  const { packageManager, packageJson, licenseFile, linker = "node-modules", members } = options;
+  const { packageManager, packageJson, licenseFile, members } = options;
 
   const tempDir = await createTempDir({ prefix: "e2e-fixtures-" });
   const path = tempDir.path;
@@ -76,7 +71,7 @@ export const createProject = async (options: ProjectOptions): Promise<Project> =
     await writeLicenseFile(licenseFile);
   }
 
-  await adapter.writeConfig?.(path, linker);
+  await adapter.writeConfig?.(path);
 
   await install(adapter, path);
 

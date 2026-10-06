@@ -10,7 +10,6 @@ import { LicenseChecker } from "./license-checker";
 import { NotInstalledError } from "./not-installed-error";
 import { OptionsNormalizer } from "./options-normalizer";
 import type { CheckLicensesResult } from "./result";
-import { UnsupportedProjectError } from "./unsupported-project-error";
 import { createMemoryDir, type MemoryDir } from "./utils/in-memory-file-system";
 
 const emptyResult = (label: string) =>
@@ -34,6 +33,7 @@ describe("LicenseChecker", () => {
   let nodeModules: FakeEngine;
   let pnpmStore: FakeEngine;
   let bunIsolated: FakeEngine;
+  let yarnPnp: FakeEngine;
   let currentDirectory: string;
 
   beforeEach(() => {
@@ -42,6 +42,7 @@ describe("LicenseChecker", () => {
     nodeModules = new FakeEngine(emptyResult("npm"));
     pnpmStore = new FakeEngine(emptyResult("pnpm"));
     bunIsolated = new FakeEngine(emptyResult("bun"));
+    yarnPnp = new FakeEngine(emptyResult("pnp"));
     currentDirectory = process.cwd();
   });
 
@@ -49,7 +50,7 @@ describe("LicenseChecker", () => {
   // be useful
   const checker = () => {
     const { packageManagerDetector, installationVerifier } = services;
-    const engines = new EngineRegistry({ nodeModules, pnpmStore, bunIsolated });
+    const engines = new EngineRegistry({ nodeModules, pnpmStore, bunIsolated, yarnPnp });
     const optionsNormalizer = new OptionsNormalizer(() => currentDirectory);
 
     return new LicenseChecker(
@@ -97,24 +98,36 @@ describe("LicenseChecker", () => {
   });
 
   describe("Plug'n'Play", () => {
-    it("should refuse a yarn project that uses Plug'n'Play without scanning it", async () => {
+    it("should use the Plug'n'Play engine for a yarn project that uses it", async () => {
       dir.write({ "package.json": packageJson(), "yarn.lock": "", ".pnp.cjs": "" });
 
-      const act = checker().check(baseOptions());
+      const result = await checker().check(baseOptions());
 
-      await expect(act).rejects.toThrow(UnsupportedProjectError);
+      expect(result).toEqual(emptyResult("pnp"));
       expect(nodeModules.calls).toHaveLength(0);
     });
 
-    it("should refuse when yarn is only named in the packageManager field", async () => {
+    it("should use it when yarn is only named in the packageManager field", async () => {
       dir.write({
         "package.json": packageJson({ packageManager: "yarn@4.0.0" }),
         ".pnp.cjs": ""
       });
 
-      const act = checker().check(baseOptions());
+      const result = await checker().check(baseOptions());
 
-      await expect(act).rejects.toThrow(UnsupportedProjectError);
+      expect(result).toEqual(emptyResult("pnp"));
+    });
+
+    it("should scan a Plug'n'Play project that has dependencies, which has no node_modules", async () => {
+      dir.write({
+        "package.json": packageJson({ dependencies: { react: "19.0.0" } }),
+        "yarn.lock": "",
+        ".pnp.cjs": ""
+      });
+
+      const result = await checker().check(baseOptions());
+
+      expect(result).toEqual(emptyResult("pnp"));
     });
 
     it("should not look for Plug'n'Play files in projects of other package managers", async () => {
@@ -123,6 +136,7 @@ describe("LicenseChecker", () => {
       const result = await checker().check(baseOptions());
 
       expect(result).toEqual(emptyResult("npm"));
+      expect(yarnPnp.calls).toHaveLength(0);
     });
   });
 

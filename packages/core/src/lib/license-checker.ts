@@ -21,7 +21,12 @@ export class LicenseChecker {
     const packageManager = await this.packageManagerDetector.detect(workingDirectory);
     const installShape = await packageManager.detectInstallShape(workingDirectory);
 
-    await this.installationVerifier.verify(workingDirectory, packageManager, scanOptions);
+    await this.installationVerifier.verify(
+      workingDirectory,
+      packageManager,
+      installShape,
+      scanOptions
+    );
 
     const engine = this.engines.get(installShape);
 

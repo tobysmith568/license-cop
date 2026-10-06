@@ -4,6 +4,12 @@ All notable changes to `license-cop` and `@license-cop/core` are documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0]
+
+### Added
+
+- **Yarn Plug'n'Play support.** license-cop can now scan a yarn 2+ project that uses Plug'n'Play (yarn's default), which has no `node_modules`. It reads the project's `.pnp.cjs` and the packages in your yarn cache (including the global cache and zero-install repositories) or in `.yarn/unplugged`. Yarn 3 and 4 are tested. Previously this was refused with an error asking you to set `nodeLinker: node-modules`; that is no longer needed. Reading a Plug'n'Play project loads its `.pnp.cjs`, which is JavaScript that yarn generates, so only scan a project you trust (see "Supported projects" in the docs).
+
 ## [2.1.0]
 
 ### Added

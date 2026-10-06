@@ -16,6 +16,12 @@ import {
   type PnpmProjectLocator
 } from "./dependency-scanning/pnpm/pnpm-project-locator";
 import { PnpmStoreEngine } from "./dependency-scanning/pnpm/pnpm-store-engine";
+import {
+  PnpApiInstallReader,
+  type PnpInstallReader
+} from "./dependency-scanning/yarn-pnp/pnp-install-reader";
+import { YarnPnpEngine } from "./dependency-scanning/yarn-pnp/yarn-pnp-engine";
+import { ZipFileSystem } from "./dependency-scanning/yarn-pnp/zip-file-system";
 import { FileBunLockReader } from "./dependency/bun-lock-reader";
 import { InstallationVerifier } from "./dependency/installation-verifier";
 import { FilePackageJsonReader } from "./dependency/package-json-reader";
@@ -46,12 +52,13 @@ export type Services = {
     nodeModules: NodeModulesEngine;
     pnpmStore: PnpmStoreEngine;
     bunIsolated: BunIsolatedEngine;
+    yarnPnp: YarnPnpEngine;
   };
 };
 
 /**
- * The edges of the object graph that reach outside the process: the disk, and the two libraries
- * that read a package manager's own install. All default to the real thing; a test swaps in a
+ * The edges of the object graph that reach outside the process: the disk, and the libraries (and
+ * the one generated file) that read a package manager's own install. All default to the real thing; a test swaps in a
  * double for whichever it doesn't want to touch.
  */
 export type Gateways = {
@@ -59,6 +66,9 @@ export type Gateways = {
   treeLoader?: InstalledTreeLoader;
   pnpmProjectLocator?: PnpmProjectLocator;
   pnpmHierarchyReader?: PnpmHierarchyReader;
+  yarnPnpInstallReader?: PnpInstallReader;
+  /** What the Plug'n'Play engine reads each package's package.json through: one that sees into zips. */
+  yarnPnpFileSystem?: FileSystem;
 };
 
 /** A checker that reports its progress to `onVerbose`, if the caller gave one. */
@@ -115,10 +125,20 @@ export const compose = (logger: Logger = new NullLogger(), gateways: Gateways = 
     logger
   );
 
-  const engineRegistry = new EngineRegistry({ nodeModules, pnpmStore, bunIsolated });
+  const pnpInstallReader =
+    gateways.yarnPnpInstallReader ?? new PnpApiInstallReader(plugAndPlayDetector);
+  const pnpFileSystem = gateways.yarnPnpFileSystem ?? new ZipFileSystem();
+  const pnpPackageJsonReader = new FilePackageJsonReader(pnpFileSystem, logger);
+  const yarnPnp = new YarnPnpEngine(classifier, pnpInstallReader, pnpPackageJsonReader, logger);
+
+  const engineRegistry = new EngineRegistry({ nodeModules, pnpmStore, bunIsolated, yarnPnp });
 
   const optionsNormalizer = new OptionsNormalizer(() => process.cwd());
-  const installationVerifier = new InstallationVerifier(fileSystem, packageJsonReader);
+  const installationVerifier = new InstallationVerifier(
+    fileSystem,
+    packageJsonReader,
+    plugAndPlayDetector
+  );
   const licenseChecker = new LicenseChecker(
     optionsNormalizer,
     packageManagerDetector,
@@ -131,6 +151,6 @@ export const compose = (logger: Logger = new NullLogger(), gateways: Gateways = 
     packageManagerDetector,
     installationVerifier,
     packageManagers: { npm, yarn, pnpm, bun },
-    engines: { nodeModules, pnpmStore, bunIsolated }
+    engines: { nodeModules, pnpmStore, bunIsolated, yarnPnp }
   };
 };

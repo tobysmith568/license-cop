@@ -13,9 +13,9 @@ import { createProject, type Project } from "./project";
 
 // The built CLI binary against a real install: args parsed -> config loaded -> engine invoked ->
 // report printed -> exit code. Just confirming the pieces wire together, one project per engine
-// (node_modules, pnpm's store and bun's isolated linker are the three distinct engines). Scenarios
+// (node_modules, pnpm's store, bun's isolated linker and Yarn's Plug'n'Play are the four distinct engines). Scenarios
 // live in the unit and contract tests.
-describe.each<PackageManager>(["npm-11", "pnpm-10", "bun-1-isolated"])(
+describe.each<PackageManager>(["npm-11", "pnpm-10", "bun-1-isolated", "yarn-4-pnp"])(
   "cli with %s",
   packageManager => {
     let project: Project;

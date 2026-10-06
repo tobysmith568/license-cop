@@ -3,7 +3,8 @@ import { join } from "path";
 import { getBunEntryPoint, getNodeEntryPoint } from "./fixtures";
 import type { PackageManager } from "./package-managers";
 
-export type Linker = "node-modules" | "pnp";
+/** What yarn 2+ installs to: a node_modules like npm's, or Plug'n'Play's resolution map. */
+export type YarnLinker = "node-modules" | "pnp";
 
 export type Overrides = Record<string, string>;
 
@@ -24,7 +25,7 @@ export type FixtureAdapter = {
   memberSpecifier: "*" | "workspace:*";
   workspaceGlobsIn: "package.json" | "pnpm-workspace.yaml";
   /** Config files that have to exist before installing, e.g. to force a linker. */
-  writeConfig?: (projectPath: string, linker: Linker) => Promise<void>;
+  writeConfig?: (projectPath: string) => Promise<void>;
 };
 
 const npmAdapter = (key: PackageManager): FixtureAdapter => {
@@ -48,9 +49,11 @@ const pnpmAdapter = (key: PackageManager, entryPoint: string): FixtureAdapter =>
   };
 };
 
-const yarnClassicAdapter = (key: PackageManager): FixtureAdapter => {
+// The alias is the one the package manager is pinned under in package.json, which a variant that
+// only differs in its linker shares with the one it's a variant of
+const yarnClassicAdapter = (alias: string): FixtureAdapter => {
   return {
-    invocation: { command: "node", args: [getNodeEntryPoint(key, "bin/yarn.js")] },
+    invocation: { command: "node", args: [getNodeEntryPoint(alias, "bin/yarn.js")] },
     installArgs: ["install"],
     withOverrides: (packageJson, overrides) => ({ ...packageJson, resolutions: overrides }),
     memberSpecifier: "*",
@@ -58,16 +61,15 @@ const yarnClassicAdapter = (key: PackageManager): FixtureAdapter => {
   };
 };
 
-const yarnModernAdapter = (key: PackageManager): FixtureAdapter => {
+// Yarn 2+ defaults to Plug'n'Play, but each entry forces its own linker explicitly, as bun's do,
+// rather than relying on that default
+const yarnModernAdapter = (alias: string, linker: YarnLinker): FixtureAdapter => {
   return {
-    ...yarnClassicAdapter(key),
+    ...yarnClassicAdapter(alias),
     installEnv: { YARN_ENABLE_IMMUTABLE_INSTALLS: "false" },
     memberSpecifier: "workspace:*",
-    // Yarn 2+ defaults to Plug'n'Play, which license-cop doesn't support, so it has to be told not to
-    writeConfig: async (projectPath, linker) => {
-      if (linker === "node-modules") {
-        await writeFile(join(projectPath, ".yarnrc.yml"), "nodeLinker: node-modules\n");
-      }
+    writeConfig: async projectPath => {
+      await writeFile(join(projectPath, ".yarnrc.yml"), `nodeLinker: ${linker}\n`);
     }
   };
 };
@@ -89,8 +91,8 @@ const bunAdapter = (bunLinker: "hoisted" | "isolated"): FixtureAdapter => {
   };
 };
 
-// A new variant (Part 6's PnP) is one more line built from the matching factory above. The
-// factories sit above this since the registry is built eagerly.
+// A new variant is one more line built from the matching factory above. The factories sit above
+// this since the registry is built eagerly.
 export const fixtureAdapters: Record<PackageManager, FixtureAdapter> = {
   "npm-10": npmAdapter("npm-10"),
   "npm-11": npmAdapter("npm-11"),
@@ -101,8 +103,10 @@ export const fixtureAdapters: Record<PackageManager, FixtureAdapter> = {
   "pnpm-11": pnpmAdapter("pnpm-11", "bin/pnpm.mjs"),
   "pnpm-12": pnpmAdapter("pnpm-12", "bin/pnpm.mjs"),
   "yarn-1": yarnClassicAdapter("yarn-1"),
-  "yarn-3": yarnModernAdapter("yarn-3"),
-  "yarn-4": yarnModernAdapter("yarn-4"),
+  "yarn-3": yarnModernAdapter("yarn-3", "node-modules"),
+  "yarn-3-pnp": yarnModernAdapter("yarn-3", "pnp"),
+  "yarn-4": yarnModernAdapter("yarn-4", "node-modules"),
+  "yarn-4-pnp": yarnModernAdapter("yarn-4", "pnp"),
   "bun-1-hoisted": bunAdapter("hoisted"),
   "bun-1-isolated": bunAdapter("isolated")
 };

@@ -31,7 +31,10 @@
     "Codecov",
     "lightningcss",
     "libvips",
-    "bunfig"
+    "bunfig",
+    "fslib",
+    "libzip",
+    "npath"
   ],
   "import": [],
   "ignoreRegExpList": [],

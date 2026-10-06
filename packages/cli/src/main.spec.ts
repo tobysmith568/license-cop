@@ -291,7 +291,7 @@ describe("run", () => {
     expect(io.stderrLines[0]).toContain("Unable to parse package.json");
   });
 
-  it("should exit 1 and explain when the project uses Yarn Plug'n'Play", async () => {
+  it("should exit 1 and explain when the project's Yarn Plug'n'Play file can't be read", async () => {
     await createProject(directory, "MIT");
     await tempDir.write({ "yarn.lock": "", ".pnp.cjs": "" });
 
@@ -299,8 +299,8 @@ describe("run", () => {
 
     expect(exitCode).toBe(1);
     expect(io.stderrLines).toHaveLength(1);
-    expect(io.stderrLines[0]).toContain("Plug'n'Play");
-    expect(io.stderrLines[0]).toContain("nodeLinker: node-modules");
+    expect(io.stderrLines[0]).toContain(".pnp.cjs");
+    expect(io.stderrLines[0]).toContain("doesn't support");
   });
 
   it("should exit 1 and say to install when the dependencies aren't installed", async () => {
