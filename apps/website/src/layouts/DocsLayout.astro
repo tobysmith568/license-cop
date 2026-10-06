@@ -4,13 +4,14 @@ import Footer from "../components/Footer.astro";
 import BaseLayout from "./BaseLayout.astro";
 
 interface LayoutProps {
-  metaDescription: string;
+  metaDescription?: string;
   noIndex?: boolean;
 }
 
-type Props = MarkdownLayoutProps<LayoutProps> & LayoutProps;
+type Props = MarkdownLayoutProps<LayoutProps> | LayoutProps;
 
-const { noIndex, metaDescription } = Astro.props.frontmatter || Astro.props;
+const { noIndex, metaDescription } =
+  "frontmatter" in Astro.props ? Astro.props.frontmatter : Astro.props;
 ---
 
 <BaseLayout

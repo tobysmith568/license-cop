@@ -1,10 +1,10 @@
 ---
 import { Code as AstroCode } from "astro/components";
-import type { Lang } from "shiki";
+import type { ComponentProps } from "astro/types";
 
 interface Props {
   code: string;
-  lang?: Lang;
+  lang?: ComponentProps<typeof AstroCode>["lang"];
 }
 
 const { code, lang } = Astro.props;

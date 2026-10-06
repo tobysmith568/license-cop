@@ -14,8 +14,6 @@
     "declarationMap": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "tmp"]

@@ -50,45 +50,43 @@ const admonitionsPlugin = () => {
         // Creating the icon.
         const icon = h("img");
         const iconData = icon.data || (icon.data = {});
-        iconData.hName = "img";
-        iconData.hProperties = h("img", {
-          class: `admonition-icon`,
-          src: `data:image/svg+xml;utf8,${literalSvg}`
-        }).properties;
+        setHastData(
+          iconData,
+          "img",
+          h("img", {
+            class: `admonition-icon`,
+            src: `data:image/svg+xml;utf8,${literalSvg}`
+          }).properties
+        );
 
         // Creating the title.
         const title = h("strong");
         const titleData = title.data || (title.data = {});
-        titleData.hName = "strong";
-        titleData.hProperties = h("strong", { class: "md-admonition-title" }).properties;
+        setHastData(titleData, "strong", h("strong", { class: "md-admonition-title" }).properties);
         title.children = [h("span", node.attributes.title ?? boxInfo.title)];
 
         // Creating the icon's row.
         const iconWrapper = h("div");
         const iconWrapperData = iconWrapper.data || (iconWrapper.data = {});
-        iconWrapperData.hName = "div";
-        iconWrapperData.hProperties = h("div", { class: "row title-row" }).properties;
+        setHastData(iconWrapperData, "div", h("div", { class: "row title-row" }).properties);
         iconWrapper.children = [icon, title];
 
         // Creating the content's row.
         const contentRowWrapper = h("div");
         const contentRowWrapperData = contentRowWrapper.data || (contentRowWrapper.data = {});
-        contentRowWrapperData.hName = "div";
-        contentRowWrapperData.hProperties = h("div", { class: "row" }).properties;
+        setHastData(contentRowWrapperData, "div", h("div", { class: "row" }).properties);
         contentRowWrapper.children = [...node.children]; // Adding markdown's content block.
 
         // Creating the row's wrapper.
         const rowsWrapper = h("div");
         const rowsWrapperData = rowsWrapper.data || (rowsWrapper.data = {});
-        rowsWrapperData.hName = "div";
-        rowsWrapperData.hProperties = h("div", { class: "rows" }).properties;
+        setHastData(rowsWrapperData, "div", h("div", { class: "rows" }).properties);
         rowsWrapper.children = [iconWrapper, contentRowWrapper];
 
         // Creating the wrapper for the admonition's content.
         const contentWrapper = h("div");
         const wrapperData = contentWrapper.data || (contentWrapper.data = {});
-        wrapperData.hName = "div";
-        wrapperData.hProperties = h("div", { class: "message-body" }).properties;
+        setHastData(wrapperData, "div", h("div", { class: "message-body" }).properties);
         contentWrapper.children = [rowsWrapper];
         node.children = [contentWrapper];
       }
@@ -97,3 +95,15 @@ const admonitionsPlugin = () => {
 };
 
 export default admonitionsPlugin;
+
+type HastElement = ReturnType<typeof h>;
+
+// `hName` and `hProperties` are only part of the data type when mdast-util-to-hast's types
+// are loaded, which isn't guaranteed here, so they're assigned without a typed property access
+const setHastData = (
+  data: NonNullable<HastElement["data"]>,
+  hName: string,
+  hProperties: HastElement["properties"]
+) => {
+  Object.assign(data, { hName, hProperties });
+};
