@@ -33,7 +33,12 @@ describe("InstallationVerifier", () => {
     ])("should fail when there are %s to scan", async (_name, declared) => {
       writePackageJson(declared);
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
@@ -41,7 +46,12 @@ describe("InstallationVerifier", () => {
     it("should pass when nothing is declared", async () => {
       writePackageJson({});
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).resolves.toBeUndefined();
     });
@@ -49,7 +59,12 @@ describe("InstallationVerifier", () => {
     it("should not count dev dependencies unless they're being scanned", async () => {
       writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).resolves.toBeUndefined();
     });
@@ -57,7 +72,12 @@ describe("InstallationVerifier", () => {
     it("should count dev dependencies when including them", async () => {
       writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, withDev);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        withDev
+      );
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
@@ -65,7 +85,12 @@ describe("InstallationVerifier", () => {
     it("should count dev dependencies when scanning only them", async () => {
       writePackageJson({ devDependencies: { a: "1.0.0" } });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, devOnly);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        devOnly
+      );
 
       await expect(act).rejects.toThrow(NotInstalledError);
     });
@@ -73,7 +98,12 @@ describe("InstallationVerifier", () => {
     it("should pass a dev-only scan of a project that has no dev dependencies", async () => {
       writePackageJson({ dependencies: { a: "1.0.0" } });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, devOnly);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        devOnly
+      );
 
       await expect(act).resolves.toBeUndefined();
     });
@@ -84,7 +114,12 @@ describe("InstallationVerifier", () => {
       writePackageJson({ dependencies: { a: "1.0.0" } });
       install();
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).resolves.toBeUndefined();
     });
@@ -93,9 +128,75 @@ describe("InstallationVerifier", () => {
       writePackageJson({ dependencies: { a: "1.0.0" } });
       dir.write({ node_modules: "" });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).rejects.toThrow(NotInstalledError);
+    });
+  });
+
+  describe("when the shape is Plug'n'Play", () => {
+    it.each([".pnp.cjs", ".pnp.js"])("should pass when there is a %s", async file => {
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      dir.write({ [file]: "" });
+
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.yarn,
+        "yarn-pnp",
+        production
+      );
+
+      await expect(act).resolves.toBeUndefined();
+    });
+
+    it("should not need a node_modules", async () => {
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      dir.write({ ".pnp.cjs": "" });
+
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.yarn,
+        "yarn-pnp",
+        production
+      );
+
+      await expect(act).resolves.toBeUndefined();
+    });
+
+    it("should fail, naming the file, when there is none", async () => {
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      install();
+
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.yarn,
+        "yarn-pnp",
+        production
+      );
+
+      await expect(act).rejects.toThrow(NotInstalledError);
+      await expect(act).rejects.toThrow("there is no .pnp.cjs");
+    });
+  });
+
+  describe("when the shape isn't Plug'n'Play", () => {
+    it("should not accept a .pnp.cjs in place of a node_modules", async () => {
+      writePackageJson({ dependencies: { a: "1.0.0" } });
+      dir.write({ ".pnp.cjs": "" });
+
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.yarn,
+        "node-modules",
+        production
+      );
+
+      await expect(act).rejects.toThrow("there is no node_modules");
     });
   });
 
@@ -110,6 +211,7 @@ describe("InstallationVerifier", () => {
       const act = installationVerifier.verify(
         dir.path,
         packageManagers[packageManager],
+        "node-modules",
         production
       );
 
@@ -119,7 +221,12 @@ describe("InstallationVerifier", () => {
     it("should suggest the workspace root, for a workspace member", async () => {
       writePackageJson({ dependencies: { a: "1.0.0" } });
 
-      const act = installationVerifier.verify(dir.path, packageManagers.npm, production);
+      const act = installationVerifier.verify(
+        dir.path,
+        packageManagers.npm,
+        "node-modules",
+        production
+      );
 
       await expect(act).rejects.toThrow("workspace root");
     });

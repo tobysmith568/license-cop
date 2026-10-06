@@ -14,6 +14,7 @@ export class PackageJsonBuilder {
   private readonly optionalDependencies: FixturePackage[] = [];
   private readonly members: string[] = [];
   private readonly overridden: FixturePackage[] = [];
+  private readonly unplugged: FixturePackage[] = [];
 
   dependsOn(...fixtures: FixturePackage[]): this {
     this.dependencies.push(...fixtures);
@@ -42,6 +43,15 @@ export class PackageJsonBuilder {
     return this;
   }
 
+  /**
+   * Has yarn 2+ unpack a dependency into `.yarn/unplugged` instead of leaving it in its zip, as it
+   * does for packages that need real files. Other package managers ignore the field.
+   */
+  unplugging(...fixtures: FixturePackage[]): this {
+    this.unplugged.push(...fixtures);
+    return this;
+  }
+
   async build(packageManager: PackageManager): Promise<object> {
     const dependencies = {
       ...(await toFileSpecifiers(this.dependencies)),
@@ -57,7 +67,8 @@ export class PackageJsonBuilder {
       private: true,
       dependencies,
       devDependencies,
-      ...(this.optionalDependencies.length > 0 ? { optionalDependencies } : {})
+      ...(this.optionalDependencies.length > 0 ? { optionalDependencies } : {}),
+      ...(this.unplugged.length > 0 ? { dependenciesMeta: toUnpluggedMeta(this.unplugged) } : {})
     };
 
     if (this.overridden.length === 0) {
@@ -80,6 +91,9 @@ const toFileSpecifiers = async (fixtures: FixturePackage[]) => {
 
   return specifiers;
 };
+
+const toUnpluggedMeta = (fixtures: FixturePackage[]) =>
+  Object.fromEntries(fixtures.map(fixture => [fixturePackages[fixture].name, { unplugged: true }]));
 
 // Members are named `member-<directory>` (see `createProject`). npm and yarn 1 resolve a plain range
 // to a workspace member that satisfies it; pnpm and yarn 2+ need the explicit protocol.

@@ -27,6 +27,10 @@ npx license-cop
 
 The `license-cop` command will use an exit code of 0 if all your dependencies conform to the settings in your config file.
 
+## Supported projects
+
+license-cop reads the dependencies your package manager has already installed, so run your package manager's install first. It supports npm, pnpm, Yarn and Bun, including their workspaces (run license-cop from the workspace root).
+
 ## Command line options
 
 ```bash

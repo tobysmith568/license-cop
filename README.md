@@ -36,6 +36,16 @@ npx license-cop
 
 The `license-cop` command will use an exit code of 0 if all your dependencies conform to the settings in your config file.
 
+## Supported projects
+
+license-cop reads the dependencies your package manager has already installed, so run your package manager's install first. It supports npm, pnpm, Yarn and Bun, including their workspaces (run license-cop from the workspace root).
+
+### Yarn Plug'n'Play
+
+Yarn 3 and 4 are tested with both of their linkers: `nodeLinker: node-modules` and the default, Plug'n'Play. A Plug'n'Play project has no `node_modules` for license-cop to read, so it reads the project's `.pnp.cjs` instead, and the packages in your Yarn cache (including the global cache and zero-install repositories) or in `.yarn/unplugged`.
+
+A `.pnp.cjs` is JavaScript that Yarn generates, and reading it means running it, in the same way `yarn run` does. As with running any other command in a project, only run license-cop against a Plug'n'Play project you trust.
+
 ## Command line options
 
 ```bash

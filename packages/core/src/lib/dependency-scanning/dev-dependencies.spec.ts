@@ -10,6 +10,7 @@ import {
   fakeDependencyNode
 } from "./pnpm/fake-pnpm-gateways";
 import type { PnpmDependencyNode } from "./pnpm/pnpm-hierarchy-reader";
+import { FakePnpInstallReader } from "./yarn-pnp/fake-pnp-install-reader";
 
 // Pins down how each engine treats dev-dependencies from the caller's perspective, so that the
 // engines can be refactored onto a shared classifier without changing behaviour.
@@ -138,6 +139,47 @@ const createBunIsolatedProject = (dir: MemoryDir): Gateways => {
   return {};
 };
 
+const createYarnPnpProject = (dir: MemoryDir): Gateways => {
+  writeProjectPackageJson(dir);
+
+  // Plug'n'Play's map for the workspace lists everything it asked for, development or not, and
+  // keeps each package's own dependencies with it
+  const pnpPackage = (name: string, dependencies?: string[]) => {
+    const directory = join(dir.path, ".yarn", "cache", `${name}.zip`, "node_modules", name);
+    writePackage(dir, directory, name, dependencies);
+
+    return {
+      id: `${name}@npm:1.0.0`,
+      directory,
+      dependencies: Object.fromEntries(
+        (dependencies ?? []).map(dependency => [dependency, `${dependency}@npm:1.0.0`])
+      )
+    };
+  };
+
+  const workspace = {
+    id: "fixture@workspace:.",
+    directory: dir.path,
+    isWorkspace: true,
+    dependencies: {
+      prod: "prod@npm:1.0.0",
+      dev: "dev@npm:1.0.0",
+      optional: "optional@npm:1.0.0"
+    }
+  };
+
+  const install = new FakePnpInstallReader([
+    workspace,
+    pnpPackage("prod", ["prod-child"]),
+    pnpPackage("prod-child"),
+    pnpPackage("dev", ["dev-child"]),
+    pnpPackage("dev-child"),
+    pnpPackage("optional")
+  ]);
+
+  return { yarnPnpInstallReader: install, yarnPnpFileSystem: dir.fileSystem };
+};
+
 type Setup = {
   /** Writes the project and returns the gateways that stand in for the libraries it needs. */
   create: (dir: MemoryDir) => Gateways;
@@ -164,6 +206,13 @@ const setups: [string, Setup][] = [
     {
       create: createBunIsolatedProject,
       engine: services => services.engines.bunIsolated
+    }
+  ],
+  [
+    "yarn-pnp",
+    {
+      create: createYarnPnpProject,
+      engine: services => services.engines.yarnPnp
     }
   ]
 ];
