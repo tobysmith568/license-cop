@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bunx astro dev",
     "build": "bunx astro build",
+    "typecheck": "astro check",
     "lint": "eslint . --max-warnings 0",
     "serve": "bunx astro preview"
   },
@@ -22,6 +23,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@types/primer__octicons": "^19.21.0"
   }
 }
