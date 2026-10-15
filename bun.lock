@@ -114,7 +114,7 @@
         "npm-10": "npm:npm@10.9.9",
         "npm-11": "npm:npm@11.21.0",
         "npm-12": "npm:npm@12.2.0",
-        "pnpm-10": "npm:pnpm@10.34.6",
+        "pnpm-10": "npm:pnpm@10.34.7",
         "pnpm-11": "npm:pnpm@11.28.5",
         "pnpm-12": "npm:pnpm@12.11.2",
         "yarn-1": "npm:yarn@1.22.22",
@@ -2130,7 +2130,7 @@
 
     "playwright-core": ["playwright-core@1.63.0", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg=="],
 
-    "pnpm-10": ["pnpm@10.34.6", "", { "bin": { "pnpm": "bin/pnpm.cjs", "pnpx": "bin/pnpx.cjs" } }, "sha512-fhrmaoOpFDwRjMGUTzfMTyuKzd7aSwAc+niQj25G5F4VKSc5ymydAmQmzHV+kxjMmMVVHWoWwWUJewAouoe05g=="],
+    "pnpm-10": ["pnpm@10.34.7", "", { "bin": { "pnpm": "bin/pnpm.cjs", "pnpx": "bin/pnpx.cjs" } }, "sha512-upirxYVTmTM3W1lx9LxtbHOhtLftxKh559EC/lQj0eAjCdZ8YKEfBJVQk6luUhrZw7E4zdZUylvlY/N4s65IvQ=="],
 
     "pnpm-11": ["pnpm@11.28.5", "", { "bin": { "pn": "bin/pnpm.mjs", "pnx": "bin/pnpx.mjs", "pnpm": "bin/pnpm.mjs", "pnpx": "bin/pnpx.mjs" } }, "sha512-SEVj0wtMKtJ8tIqpT/KzAtvOvI/2vyiBbCWJiG4UbOf3bzVPO8GkOOb16XaMMCqgpvet2CMpA81M+BQmy8FNng=="],
 
