@@ -25,6 +25,14 @@ describe("FilePackageJsonReader", () => {
       expect(result.licenseExpression).toBe("MIT");
     });
 
+    it("should read a package.json whose licenses field is a bare string", async () => {
+      dir.write({ "package.json": { name: "requireg", version: "0.2.2", licenses: "MIT" } });
+
+      const result = await reader.read(`${dir.path}/package.json`);
+
+      expect(result.licenseExpression).toBe("MIT");
+    });
+
     it("should read a package.json containing comments and trailing commas", async () => {
       dir.write({
         "package.json": `{

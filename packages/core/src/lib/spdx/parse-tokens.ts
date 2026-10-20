@@ -5,7 +5,6 @@ export const parseTokens = (tokens: Token[], originalInput: string): SpdxExpress
   let index = 0;
 
   const throwNotValid = () => {
-    console.trace();
     throw new Error(`'${originalInput}' is not a valid SPDX expression`);
   };
 

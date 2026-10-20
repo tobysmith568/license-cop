@@ -32,6 +32,24 @@ describe("PackageJson", () => {
       expect(result).toBe("(MIT AND ISC AND Apache-2.0)");
     });
 
+    it("should accept a bare string as the licenses field", () => {
+      const result = packageJson({ licenses: "MIT" }).licenseExpression;
+
+      expect(result).toBe("MIT");
+    });
+
+    it("should accept a single object as the licenses field", () => {
+      const result = packageJson({ licenses: { type: "ISC" } }).licenseExpression;
+
+      expect(result).toBe("ISC");
+    });
+
+    it("should AND together a licenses array mixing strings and objects", () => {
+      const result = packageJson({ licenses: ["MIT", { type: "ISC" }] }).licenseExpression;
+
+      expect(result).toBe("(MIT AND ISC)");
+    });
+
     it("should prefer license over licenses", () => {
       const result = packageJson({ license: "MIT", licenses: [{ type: "ISC" }] }).licenseExpression;
 
@@ -52,6 +70,12 @@ describe("PackageJson", () => {
 
     it("should return UNLICENSED for an empty licenses array", () => {
       const result = packageJson({ licenses: [] }).licenseExpression;
+
+      expect(result).toBe("UNLICENSED");
+    });
+
+    it("should return UNLICENSED for an empty licenses string", () => {
+      const result = packageJson({ licenses: "" }).licenseExpression;
 
       expect(result).toBe("UNLICENSED");
     });
