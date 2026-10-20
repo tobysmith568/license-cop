@@ -63,7 +63,11 @@ export class LicenseDependencyClassifier implements DependencyClassifier {
     }
 
     const rawLicenseExpression = packageJson.licenseExpression;
-    const licenseExpression = parseLicenseExpression(rawLicenseExpression);
+    const licenseExpression = this.parseExpression(
+      rawLicenseExpression,
+      packageName,
+      packageVersion
+    );
 
     if (licenseExpression.type === "unlicensed") {
       this.logger.verbose(`Package ${packageName} is unlicensed`);
@@ -92,5 +96,21 @@ export class LicenseDependencyClassifier implements DependencyClassifier {
       spdxExpression: rawLicenseExpression,
       licenses: licenseExpression
     });
+  }
+
+  /** The parser only knows the expression, so say which package declared it. */
+  private parseExpression(
+    rawLicenseExpression: string,
+    packageName: string,
+    packageVersion: string
+  ) {
+    try {
+      return parseLicenseExpression(rawLicenseExpression);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      const message = `Package ${packageName}@${packageVersion} declares an invalid license: ${reason}`;
+
+      throw new Error(message, { cause: error });
+    }
   }
 }

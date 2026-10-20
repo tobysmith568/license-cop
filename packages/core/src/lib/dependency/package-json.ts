@@ -5,11 +5,15 @@ const licenseSectionSchema = z.object({
   url: z.string().optional()
 });
 
+// Old packages declare `licenses` in more than one shape: the array of { type, url } objects, but
+// also a bare string ("MIT") or a single object. One odd manifest must not fail the whole scan.
+const legacyLicenseSchema = z.union([z.string(), licenseSectionSchema]);
+
 export const packageJsonSchema = z.object({
   name: z.string(),
   version: z.string(),
   license: z.union([z.string(), licenseSectionSchema]).optional(),
-  licenses: licenseSectionSchema.array().optional(),
+  licenses: z.union([legacyLicenseSchema, legacyLicenseSchema.array()]).optional(),
   packageManager: z.string().optional()
 });
 
@@ -39,16 +43,27 @@ export class PackageJson {
       return license.type;
     }
 
-    if (licenses && licenses.length > 0) {
-      const types = licenses.map<string>(section => section.type);
+    const types = toLicenseTypes(licenses);
 
-      if (types.length === 1) {
-        return types[0]!;
-      }
+    if (types.length === 1) {
+      return types[0]!;
+    }
 
+    if (types.length > 1) {
       return `(${types.join(" AND ")})`;
     }
 
     return "UNLICENSED";
   }
 }
+
+const toLicenseTypes = (licenses: PackageJsonData["licenses"]): string[] => {
+  if (licenses === undefined) {
+    return [];
+  }
+
+  const entries = Array.isArray(licenses) ? licenses : [licenses];
+  const types = entries.map(entry => (typeof entry === "string" ? entry : entry.type));
+
+  return types.filter(type => type !== "");
+};

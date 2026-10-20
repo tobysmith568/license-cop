@@ -120,6 +120,19 @@ describe("LicenseDependencyClassifier", () => {
     }
   });
 
+  it("should name the package when its license isn't a valid SPDX expression", () => {
+    const act = () => classify([node("qrcode-terminal", "Apache 2.0", [], "0.12.0")]);
+
+    expect(act).toThrow("Package qrcode-terminal@0.12.0 declares an invalid license");
+    expect(act).toThrow("'Apache 2.0' is not a valid SPDX expression");
+  });
+
+  it("should not look at the license of an allowed package, so its invalid expression is tolerated", () => {
+    const result = classify([node("qrcode-terminal", "Apache 2.0")], ["MIT"], ["qrcode-terminal"]);
+
+    expect(result.allowedPackages.size).toBe(1);
+  });
+
   it("should classify deeply nested packages", () => {
     const tree = node("a", "MIT", [node("b", "MIT", [node("c", "GPL-3.0")])]);
 
