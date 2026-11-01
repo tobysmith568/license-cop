@@ -1,28 +1,19 @@
-import tobysmith568 from "@tobysmith568/eslint-config";
-import typescriptParser from "@typescript-eslint/parser";
-import astro from "eslint-plugin-astro";
+import recommended from "@tobysmith568/eslint-config";
+import astro from "@tobysmith568/eslint-config/astro";
+import browser from "@tobysmith568/eslint-config/browser";
+import node from "@tobysmith568/eslint-config/node";
+import playwright from "@tobysmith568/eslint-config/playwright";
+import prettier from "@tobysmith568/eslint-config/prettier";
+import test from "@tobysmith568/eslint-config/test";
+import { defineConfig } from "eslint/config";
 
-const astroConfigs = astro.configs["flat/recommended"].map(config => {
-  const isAstroFileConfig = config.files?.includes("**/*.astro") ?? false;
-
-  if (!isAstroFileConfig) {
-    return config;
-  }
-
-  return {
-    ...config,
-    files: ["apps/website/**/*.astro"],
-    languageOptions: {
-      ...config.languageOptions,
-      parserOptions: { ...config.languageOptions.parserOptions, parser: typescriptParser }
-    }
-  };
-});
-
-export default [
-  {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**", "**/.astro/**"]
-  },
-  ...tobysmith568.recommended,
-  ...astroConfigs
-];
+export default defineConfig([
+  { ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**", "**/.astro/**"] },
+  recommended,
+  node,
+  { files: ["apps/website/**"], extends: [browser] },
+  { files: ["**/*.spec.ts"], extends: [test] },
+  { files: ["apps/website-e2e/**/*.spec.ts"], extends: [playwright] },
+  astro,
+  prettier
+]);
