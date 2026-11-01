@@ -52,30 +52,28 @@ const getPackageUrl = (packageNameAndVersion: string) => {
   </p>
 
   <ul class="licenses">
-    {
-      licenses.map((license, i) => (
-        <li>
-          <p>The following npm packages may be included in this project:</p>
-          <ul class="packages">
-            {license.dependencies.map(pkg => (
-              <li>
-                <a href={getPackageUrl(pkg)} target="_blank">
-                  {pkg}
-                </a>
-              </li>
-            ))}
-          </ul>
+    {licenses.map((license, i) => (
+      <li>
+        <p>The following npm packages may be included in this project:</p>
+        <ul class="packages">
+          {license.dependencies.map(pkg => (
+            <li>
+              <a href={getPackageUrl(pkg)} target="_blank">
+                {pkg}
+              </a>
+            </li>
+          ))}
+        </ul>
 
-          <p>These packages contains the following license and notice below:</p>
+        <p>These packages contains the following license and notice below:</p>
 
-          <pre class="license-content">
+        <pre class="license-content">
             <code>{license.content.trimStart()}</code>
           </pre>
 
-          {i !== licenses.length - 1 && <hr />}
-        </li>
-      ))
-    }
+        {i !== licenses.length - 1 && <hr />}
+      </li>
+    ))}
   </ul>
 </DocsLayout>
 
