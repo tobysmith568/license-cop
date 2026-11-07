@@ -16,7 +16,7 @@
     "@license-cop/test-utils": "workspace:*",
     "@license-cop/uses-isc-test-package": "workspace:*",
     "bun-1": "npm:bun@1.4.4",
-    "npm-10": "npm:npm@10.9.9",
+    "npm-10": "npm:npm@10.9.10",
     "npm-11": "npm:npm@11.21.1",
     "npm-12": "npm:npm@12.2.1",
     "pnpm-10": "npm:pnpm@10.34.9",
