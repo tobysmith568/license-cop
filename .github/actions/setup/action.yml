@@ -23,7 +23,7 @@ runs:
     - name: Install bun
       uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 1.4.4
+        bun-version: 1.4.5
 
     - name: Cache bun install cache
       uses: actions/cache@v6
