@@ -116,7 +116,7 @@
         "pnpm-12": "npm:pnpm@12.22.0",
         "yarn-1": "npm:yarn@1.22.22",
         "yarn-3": "npm:@yarnpkg/cli-dist@3.8.7",
-        "yarn-4": "npm:@yarnpkg/cli-dist@4.18.1",
+        "yarn-4": "npm:@yarnpkg/cli-dist@4.19.0",
       },
     },
     "packages/e2e/isc-package": {
@@ -2608,7 +2608,7 @@
 
     "yarn-3": ["@yarnpkg/cli-dist@3.8.7", "", { "bin": { "yarn": "bin/yarn.js", "yarnpkg": "bin/yarn.js" } }, "sha512-YMoAlLR9f+kxXjK72ggBIidi3ulQQrQpMSxzrLUt0OUk9Xdst2v26LBSYFlzOm+7KRNWgYIJpFjA8uRnCgB5xQ=="],
 
-    "yarn-4": ["@yarnpkg/cli-dist@4.18.1", "", { "bin": { "yarn": "bin/yarn.js", "yarnpkg": "bin/yarn.js" } }, "sha512-EH+A4TxAtBWXKE0DGQxW9Bo9crXHLJ73mfxjTQJuv8XonNWWTpei8BQ5JjczHJNU9GROTycwMFn8iOvRIZXUcA=="],
+    "yarn-4": ["@yarnpkg/cli-dist@4.19.0", "", { "bin": { "yarn": "bin/yarn.js", "yarnpkg": "bin/yarn.js" } }, "sha512-jjv4NIPlz974CUxGIdQDuK7mRb1f26BFIdkCkuFcM/64LT9tTRVj7/UqEv9bcB8DKFvtUw680CVo71bEBsHjuA=="],
 
     "yocto-queue": ["yocto-queue@1.2.2", "", {}, "sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ=="],
 
